@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/features/tech-blog/header";
-import { MainContent } from "@/components/layout/main-content";
+import { TechBlogListLayout } from "@/components/layout/tech-blog-list-layout";
 import { WeeklyPopular } from "@/components/features/tech-blog/weekly-popular";
 import { Footer } from "@/components/layout/footer";
 import { useScrollToTop } from "@/hooks/use-scroll-to-top";
@@ -102,7 +102,7 @@ export default function HomePage() {
       {/* Header is handled globally in layout/global-header.tsx */}
 
       <div className="container mx-auto px-4 flex gap-8 pt-24">
-        <MainContent
+        <TechBlogListLayout
           blogs={blogs}
           loading={loading}
           totalCount={totalCount}
