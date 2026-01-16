@@ -1,0 +1,204 @@
+import { BlogCard } from "@/components/features/tech-blog/blog-card";
+import { BlogListItem } from "@/components/features/tech-blog/blog-list-item";
+
+import { ViewToggle } from "@/components/features/tech-blog/view-toggle";
+import { Button } from "@/components/ui/button";
+import { TagFilterBar } from "@/components/features/tech-blog/tag-filter-bar";
+import { TAG_FILTER_OPTIONS, type TagCategory } from "@/lib/tag-filters";
+import type { Blog } from "@/lib/supabase";
+import { ChevronLeft } from "lucide-react";
+
+import { BlogPagination } from "@/components/features/tech-blog/blog-pagination";
+
+interface MainContentProps {
+  blogs: Blog[];
+  loading: boolean;
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  viewMode: "gallery" | "list";
+  searchQuery: string;
+  tagCategory: TagCategory;
+  selectedSubTags: string[];
+  isWeeklyExpanded: boolean;
+  onPageChange: (page: number) => void;
+  onViewModeChange: (mode: "gallery" | "list") => void;
+  onSearchChange: (query: string) => void;
+  onTagCategoryChange: (category: TagCategory) => void;
+  onSubTagChange: (subTags: string[]) => void;
+  onWeeklyToggle: () => void;
+  onLoginClick: () => void;
+}
+
+export function MainContent({
+  blogs,
+  loading,
+  totalCount,
+  totalPages,
+  currentPage,
+  viewMode,
+  searchQuery,
+  tagCategory,
+  selectedSubTags,
+  isWeeklyExpanded,
+  onPageChange,
+  onViewModeChange,
+  onSearchChange,
+  onTagCategoryChange,
+  onSubTagChange,
+  onWeeklyToggle,
+  onLoginClick,
+}: MainContentProps) {
+  // 태그 클릭 시 필터에 추가
+  const handleTagClick = (tag: string) => {
+    // 클릭한 태그가 속한 카테고리 찾기
+    const matchedCategory = TAG_FILTER_OPTIONS.find((option) =>
+      option.tags.includes(tag)
+    );
+
+    // 이미 선택된 태그면 제거
+    if (selectedSubTags.includes(tag)) {
+      onSubTagChange(selectedSubTags.filter((t) => t !== tag));
+    } else {
+      // 태그 추가하고, 해당 카테고리로 전환
+      if (matchedCategory && tagCategory !== matchedCategory.id) {
+        onTagCategoryChange(matchedCategory.id as TagCategory);
+      }
+      onSubTagChange([...selectedSubTags, tag]);
+    }
+
+    // 상단으로 스크롤
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <main className="flex-1 pt-4">
+      <div className="mb-4 flex items-center gap-4">
+        <ViewToggle
+          viewMode={viewMode}
+          onViewModeChange={onViewModeChange}
+          searchQuery={searchQuery}
+          onSearchChange={onSearchChange}
+        />
+        {!isWeeklyExpanded && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onWeeklyToggle}
+            className="hidden xl:flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            주간 인기글 보기
+          </Button>
+        )}
+      </div>
+
+      <div className="mb-6 w-full overflow-hidden">
+        <TagFilterBar
+          value={tagCategory}
+          options={TAG_FILTER_OPTIONS} // Pass the imported options
+          selectedSubTags={selectedSubTags}
+          // Construct availableTags from all options since we don't have DB stats yet
+          availableTags={TAG_FILTER_OPTIONS.flatMap((opt) =>
+            opt.tags.map((t) => ({ tag: t, count: 0 }))
+          )}
+          onChange={(val) => onTagCategoryChange(val as TagCategory)}
+          onSubTagChange={onSubTagChange}
+        />
+      </div>
+
+      {loading ? (
+        <>
+          {/* 로딩 스켈레톤 */}
+          {viewMode === "gallery" ? (
+            <div
+              className={`grid grid-cols-1 md:grid-cols-2 ${
+                isWeeklyExpanded ? "xl:grid-cols-2" : "xl:grid-cols-3"
+              } gap-8`}
+            >
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 rounded-2xl h-80"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 rounded-lg h-32"></div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      ) : blogs.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="text-8xl mb-6">🔍</div>
+          <h3 className="text-2xl font-bold mb-3 text-slate-900 dark:text-slate-100">
+            검색 결과가 없습니다
+          </h3>
+          <p className="text-slate-600 dark:text-slate-400 text-lg">
+            다른 키워드로 검색해보세요.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* 검색 결과 개수 표시 */}
+          {searchQuery && (
+            <div className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+              '
+              <span className="font-medium text-slate-900 dark:text-slate-100">
+                {searchQuery}
+              </span>
+              ' 검색 결과{" "}
+              <span className="font-semibold text-blue-600 dark:text-blue-400">
+                {totalCount}개
+              </span>
+            </div>
+          )}
+          {/* 블로그 목록 */}
+          {viewMode === "gallery" ? (
+            <div
+              className={`grid grid-cols-1 md:grid-cols-2 ${
+                isWeeklyExpanded ? "xl:grid-cols-2" : "xl:grid-cols-3"
+              } gap-8`}
+            >
+              {blogs.map((blog) => (
+                <BlogCard
+                  key={blog.id}
+                  blog={blog}
+                  onLoginClick={onLoginClick}
+                  selectedSubTags={selectedSubTags}
+                  onTagClick={handleTagClick}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {blogs.map((blog) => (
+                <BlogListItem
+                  key={blog.id}
+                  blog={blog}
+                  onLoginClick={onLoginClick}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* 페이지네이션 */}
+          {!loading && blogs.length > 0 && (
+            <BlogPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={onPageChange}
+            />
+          )}
+
+          {/* 푸터가 표시될 때 여백 추가 */}
+          {!loading && blogs.length > 0 && <div className="pb-16"></div>}
+        </>
+      )}
+    </main>
+  );
+}

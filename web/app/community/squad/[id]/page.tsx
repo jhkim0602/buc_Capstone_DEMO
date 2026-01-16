@@ -1,0 +1,325 @@
+import { notFound } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
+import { ko } from "date-fns/locale";
+import { createClient } from "@/lib/supabase/server"; // Keep creating client for AUTH (session) only
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Viewer } from "@/components/features/community/squad-viewer";
+import {
+  MapPin,
+  Calendar,
+  Star,
+  Monitor,
+  Share2,
+  AlertTriangle,
+} from "lucide-react";
+import { fetchDevEventById } from "@/lib/server/dev-events";
+import {
+  getSquad,
+  getApplicationStatus,
+  getApplications,
+} from "@/lib/server/community";
+
+// Components
+import ApplicationButton from "@/components/features/community/squad/application-button";
+import ApplicantManager from "@/components/features/community/squad/applicant-manager";
+
+interface PageProps {
+  params: { id: string };
+}
+
+export default async function SquadDetailPage({ params }: PageProps) {
+  const resolvedParams = params;
+  const id = resolvedParams.id;
+  const supabase = await createClient(); // For Auth Session
+
+  // Fetch Squad with Relations (Prisma)
+  const squad = await getSquad(id);
+
+  if (!squad) {
+    notFound();
+  }
+
+  // Fetch Current User Session
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const currentUserId = session?.user?.id;
+
+  // Determine User Role
+  // @ts-ignore
+  const isLeader = currentUserId === squad.leader_id;
+  // @ts-ignore
+  const isMember = squad.members?.some((m) => m.user_id === currentUserId);
+
+  // Check application status if not member
+  let applicationStatus = null;
+  if (currentUserId && !isMember) {
+    applicationStatus = await getApplicationStatus(id, currentUserId);
+  }
+
+  // Fetch Applications if Leader
+  let applications: any[] = [];
+  if (isLeader) {
+    applications = await getApplications(id);
+  }
+
+  // Fetch Related Activity if exists
+  let activity = null;
+  if (squad.activity_id) {
+    activity = await fetchDevEventById(squad.activity_id);
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Header */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Badge
+                variant={
+                  squad.status === "recruiting" ? "default" : "secondary"
+                }
+              >
+                {squad.status === "recruiting" ? "모집중" : "모집마감"}
+              </Badge>
+              <span className="text-sm font-medium text-muted-foreground uppercase">
+                {squad.type}
+              </span>
+            </div>
+
+            <h1 className="text-3xl font-bold mb-4 leading-tight">
+              {squad.title}
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground pb-6 border-b">
+              <div className="flex items-center gap-2">
+                <Avatar className="w-6 h-6">
+                  {/* @ts-ignore */}
+                  <AvatarImage src={squad.leader?.avatar_url} />
+                  <AvatarFallback>{squad.leader?.nickname?.[0]}</AvatarFallback>
+                </Avatar>
+                {/* @ts-ignore */}
+                <span className="font-medium text-foreground">
+                  {squad.leader?.nickname}
+                </span>
+              </div>
+              <span>·</span>
+              <span>
+                {formatDistanceToNow(new Date(squad.created_at), {
+                  addSuffix: true,
+                  locale: ko,
+                })}
+              </span>
+              <div className="ml-auto flex items-center gap-2">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Share2 className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-destructive"
+                >
+                  <AlertTriangle className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Activity Link Banner */}
+          {activity && (
+            <Card className="bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900">
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="bg-blue-100 dark:bg-blue-800 p-2 rounded-lg">
+                  <Star className="w-5 h-5 text-blue-600 dark:text-blue-300 fill-current" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-0.5">
+                    관련 활동
+                  </p>
+                  <p className="font-medium text-blue-900 dark:text-blue-100">
+                    {activity.title}
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="ml-auto" asChild>
+                  <a
+                    href={`/career/activities/${activity.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    자세히 보기
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Body Content */}
+          <div className="prose dark:prose-invert max-w-none min-h-[300px]">
+            <Viewer content={squad.content} />
+          </div>
+        </div>
+
+        {/* Right Column: Sidebar */}
+        <div className="space-y-6">
+          {/* Action Card */}
+          <Card className="shadow-lg border-primary/20 relative overflow-hidden">
+            {squad.status === "recruiting" && (
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
+            )}
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center text-lg">
+                <span>현재 모집 현황</span>
+                <span className="text-primary font-bold text-xl">
+                  {squad.recruited_count} / {squad.capacity}{" "}
+                  <span className="text-sm font-normal text-muted-foreground">
+                    명
+                  </span>
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Progress Bar */}
+              <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
+                <div
+                  className="bg-primary h-full transition-all duration-500"
+                  style={{
+                    width: `${(squad.recruited_count / squad.capacity) * 100}%`,
+                  }}
+                />
+              </div>
+
+              {isLeader ? (
+                <div className="pt-2 space-y-2">
+                  <p className="text-sm text-center text-muted-foreground mb-4">
+                    리더 권한으로 팀원을 관리할 수 있습니다.
+                  </p>
+                  {/* @ts-ignore */}
+                  <ApplicantManager
+                    squadId={squad.id}
+                    initialApplications={applications}
+                  />
+                  <Button variant="outline" className="w-full">
+                    모집글 수정하기
+                  </Button>
+                </div>
+              ) : (
+                <div className="pt-2">
+                  {/* @ts-ignore */}
+                  <ApplicationButton
+                    squadId={squad.id}
+                    currentUserId={currentUserId}
+                    status={applicationStatus}
+                    isRecruiting={squad.status === "recruiting"}
+                    leaderId={squad.leader_id}
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Info Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">상세 정보</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <div className="flex items-start gap-3">
+                <Monitor className="w-4 h-4 mt-0.5 text-muted-foreground" />
+                <div>
+                  <span className="font-semibold block mb-0.5">진행 방식</span>
+                  <span className="text-muted-foreground">
+                    {squad.place_type === "online"
+                      ? "온라인"
+                      : squad.place_type === "offline"
+                      ? "오프라인"
+                      : "온/오프라인 혼합"}
+                  </span>
+                </div>
+              </div>
+              {(squad.location || squad.place_type !== "online") && (
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <span className="font-semibold block mb-0.5">
+                      활동 지역/플랫폼
+                    </span>
+                    <span className="text-muted-foreground">
+                      {squad.location || "-"}
+                    </span>
+                  </div>
+                </div>
+              )}
+              <div className="flex items-start gap-3">
+                <Calendar className="w-4 h-4 mt-0.5 text-muted-foreground" />
+                <div>
+                  <span className="font-semibold block mb-0.5">모집 마감</span>
+                  <span className="text-muted-foreground">
+                    상시 모집 (인원 충원 시 마감)
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Tech Stack */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">필요 기술 / 언어</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {squad.tech_stack?.map((tech: string) => (
+                  <Badge key={tech} variant="secondary">
+                    {tech}
+                  </Badge>
+                ))}
+                {(!squad.tech_stack || squad.tech_stack.length === 0) && (
+                  <span className="text-sm text-muted-foreground">무관</span>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Members */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">
+                참여 멤버 ({squad.recruited_count})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3">
+                {/* @ts-ignore */}
+                {squad.members?.map((member) => (
+                  <div key={member.user_id} className="flex items-center gap-3">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={member.profile?.avatar_url} />
+                      <AvatarFallback>
+                        {member.profile?.nickname?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {member.profile?.nickname}
+                        {member.role === "leader" && (
+                          <span className="ml-1 text-xs text-primary font-bold">
+                            👑
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
