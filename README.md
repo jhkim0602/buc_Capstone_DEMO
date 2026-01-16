@@ -9,36 +9,21 @@
 DDD(도메인 주도 설계) 원칙에 따라 리팩토링된 프로젝트 구조 명세서입니다.
 새로운 기능을 추가하거나 코드를 수정할 때 이 문서를 참고하세요.
 
-### 1. AI Backend (`ai/src/app`)
+### 1. AI Interview (`ai-interview/`)
+> **🚧 Status**: Planning Phase (기획 단계)
+> 현재 백엔드 로직은 기획서(`AI_INTERVIEW_BACKEND_PLAN.md`)로만 존재하며, 프론트엔드(`web`)는 Mock Data를 기반으로 동작하도록 구성되어 있습니다.
 
-핵심 로직과 외부 의존성을 철저히 분리했습니다.
+본 프로젝트는 **"분석 -> 사용자 검토 -> 면접 생성"**의 3단계 흐름을 따르는 AI 면접 서비스를 지향합니다.
 
-```
-ai/src/app/
-├── agents/                           # AI 에이전트 (Brain)
-│   └── interviewer/                  # 면접관 페르소나 및 대화 로직
-├── api/                              # 네트워크 계층
-│   └── routers/
-│       ├── system.py                 # 시스템 상태 확인용 라우터
-│       └── websocket.py              # 실시간 면접용 WebSocket 핸들러
-├── bootstrap/                        # 앱 구동 (Startup)
-│   ├── main.py                       # 메인 진입점 (run_server)
-│   ├── di.py                         # 의존성 주입 (ServiceContext)
-│   └── server.py                     # FastAPI 앱 생성 팩토리
-├── core/                             # 핵심 도메인 로직 (Business Logic)
-│   ├── audio/                        # 오디오 처리 (STT, TTS, VAD)
-│   ├── chat/                         # 대화 관리 (히스토리, 메시지 큐)
-│   ├── config/                       # 설정 관리 (YAML 로더)
-│   └── interview/                    # 면접 세션 상태 관리 (InterviewManager)
-└── infra/                            # 인프라 계층 (External Services)
-    └── proxy/                        # 외부 서비스 프록시 (LLM API 등)
-```
+*   **Backend Plan (`ai-interview/AI_INTERVIEW_BACKEND_PLAN.md`)**:
+    *   **Goal**: FastAPI 비동기 서버, 상호작용적 분석(Interactive Analysis), 모듈형 RAG 아키텍처
+    *   **Engines**: 채용공고(JD) 분석, 이력서 인사이트, 맞춤형 면접 설계, 실시간 인터뷰 세션(WebSocket)
 
-#### 💡 Backend 개발 가이드: 코드를 어디에 넣을까?
-*   **새로운 AI 기능/성격 추가**: `agents/` 폴더에 새 에이전트 폴더 생성.
-*   **핵심 비즈니스 로직 수정**: `core/` 하위의 적절한 도메인을 찾아 수정. (예: 대화 저장 방식 변경 -> `core/chat`)
-*   **외부 API 연동 (GPT, Claude 등)**: `infra/` 폴더에 구현. `core`는 `infra`에 직접 의존하지 않도록 주의.
-*   **새로운 API 엔드포인트**: `api/routers/`에 파일 추가 후 `bootstrap/server.py`에 등록.
+*   **Frontend Plan (`ai-interview/AI_INTERVIEW_FRONTEND_PLAN.md`)**:
+    *   **Goal**: 백엔드 연동 없이 화면 흐름(Setup Flow)과 UI 구조를 확정하기 위한 **UI-First** 접근
+    *   **Features**: SPA 구조의 Setup Wizard (Dashboard -> JD -> Resume -> Mode), 사이드바 네비게이션
+
+
 
 ### 2. Web Frontend (`web/`)
 
@@ -62,9 +47,17 @@ web/components/features/              # 도메인별 기능 컴포넌트
 #### 💡 Frontend 개발 가이드: 코드를 어디에 넣을까?
 *   **새로운 페이지 기능 개발**: `web/components/features/` 아래에 새로운 폴더(도메인) 생성. (예: 마이페이지 -> `features/mypage`)
 *   **면접 관련 UI 수정**: `features/interview/` 내부에서 `room`(진행중), `result`(결과), `setup`(설정) 중 성격에 맞는 곳 수정.
+    *   *Note: 현재 면접 진행은 Mock Data를 사용하므로 `web/mocks/` 데이터도 함께 확인하세요.*
 *   **여러 곳에서 쓰는 버튼/입력창**: `web/components/ui` (Shadcn UI) 또는 `web/components/shared` 활용.
 
-### 3. Crawler (`crawler/src`)
+### 3. Workspace Server (`workspace-server/`)
+실시간 협업(화이트보드, 채팅)을 위한 전용 Node.js 서버입니다.
+
+- `src/modules/board/`: 화이트보드 (Yjs)
+- `src/modules/chat/`: 채팅 (Socket.io)
+- `src/modules/socket/`: 소켓 게이트웨이
+
+### 4. Crawler (`crawler/src`)
 
 수집 대상(Domain)과 수집 엔진(Core)을 분리했습니다.
 
@@ -91,15 +84,18 @@ crawler/src/
 ## 🛠 기술 스택
 
 ### Web (Frontend)
-- **Framework**: Next.js 15+ (App Router)
+- **Framework**: Next.js 14+ (App Router, SPA Structure)
 - **Styling**: Tailwind CSS + shadcn/ui
 - **State/Data**: Supabase, LiveKit Client
 - **Deployment**: Vercel
 
-### AI Agent (Backend)
-- **Model**: Gemini 2.0 Flash (Multimodal)
-- **Framework**: LiveKit Agents, Python 3.10+
-- **Communication**: WebSockets, Real-time Audio/Video
+### AI Agent (Interview - Planned)
+- **Status**: Planning (기획 단계)
+- **Plan**: LiveKit Agents, Python 3.10+, Gemini 2.0 Flash
+
+### Workspace Server (Collaboration)
+- **Runtime**: Node.js (TypeScript)
+- **Real-time**: Socket.IO, Yjs (WebSocket)
 
 ### Crawler
 - **Language**: Python
@@ -111,7 +107,7 @@ crawler/src/
 ## 🚀 시작하기
 
 ### 1. 환경 변수 설정
-각 디렉토리(`. /ai`, `./web`, `./crawler`)에 있는 `.env.example` 파일을 참고하여 `.env` 파일을 생성하고 필요한 API Key를 설정하세요.
+각 디렉토리(`. /workspace-server`, `./web`, `./crawler`)에 있는 `.env.example` 파일을 참고하여 `.env` 파일을 생성하고 필요한 API Key를 설정하세요.
 - Gemini API Key
 - Supabase URL & Service Role Key
 - LiveKit API Key & Secret
@@ -125,12 +121,15 @@ pnpm install
 pnpm dev
 ```
 
-#### AI Agent
+#### Workspace Server
 ```bash
-cd ai
-uv sync
-uv run run_server.py
+cd workspace-server
+npm install
+npm run dev
 ```
+
+#### AI Agent (Planning)
+*현재 기획 단계로 실행 가능한 코드가 없습니다. `ai-interview/` 내의 기획 문서를 참고하세요.*
 
 #### Crawler
 ```bash
