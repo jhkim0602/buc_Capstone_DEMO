@@ -3,16 +3,16 @@ import { notFound } from "next/navigation";
 import { JobDetailHeader } from "@/components/features/career/job-detail-header";
 import { JobDetailContent } from "@/components/features/career/job-detail-content";
 
-// Next.js 15 requires params to be a Promise (Reverted for Next.js 14)
+// Next.js 15 requires params to be a Promise
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  // Await params in Next.js 15 (Reverted)
-  const { id } = params;
+  // Await params in Next.js 15
+  const { id } = await params;
   const job = await fetchRecruitJobById(id);
 
   if (!job) {
@@ -31,8 +31,8 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function JobDetailPage({ params }: PageProps) {
-  // Await params in Next.js 15 (Reverted)
-  const { id } = params;
+  // Await params in Next.js 15
+  const { id } = await params;
   const job = await fetchRecruitJobById(id);
 
   if (!job) {

@@ -13,7 +13,7 @@ export default async function ActivityDetailPage({
 }: {
   params: { id: string };
 }) {
-  const { id } = params;
+  const { id } = await params;
   const event = await fetchDevEventById(id);
 
   if (!event) {
@@ -30,7 +30,7 @@ export default async function ActivityDetailPage({
         {/* Content Body */}
         {event.content ? (
           <article
-            className="prose prose-lg dark:prose-invert max-w-none
+            className="prose prose-lg dark:prose-invert max-w-none 
             prose-headings:font-bold prose-headings:tracking-tight
             prose-h1:text-4xl prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:pb-2 prose-h2:border-b
             prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300

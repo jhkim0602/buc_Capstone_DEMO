@@ -1,29 +1,68 @@
-export * from "./client";
-// export * from "./server"; // Removed to prevent server-side imports in client bundle
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export async function incrementViews(blogId: string | number) {
-  // Placeholder: call supabase rpc or update
-  console.log("Increment views for", blogId);
-  return { error: null };
+export interface Blog {
+  id: number;
+  title: string;
+  summary?: string | null;
+  author: string;
+  tags: string[];
+  published_at?: string | Date | null;
+  thumbnail_url?: string | null;
+  external_url: string;
+  views?: number | null;
+  created_at?: string | Date | null;
+  updated_at?: string | Date | null;
+  blog_type?: string | null;
+  category?: string | null;
 }
 
+export const fetchWeeklyPopularBlogs = async (limit = 10): Promise<Blog[]> => {
+  const supabase = createClientComponentClient();
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .order("views", { ascending: false })
+    .limit(limit);
 
-// Common types or helpers can be exported here
-export type { Database } from "@/lib/database.types";
+  if (error) {
+    console.error("Error fetching popular blogs:", error);
+    return [];
+  }
 
-export type Blog = Database["public"]["Tables"]["posts"]["Row"] & {
-  author: {
-    nickname: string | null;
-    avatar_url: string | null;
-  } | null;
-  tags: string[] | null;
+  return (data as any[]) || [];
 };
 
-// Mock function for fetchWeeklyPopularBlogs used in tech-blog/page.tsx
-// This should ideally be implemented with actual DB logic
-export async function fetchWeeklyPopularBlogs(limit: number = 5) {
-  // Mock data to prevent build hang during SSG
-  console.log("Fetching weekly popular blogs (MOCK)");
-  return [] as Blog[];
-}
+export const incrementViews = async (id: number) => {
+  const supabase = createClientComponentClient();
+  // Using RPC is better for atomicity, but for now we just define the method
+  const { error } = await supabase.rpc("increment_views", { blog_id: id });
+  if (error) {
+    console.error("Error incrementing views:", error);
+  }
+};
 
+export const fetchAvailableBlogs = async () => {
+  const supabase = createClientComponentClient();
+
+  // Fetch distinct authors/blogs
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("author, blog_type, category")
+    .order("author");
+
+  if (error) {
+    console.error("Error fetching available blogs:", error);
+    return { companies: [], individuals: [] };
+  }
+
+  // De-duplicate based on author name
+  const uniqueBlogs = Array.from(
+    new Map((data || []).map((item) => [item.author, item])).values(),
+  );
+
+  // Group by type
+  const companies = uniqueBlogs.filter((b) => b.blog_type === "company");
+  const individuals = uniqueBlogs.filter((b) => b.blog_type !== "company"); // Assuming 'personal' or null is individual
+
+  return { companies, individuals };
+};
