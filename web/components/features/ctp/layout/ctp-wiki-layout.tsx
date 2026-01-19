@@ -27,7 +27,7 @@ export function CTPWikiLayout({ children }: CTPWikiLayoutProps) {
 
       {/* 3. Main Content Area */}
       <div className="flex-1 min-w-0 relative">
-        <main className="max-w-4xl mx-auto px-6 py-12 md:px-10 md:py-12">
+        <main className="w-full max-w-7xl mx-auto px-4 py-8 md:px-8 md:py-10">
           {children}
         </main>
       </div>

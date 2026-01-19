@@ -18,6 +18,36 @@ const DEMO_SECTIONS = [
 export function CTPRightSidebar() {
   const [activeSection, setActiveSection] = useState("intro");
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-20% 0px -35% 0px", // Adjust trigger zone
+        threshold: 0.1
+      }
+    );
+
+    const sections = document.querySelectorAll("section[id]");
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    setActiveSection(id);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <aside className="hidden xl:block w-64 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto pl-6 pr-6 py-8 border-l border-border/40">
       <div className="space-y-4">
@@ -29,9 +59,9 @@ export function CTPRightSidebar() {
             <Link
               key={section.id}
               href={`#${section.id}`}
-              onClick={() => setActiveSection(section.id)}
+              onClick={(e) => handleClick(e, section.id)}
               className={cn(
-                "text-sm transition-colors border-l-2 pl-3 py-1 -ml-px",
+                "text-sm transition-colors border-l-2 pl-3 py-1 -ml-px block",
                 activeSection === section.id
                   ? "border-primary text-primary font-medium"
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
