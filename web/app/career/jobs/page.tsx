@@ -2,6 +2,8 @@ import { fetchRecruitJobs, getAllTags } from "@/lib/server/recruit";
 import { RecruitJobCard } from "@/components/features/career/recruit-job-card";
 import { RecruitFilter } from "@/components/features/career/recruit-filter";
 import { RecruitSearchSort } from "@/components/features/career/recruit-search-sort";
+import { Sidebar } from "@/components/layout/sidebar";
+import { SidebarBanner } from "@/components/features/career/sidebar-banner";
 
 export const metadata = {
   title: "채용 공고 | StackLoad",
@@ -72,27 +74,38 @@ export default async function RecruitPage({ searchParams }: PageProps) {
           <RecruitFilter allTags={allTags} />
         </div>
 
-        {/* Grid Layout (Same breakpoints as Tech Blog) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {jobs.map((job) => (
-            <div key={job.id} className="h-[380px]">
-              <RecruitJobCard job={job} />
+        {/* Content Layout with Sidebar */}
+        <div className="grid grid-cols-12 gap-8">
+          {/* Main Content (9 Cols) */}
+          <div className="col-span-12 lg:col-span-9">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {jobs.map((job) => (
+                <div key={job.id} className="h-[380px]">
+                  <RecruitJobCard job={job} />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {jobs.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-32 text-center border rounded-2xl border-dashed">
-            <div className="text-6xl mb-6">🔍</div>
-            <h3 className="text-xl font-bold mb-2">
-              조건에 맞는 공고가 없습니다.
-            </h3>
-            <p className="text-muted-foreground">
-              필터를 초기화하거나 다른 검색어로 시도해보세요.
-            </p>
+            {/* Empty State */}
+            {jobs.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-32 text-center border rounded-2xl border-dashed">
+                <div className="text-6xl mb-6">🔍</div>
+                <h3 className="text-xl font-bold mb-2">
+                  조건에 맞는 공고가 없습니다.
+                </h3>
+                <p className="text-muted-foreground">
+                  필터를 초기화하거나 다른 검색어로 시도해보세요.
+                </p>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Sidebar (3 Cols) */}
+          <div className="col-span-12 lg:col-span-3">
+            <Sidebar className="top-[130px] sticky">
+              <SidebarBanner />
+            </Sidebar>
+          </div>
+        </div>
       </div>
     </div>
   );

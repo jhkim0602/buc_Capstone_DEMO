@@ -1,17 +1,31 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import { SquadCard } from "@/components/features/community/squad-card";
 import { fetchDevEvents } from "@/lib/server/dev-events";
 import { Button } from "@/components/ui/button";
-import { getSquads } from "@/lib/server/community";
 
- // Use force-dynamic because access to data is real-time/frequent updates
- // and we are using Prisma (DB) which should be dynamic.
 export const dynamic = "force-dynamic";
 
 export default async function SquadListPage() {
-  // Fetch Squads via Prisma Service
-  const squads = await getSquads();
+  const supabase = await createClient();
+
+  // Fetch Squads
+  const { data: squads, error } = await supabase
+    .from("squads")
+    .select(
+      `
+      *,
+      leader:leader_id (
+        id, nickname, avatar_url, tier
+      )
+    `
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to fetch squads:", error);
+  }
 
   // Fetch Events to map Titles
   // Optimization: In real app, might fetch only relevant IDs or use a map
@@ -22,7 +36,8 @@ export default async function SquadListPage() {
   const enhancedSquads =
     squads?.map((s) => ({
       ...s,
-      // leader is already mapped by getSquads
+      // @ts-ignore: join result
+      leader: s.leader,
       activity: s.activity_id
         ? {
             id: s.activity_id,

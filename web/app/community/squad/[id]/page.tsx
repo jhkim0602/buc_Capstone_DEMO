@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
-import { createClient } from "@/lib/supabase/server"; // Keep creating client for AUTH (session) only
+import { createClient } from "@/lib/supabase/server";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,39 +10,50 @@ import { Viewer } from "@/components/features/community/squad-viewer";
 import {
   MapPin,
   Calendar,
+  Users,
   Star,
   Monitor,
   Share2,
   AlertTriangle,
 } from "lucide-react";
 import { fetchDevEventById } from "@/lib/server/dev-events";
-import {
-  getSquad,
-  getApplicationStatus,
-  getApplications,
-} from "@/lib/server/community";
 
 // Components
 import ApplicationButton from "@/components/features/community/squad/application-button";
 import ApplicantManager from "@/components/features/community/squad/applicant-manager";
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function SquadDetailPage({ params }: PageProps) {
-  const resolvedParams = params;
+  const resolvedParams = await params;
   const id = resolvedParams.id;
-  const supabase = await createClient(); // For Auth Session
+  const supabase = await createClient();
 
-  // Fetch Squad with Relations (Prisma)
-  const squad = await getSquad(id);
+  // Fetch Squad with Relations
+  const { data: squad, error } = await supabase
+    .from("squads")
+    .select(
+      `
+      *,
+      leader:leader_id (
+        id, nickname, avatar_url, tier, bio
+      ),
+      members:squad_members (
+        user_id, role,
+        profile:user_id (id, nickname, avatar_url)
+      )
+    `
+    )
+    .eq("id", id)
+    .single();
 
-  if (!squad) {
+  if (error || !squad) {
     notFound();
   }
 
-  // Fetch Current User Session
+  // Fetch Current User
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -57,13 +68,26 @@ export default async function SquadDetailPage({ params }: PageProps) {
   // Check application status if not member
   let applicationStatus = null;
   if (currentUserId && !isMember) {
-    applicationStatus = await getApplicationStatus(id, currentUserId);
+    const { data: application } = await supabase
+      .from("squad_applications")
+      .select("status")
+      .eq("squad_id", id)
+      .eq("user_id", currentUserId)
+      .single();
+    applicationStatus = application?.status;
   }
 
   // Fetch Applications if Leader
   let applications: any[] = [];
   if (isLeader) {
-    applications = await getApplications(id);
+    const { data: apps } = await supabase
+      .from("squad_applications")
+      // @ts-ignore
+      .select(`*, user:user_id(id, nickname, avatar_url, tier)`)
+      .eq("squad_id", id)
+      .eq("status", "pending") // Show pending primarily
+      .order("created_at", { ascending: false });
+    applications = apps || [];
   }
 
   // Fetch Related Activity if exists
