@@ -1,19 +1,24 @@
 
+export interface TCPSubConcept {
+  id: string;
+  title: string;
+}
+
 export interface CTPConcept {
   id: string;
   title: string;
   description: string;
   difficulty: "Easy" | "Medium" | "Hard";
-  icon?: string;
   isImportant?: boolean;
+  subConcepts?: TCPSubConcept[];
 }
 
 export interface CTPCategory {
   id: string;
   title: string;
   description: string;
-  concepts: CTPConcept[];
   color: string;
+  concepts: CTPConcept[];
 }
 
 export const CTP_DATA: CTPCategory[] = [
@@ -23,7 +28,20 @@ export const CTP_DATA: CTPCategory[] = [
     description: "순차적으로 데이터를 저장하고 처리하는 기초 자료구조",
     color: "from-blue-500 to-cyan-400",
     concepts: [
-      { id: "array", title: "배열 (Array)", description: "메모리 연속 할당, 인덱스 접근", difficulty: "Easy", isImportant: true },
+      {
+        id: "array",
+        title: "배열 (Array)",
+        description: "메모리 연속 할당, 인덱스 접근",
+        difficulty: "Easy",
+        isImportant: true,
+        subConcepts: [
+          { id: "1d-array", title: "1차원 배열 기초" },
+          { id: "2d-array", title: "2차원 배열 & 행렬" },
+          { id: "char-array", title: "문자열 (Char Array)" },
+          { id: "dynamic-array", title: "동적 배열 (Vector/ArrayList)" },
+          { id: "memory", title: "메모리 구조와 캐시" }
+        ]
+      },
       { id: "linked-list", title: "연결 리스트 (Linked List)", description: "노드 기반 불연속 할당, 단일/이중", difficulty: "Medium" },
       { id: "stack", title: "스택 (Stack)", description: "LIFO 구조, 재귀, 후위 표기법", difficulty: "Easy" },
       { id: "queue", title: "큐 & 덱 (Queue & Deque)", description: "FIFO 구조, BFS, 캐시 구현", difficulty: "Easy" },
