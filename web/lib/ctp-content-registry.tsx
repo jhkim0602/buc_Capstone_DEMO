@@ -1,4 +1,4 @@
-import ArrayContent from "@/components/features/ctp/contents/linear-ds/array-content";
+import ArrayContent from "@/components/features/ctp/contents/linear-ds/array";
 import { ReactNode } from "react";
 
 // Component Type
