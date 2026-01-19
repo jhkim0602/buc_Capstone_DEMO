@@ -112,9 +112,9 @@ export function MainContent({
           {/* 로딩 스켈레톤 */}
           {viewMode === "gallery" ? (
             <div
-              className={`grid grid-cols-1 md:grid-cols-2 ${
-                isWeeklyExpanded ? "xl:grid-cols-2" : "xl:grid-cols-3"
-              } gap-8`}
+              className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${
+                isWeeklyExpanded ? "xl:grid-cols-3" : "xl:grid-cols-4"
+              } gap-6`}
             >
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
@@ -160,9 +160,9 @@ export function MainContent({
           {/* 블로그 목록 */}
           {viewMode === "gallery" ? (
             <div
-              className={`grid grid-cols-1 md:grid-cols-2 ${
-                isWeeklyExpanded ? "xl:grid-cols-2" : "xl:grid-cols-3"
-              } gap-8`}
+              className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${
+                isWeeklyExpanded ? "xl:grid-cols-3" : "xl:grid-cols-4"
+              } gap-6`}
             >
               {blogs.map((blog) => (
                 <BlogCard
