@@ -49,7 +49,7 @@ export function BlogFormModal({ isOpen, onClose, onSaved, editingBlog }: BlogFor
         title: editingBlog.title,
         summary: editingBlog.summary || "",
         author: editingBlog.author,
-        category: editingBlog.category,
+        category: editingBlog.category || "",
         external_url: editingBlog.external_url,
         thumbnail_url: editingBlog.thumbnail_url || "",
         tags: editingBlog.tags || [],
@@ -108,6 +108,8 @@ export function BlogFormModal({ isOpen, onClose, onSaved, editingBlog }: BlogFor
 
       const blogData = {
         ...formData,
+        category: (formData.category || null) as "FE" | "BE" | "AI" | "APP" | null,
+        blog_type: "company" as const,
         published_at: new Date().toISOString(),
         views: editingBlog?.views || 0,
       }

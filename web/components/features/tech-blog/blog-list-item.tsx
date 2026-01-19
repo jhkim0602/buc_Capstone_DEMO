@@ -103,14 +103,8 @@ export function BlogListItem({
                   <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-wrap">
                     {/* 작성자 정보 */}
                     {blog.author && (
-                      <div
-                        className={`flex items-center gap-1 sm:gap-2 text-sm min-w-0 ${
-                          blog.blog_type === "personal"
-                            ? "text-primary font-medium"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {blog.blog_type === "company" && logoUrl ? (
+                      <div className="flex items-center gap-1 sm:gap-2 text-sm min-w-0 text-muted-foreground">
+                        {logoUrl ? (
                           <Image
                             src={logoUrl}
                             alt="logo"
@@ -118,16 +112,10 @@ export function BlogListItem({
                             height={16}
                             className="rounded flex-shrink-0"
                           />
-                        ) : blog.blog_type === "company" ? (
-                          <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                         ) : (
-                          <User className="h-4 w-4 text-primary flex-shrink-0" />
+                          <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                         )}
-                        <span
-                          className={`${
-                            blog.blog_type === "personal" ? "font-medium" : ""
-                          } truncate min-w-0 max-w-20 sm:max-w-none`}
-                        >
+                        <span className="truncate min-w-0 max-w-20 sm:max-w-none">
                           {blog.author}
                         </span>
                       </div>

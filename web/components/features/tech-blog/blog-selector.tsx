@@ -16,7 +16,6 @@ import { getLogoUrl } from "@/lib/logos";
 interface BlogSelectorProps {
   selectedBlog: string;
   onBlogChange: (blog: string) => void;
-  blogType: "company" | "personal";
   className?: string;
 }
 
@@ -29,7 +28,6 @@ interface Blog {
 export function BlogSelector({
   selectedBlog,
   onBlogChange,
-  blogType,
   className = "",
 }: BlogSelectorProps) {
   const [blogs, setBlogs] = useState<{
@@ -62,15 +60,10 @@ export function BlogSelector({
     loadBlogs();
   }, [mounted]);
 
-  const getAvailableBlogs = () => {
-    if (blogType === "company") {
-      return blogs.companies;
-    } else {
-      return blogs.individuals;
-    }
-  };
-
-  const availableBlogs = getAvailableBlogs();
+  // Merge all blogs for display, or just companies if personal is gone.
+  // Ideally fetchAvailableBlogs should be updated to return a flat list or just companies.
+  // For now, flattening here to safe guard.
+  const availableBlogs = [...blogs.companies, ...blogs.individuals];
 
   if (!mounted) {
     return (
@@ -109,7 +102,7 @@ export function BlogSelector({
           return (
             <SelectItem key={blog.author} value={blog.author}>
               <div className="flex items-center gap-2">
-                {blog.blog_type === "company" && logoUrl ? (
+                {logoUrl ? (
                   <Image
                     src={logoUrl}
                     alt="logo"
@@ -117,17 +110,10 @@ export function BlogSelector({
                     height={16}
                     className="rounded"
                   />
-                ) : blog.blog_type === "company" ? (
-                  <Building2 className="h-4 w-4 text-muted-foreground" />
                 ) : (
-                  <User className="h-4 w-4 text-muted-foreground" />
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
                 )}
                 <span className="flex-1">{blog.author}</span>
-                {blog.blog_type === "personal" && blog.category && (
-                  <span className="text-xs text-muted-foreground leading-none flex items-center">
-                    {blog.category}
-                  </span>
-                )}
               </div>
             </SelectItem>
           );

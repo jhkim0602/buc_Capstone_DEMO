@@ -15,7 +15,7 @@ export interface Blog {
   thumbnail_url: string | null;
   external_url: string;
   views: number;
-  blog_type: "company" | "personal";
+  blog_type: "company";
   category: "FE" | "BE" | "AI" | "APP" | null;
   created_at: string;
   updated_at: string;
@@ -24,11 +24,11 @@ export interface Blog {
 // 저자 타입 정의
 interface AuthorInfo {
   author: string;
-  blog_type: "company" | "personal";
+  blog_type: "company";
   category?: "FE" | "BE" | "AI" | "APP" | null;
 }
 
-// 사용 가능한 블로그 목록 조회 (기업/개인별)
+// 사용 가능한 블로그 목록 조회 (기업별)
 export async function fetchAvailableBlogs() {
   try {
     // 카테고리 정보를 포함하여 조회
@@ -37,17 +37,8 @@ export async function fetchAvailableBlogs() {
       .select("author, category")
       .eq("blog_type", "company");
 
-    const { data: personalData, error: personalError } = await supabase
-      .from("blogs")
-      .select("author, category")
-      .eq("blog_type", "personal");
-
     if (companyError) {
       throw new Error(`기업 블로그 목록 조회 실패: ${companyError.message}`);
-    }
-
-    if (personalError) {
-      throw new Error(`개인 블로그 목록 조회 실패: ${personalError.message}`);
     }
 
     // 중복 제거하면서 카테고리 정보 유지
@@ -56,14 +47,6 @@ export async function fetchAvailableBlogs() {
     ).map(([author, item]) => ({
       author,
       blog_type: "company" as const,
-      category: item.category,
-    }));
-
-    const individuals = Array.from(
-      new Map((personalData || []).map((item) => [item.author, item]))
-    ).map(([author, item]) => ({
-      author,
-      blog_type: "personal" as const,
       category: item.category,
     }));
 
@@ -113,14 +96,9 @@ export async function fetchAvailableBlogs() {
       return aIndex - bIndex;
     });
 
-    // 개인 블로그 정렬 (알파벳 순)
-    const sortedPersonals = individuals.sort((a: AuthorInfo, b: AuthorInfo) =>
-      a.author.localeCompare(b.author)
-    );
-
     return {
       companies: sortedCompanies,
-      individuals: sortedPersonals,
+      individuals: [],
     };
   } catch (error) {
     console.error("블로그 목록 조회 실패:", error);
@@ -143,7 +121,7 @@ export async function fetchBlogs({
   limit?: number;
   search?: string;
   sortBy?: "published_at" | "title" | "views";
-  blogType?: "company" | "personal";
+  blogType?: "company";
   author?: string;
   tags?: string[];
   tagMode?: "and" | "or";

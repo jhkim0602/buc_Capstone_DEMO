@@ -104,14 +104,8 @@ export function BlogCard({
 
             {/* 작성자 정보 */}
             {blog.author && (
-              <div
-                className={`flex items-center gap-2 mb-3 text-sm ${
-                  blog.blog_type === "personal"
-                    ? "text-primary font-medium"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {blog.blog_type === "company" && logoUrl ? (
+              <div className="flex items-center gap-2 mb-3 text-sm text-muted-foreground">
+                {logoUrl ? (
                   <Image
                     src={logoUrl}
                     alt="logo"
@@ -119,23 +113,10 @@ export function BlogCard({
                     height={20}
                     className="rounded"
                   />
-                ) : blog.blog_type === "company" ? (
-                  <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 ) : (
-                  <User className="h-4 w-4 text-primary flex-shrink-0" />
+                  <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 )}
-                <span
-                  className={`${
-                    blog.blog_type === "personal" ? "font-medium" : ""
-                  } truncate`}
-                >
-                  {blog.author}
-                </span>
-                {blog.blog_type === "personal" && blog.category && (
-                  <span className="text-xs text-muted-foreground">
-                    {blog.category}
-                  </span>
-                )}
+                <span className="truncate">{blog.author}</span>
               </div>
             )}
 

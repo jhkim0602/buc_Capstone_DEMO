@@ -7,13 +7,11 @@ import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { UserMenu } from "@/components/auth/user-menu";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { isFlutterWebView } from "@/lib/webview-bridge";
-import { BlogTypeToggle } from "@/components/features/tech-blog/blog-type-toggle";
 import { BlogSelector } from "@/components/features/tech-blog/blog-selector";
 import { useUrlFilters } from "@/hooks/use-url-filters";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Button } from "@/components/ui/button";
-
 // 메뉴 구조 정의
 const MENUS = {
   insights: {
@@ -64,13 +62,11 @@ export function GlobalHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const isTechBlog = pathname.startsWith("/insights/tech-blog");
+  const isTechBlog = pathname && pathname.startsWith("/insights/tech-blog");
 
   // Use URL filters hook for Tech Blog state (synced via URL)
   const {
-    blogType,
     selectedBlog,
-    handleBlogTypeChange,
     handleBlogChange,
   } = useUrlFilters();
 
@@ -126,17 +122,11 @@ export function GlobalHeader() {
 
           <div className="flex items-center gap-3">
             {/* Tech Blog Specific Filters */}
+            {/* Tech Blog Specific Filters */}
             {isTechBlog && (
               <div className="flex items-center gap-2 mr-2">
-                <div className="hidden sm:block">
-                  <BlogTypeToggle
-                    blogType={blogType}
-                    onBlogTypeChange={handleBlogTypeChange}
-                  />
-                </div>
                 <div className="hidden md:block">
                   <BlogSelector
-                    blogType={blogType}
                     selectedBlog={selectedBlog}
                     onBlogChange={handleBlogChange}
                   />
@@ -187,15 +177,10 @@ export function GlobalHeader() {
         {isTechBlog && (
           <div className="sm:hidden border-t border-border/50 p-2 bg-background/50 backdrop-blur-md">
             <div className="flex items-center gap-2 justify-between">
-              <BlogTypeToggle
-                blogType={blogType}
-                onBlogTypeChange={handleBlogTypeChange}
-              />
               <BlogSelector
-                blogType={blogType}
                 selectedBlog={selectedBlog}
                 onBlogChange={handleBlogChange}
-                className="w-[140px]"
+                className="w-full"
               />
             </div>
           </div>

@@ -1,25 +1,19 @@
 "use client";
 
-import { BlogTypeToggle } from "@/components/features/tech-blog/blog-type-toggle";
 import { BlogSelector } from "@/components/features/tech-blog/blog-selector";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { UserMenu } from "@/components/auth/user-menu";
 import { isFlutterWebView } from "@/lib/webview-bridge";
-import type { BlogType } from "@/hooks/use-url-filters";
 
 interface HeaderProps {
-  blogType: BlogType;
   selectedBlog: string;
-  onBlogTypeChange: (type: BlogType) => void;
   onBlogChange: (blog: string) => void;
   onLogoClick: () => void;
   onLoginClick: () => void;
 }
 
 export function Header({
-  blogType,
   selectedBlog,
-  onBlogTypeChange,
   onBlogChange,
   onLogoClick,
   onLoginClick,
@@ -41,14 +35,9 @@ export function Header({
 
           {/* 필터들 */}
           <div className="flex items-center gap-3">
-            <BlogTypeToggle
-              blogType={blogType}
-              onBlogTypeChange={onBlogTypeChange}
-            />
             <BlogSelector
               selectedBlog={selectedBlog}
               onBlogChange={onBlogChange}
-              blogType={blogType}
             />
             <ThemeToggle />
             {!isFlutterWebView() && <UserMenu onLoginClick={onLoginClick} />}
@@ -75,14 +64,9 @@ export function Header({
 
           {/* 두 번째 줄: 필터들 */}
           <div className="flex items-center justify-between gap-2">
-            <BlogTypeToggle
-              blogType={blogType}
-              onBlogTypeChange={onBlogTypeChange}
-            />
             <BlogSelector
               selectedBlog={selectedBlog}
               onBlogChange={onBlogChange}
-              blogType={blogType}
             />
           </div>
         </div>

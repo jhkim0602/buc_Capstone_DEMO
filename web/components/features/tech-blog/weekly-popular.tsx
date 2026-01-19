@@ -82,11 +82,7 @@ export function WeeklyPopular({ blogs }: WeeklyPopularProps) {
                           />
                         ) : (
                           <Image
-                            src={
-                              blog.blog_type === "personal"
-                                ? "/placeholder-user.jpg"
-                                : "/placeholder-logo.svg"
-                            }
+                            src="/placeholder-logo.svg"
                             alt={blog.author}
                             width={40}
                             height={40}

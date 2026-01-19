@@ -5,10 +5,9 @@ export function useUrlFilters() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [blogType, setBlogType] = useState("all");
   const [selectedBlog, setSelectedBlog] = useState("all");
   const [sortBy, setSortBy] = useState("latest");
-  const [viewMode, setViewMode] = useState<"card" | "list">("card");
+  const [viewMode, setViewMode] = useState<"gallery" | "list">("gallery");
   const [searchQuery, setSearchQuery] = useState("");
   const [tagCategory, setTagCategory] = useState("ALL");
   const [selectedSubTags, setSelectedSubTags] = useState<string[]>([]);
@@ -18,7 +17,6 @@ export function useUrlFilters() {
   // Ideally this should sync with URL search params.
 
   return {
-    blogType,
     selectedBlog,
     sortBy,
     viewMode,
@@ -26,7 +24,6 @@ export function useUrlFilters() {
     tagCategory,
     selectedSubTags,
     currentPage,
-    handleBlogTypeChange: setBlogType,
     handleBlogChange: setSelectedBlog,
     handlePageChange: setCurrentPage,
     handleViewModeChange: setViewMode,

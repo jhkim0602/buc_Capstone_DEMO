@@ -23,14 +23,12 @@ export default function HomePage() {
 
   // URL 필터 상태 관리
   const {
-    blogType,
     selectedBlog,
     sortBy,
     viewMode,
     searchQuery,
     tagCategory,
     selectedSubTags,
-    handleBlogTypeChange,
     handleBlogChange,
     handlePageChange,
     handleViewModeChange,
@@ -43,7 +41,6 @@ export default function HomePage() {
   // 블로그 데이터 관리 (페이지네이션)
   const { blogs, loading, totalCount, totalPages, currentPage } =
     useBlogData({
-      blogType,
       selectedBlog,
       sortBy,
       searchQuery,
@@ -69,15 +66,6 @@ export default function HomePage() {
   // 로고 클릭 시 초기화
   const handleLogoClick = () => {
     router.push("/");
-  };
-
-  // 블로그 타입 변경 (다른 타입으로 변경될 때만 스크롤)
-  const handleBlogTypeChangeWithScroll = (type: typeof blogType) => {
-    const shouldScroll = type !== blogType; // 타입이 변경되는 경우에만 스크롤
-    handleBlogTypeChange(type);
-    if (shouldScroll) {
-      scrollToTop();
-    }
   };
 
   // 블로그 필터 변경 (다른 블로그로 변경될 때만 스크롤)
@@ -110,7 +98,7 @@ export default function HomePage() {
           currentPage={currentPage}
           viewMode={viewMode}
           searchQuery={searchQuery}
-          tagCategory={tagCategory}
+          tagCategory={tagCategory as any}
           selectedSubTags={selectedSubTags}
           onPageChange={(page) => {
             handlePageChange(page);

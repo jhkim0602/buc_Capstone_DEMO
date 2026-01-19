@@ -3,7 +3,6 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Blog } from "@/lib/supabase";
 
 interface UseBlogDataParams {
-  blogType?: string;
   selectedBlog?: string;
   sortBy?: string;
   searchQuery?: string;
@@ -28,9 +27,7 @@ export function useBlogData(params: UseBlogDataParams) {
         let query = supabase.from("blogs").select("*", { count: "exact" });
 
         // Apply filters here based on params
-        if (params.blogType && params.blogType !== "all") {
-          query = query.eq("blog_type", params.blogType);
-        }
+        // blogType filtering removed as we only support "company" now
 
         // Pagination
         const page = params.page || 1;
@@ -59,7 +56,6 @@ export function useBlogData(params: UseBlogDataParams) {
 
     fetchBlogs();
   }, [
-    params.blogType,
     params.selectedBlog,
     params.sortBy,
     params.searchQuery,
