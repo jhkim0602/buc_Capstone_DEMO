@@ -19,7 +19,7 @@ const MENUS = {
     href: "/insights",
     submenus: [
       { href: "/insights/tech-blog", label: "기술 블로그" },
-      { href: "/insights/roadmap", label: "개발자 로드맵" },
+      { href: "/insights/ctp", label: "CTP" },
     ],
   },
   career: {

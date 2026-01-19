@@ -12,11 +12,11 @@ export default function InsightsPage() {
       icon: <BookOpen className="w-6 h-6" />,
     },
     {
-      title: "개발자 로드맵",
-      description: "주니어부터 시니어까지, 커리어 성장을 위해 무엇을 공부해야 할지 단계별로 안내합니다.",
-      href: "/insights/roadmap",
+      title: "CTP (Coding Test Prep)",
+      description: "자료구조, 알고리즘 등 코딩 테스트 준비를 위한 학습 로드맵과 자료를 제공합니다.",
+      href: "/insights/ctp",
       icon: <Map className="w-6 h-6" />,
-      isComingSoon: true, // Assuming this is not fully ready yet based on previous conversations
+      isComingSoon: true,
     },
     {
       title: "테크 허브",
