@@ -8,10 +8,14 @@ export async function fetchDevEvents({
   search,
   category,
   tags,
+  page = 1,
+  limit = 12,
 }: {
   search?: string;
   category?: string;
   tags?: string[];
+  page?: number;
+  limit?: number;
 } = {}) {
   try {
     const filePath = path.join(
@@ -54,13 +58,24 @@ export async function fetchDevEvents({
       );
     }
 
+    // Pagination
+    const pageNum = Math.max(1, page);
+    const limitNum = Math.max(1, limit);
+    const totalCount = filteredEvents.length;
+    const totalPages = Math.ceil(totalCount / limitNum);
+
+    const startIndex = (pageNum - 1) * limitNum;
+    const endIndex = startIndex + limitNum;
+    const paginatedEvents = filteredEvents.slice(startIndex, endIndex);
+
     return {
-      events: filteredEvents,
-      totalCount: filteredEvents.length,
+      events: paginatedEvents,
+      totalCount,
+      totalPages,
     };
   } catch (e) {
     console.error("Failed to load dev events:", e);
-    return { events: [], totalCount: 0 };
+    return { events: [], totalCount: 0, totalPages: 0 };
   }
 }
 

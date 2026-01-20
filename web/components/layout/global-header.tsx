@@ -29,7 +29,8 @@ const MENUS = {
     href: "/career",
     submenus: [
       { href: "/career/activities", label: "대외활동" },
-      { href: "/career/jobs", label: "채용 공고" },
+      { href: "/career/contest", label: "공모전" },
+      { href: "/career/jobs", label: "채용공고" },
     ],
   },
   community: {
@@ -67,16 +68,12 @@ export function GlobalHeader() {
   const isTechBlog = pathname.startsWith("/insights/tech-blog");
 
   // Use URL filters hook for Tech Blog state (synced via URL)
-  const {
-    blogType,
-    selectedBlog,
-    handleBlogTypeChange,
-    handleBlogChange,
-  } = useUrlFilters();
+  const { blogType, selectedBlog, handleBlogTypeChange, handleBlogChange } =
+    useUrlFilters();
 
   // 현재 활성화된 메인 카테고리 찾기
   const currentCategory = Object.keys(MENUS).find((key) =>
-    pathname.startsWith(MENUS[key as keyof typeof MENUS].href)
+    pathname.startsWith(MENUS[key as keyof typeof MENUS].href),
   );
 
   const submenus = currentCategory
@@ -113,7 +110,7 @@ export function GlobalHeader() {
                         "text-base font-medium h-9 px-4 hover:bg-muted/50 transition-colors",
                         isActive
                           ? "text-primary font-bold bg-muted/30"
-                          : "text-muted-foreground"
+                          : "text-muted-foreground",
                       )}
                     >
                       {menu.label}
@@ -159,7 +156,9 @@ export function GlobalHeader() {
                 {submenus.map((submenu) => {
                   // 단순 startsWith 비교보다 정확한 활성화 로직
                   // 예: /community/board 가 /community/board-detail 도 포함하도록
-                  const isSubActive = pathname === submenu.href || pathname.startsWith(submenu.href + '/');
+                  const isSubActive =
+                    pathname === submenu.href ||
+                    pathname.startsWith(submenu.href + "/");
                   return (
                     <Link
                       key={submenu.href}
@@ -168,7 +167,7 @@ export function GlobalHeader() {
                         "text-sm font-medium whitespace-nowrap transition-colors relative py-1",
                         isSubActive
                           ? "text-primary"
-                          : "text-muted-foreground hover:text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
                       )}
                     >
                       {submenu.label}
@@ -206,7 +205,7 @@ export function GlobalHeader() {
       <div
         className={cn(
           "w-full transition-all duration-300",
-          submenus.length > 0 ? "h-24 md:h-14" : "h-14"
+          submenus.length > 0 ? "h-24 md:h-14" : "h-14",
         )}
       />
 

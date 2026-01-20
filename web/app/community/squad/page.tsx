@@ -1,50 +1,27 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
 import { SquadCard } from "@/components/features/community/squad-card";
-import { fetchDevEvents } from "@/lib/server/dev-events";
 import { Button } from "@/components/ui/button";
+import { fetchSquads } from "@/lib/server/squads";
+import { PaginationControl } from "@/components/ui/pagination-control";
 
 export const dynamic = "force-dynamic";
 
-export default async function SquadListPage() {
-  const supabase = await createClient();
+interface PageProps {
+  searchParams: Promise<{ page?: string }>;
+}
 
-  // Fetch Squads
-  const { data: squads, error } = await supabase
-    .from("squads")
-    .select(
-      `
-      *,
-      leader:leader_id (
-        id, nickname, avatar_url, tier
-      )
-    `
-    )
-    .order("created_at", { ascending: false });
+export default async function SquadListPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const page =
+    typeof resolvedSearchParams.page === "string"
+      ? parseInt(resolvedSearchParams.page)
+      : 1;
 
-  if (error) {
-    console.error("Failed to fetch squads:", error);
-  }
-
-  // Fetch Events to map Titles
-  // Optimization: In real app, might fetch only relevant IDs or use a map
-  const { events } = await fetchDevEvents();
-  const eventMap = new Map(events.map((e) => [e.id, e.title]));
-
-  // Enhance Squads with Activity Title
-  const enhancedSquads =
-    squads?.map((s) => ({
-      ...s,
-      // @ts-ignore: join result
-      leader: s.leader,
-      activity: s.activity_id
-        ? {
-            id: s.activity_id,
-            title: eventMap.get(s.activity_id) || "알 수 없는 활동",
-          }
-        : null,
-    })) || [];
+  const { squads, totalPages, totalCount } = await fetchSquads({
+    page,
+    limit: 9,
+  });
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -54,6 +31,9 @@ export default async function SquadListPage() {
           <h1 className="text-3xl font-bold tracking-tight mb-2">팀원 모집</h1>
           <p className="text-muted-foreground">
             사이드 프로젝트, 스터디, 공모전 팀원을 찾아보세요.
+            <span className="ml-2 text-sm bg-muted px-2 py-1 rounded-full">
+              Total {totalCount}
+            </span>
             <br />
             원하는 동료와 함께 성장할 수 있는 기회입니다.
           </p>
@@ -68,13 +48,18 @@ export default async function SquadListPage() {
       </div>
 
       {/* Grid */}
-      {enhancedSquads.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {enhancedSquads.map((squad) => (
-            // @ts-ignore
-            <SquadCard key={squad.id} squad={squad} />
-          ))}
-        </div>
+      {squads.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {squads.map((squad) => (
+              // @ts-ignore
+              <SquadCard key={squad.id} squad={squad} />
+            ))}
+          </div>
+          <div className="py-12">
+            <PaginationControl currentPage={page} totalPages={totalPages} />
+          </div>
+        </>
       ) : (
         <div className="flex flex-col items-center justify-center py-32 text-center border rounded-2xl border-dashed bg-muted/20">
           <div className="text-6xl mb-6">👥</div>

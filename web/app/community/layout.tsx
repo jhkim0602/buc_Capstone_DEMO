@@ -28,6 +28,11 @@ export default function CommunityLayout({
     },
   ];
 
+  const isSquadDetail =
+    pathname?.startsWith("/community/squad/") &&
+    pathname !== "/community/squad";
+  const showSidebar = !isSquadDetail;
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex flex-col gap-8">
@@ -54,7 +59,7 @@ export default function CommunityLayout({
                   "flex items-center gap-2 py-4 text-sm font-medium border-b-2 transition-colors",
                   tab.active
                     ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted",
                 )}
               >
                 <tab.icon className="w-4 h-4" />
@@ -65,14 +70,28 @@ export default function CommunityLayout({
         </div>
 
         {/* Content with Sidebar Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Main Content (3/4) */}
-          <div className="lg:col-span-3 min-h-[500px]">{children}</div>
-
-          {/* Sidebar (1/4) - Hidden on mobile if needed, or stacked */}
-          <div className="hidden lg:block lg:col-span-1">
-            <CommunitySidebar />
+        <div
+          className={cn(
+            "grid grid-cols-1 gap-8",
+            showSidebar && "lg:grid-cols-4",
+          )}
+        >
+          {/* Main Content */}
+          <div
+            className={cn(
+              "min-h-[500px]",
+              showSidebar ? "lg:col-span-3" : "w-full",
+            )}
+          >
+            {children}
           </div>
+
+          {/* Sidebar (1/4) */}
+          {showSidebar && (
+            <div className="hidden lg:block lg:col-span-1">
+              <CommunitySidebar />
+            </div>
+          )}
         </div>
       </div>
     </div>

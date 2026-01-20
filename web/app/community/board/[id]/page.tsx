@@ -57,7 +57,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
                 {post.author?.nickname || "익명"}
               </div>
               <div className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(post.created_at), {
+                {formatDistanceToNow(new Date(post.created_at || new Date()), {
                   addSuffix: true,
                   locale: ko,
                 })}

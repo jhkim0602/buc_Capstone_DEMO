@@ -4,6 +4,7 @@ import { RecruitFilter } from "@/components/features/career/recruit-filter";
 import { RecruitSearchSort } from "@/components/features/career/recruit-search-sort";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SidebarBanner } from "@/components/features/career/sidebar-banner";
+import { PaginationControl } from "@/components/ui/pagination-control";
 
 export const metadata = {
   title: "채용 공고 | StackLoad",
@@ -36,12 +37,24 @@ export default async function RecruitPage({ searchParams }: PageProps) {
     typeof resolvedSearchParams.search === "string"
       ? resolvedSearchParams.search
       : undefined;
+
   const sort =
     typeof resolvedSearchParams.sort === "string"
       ? (resolvedSearchParams.sort as any)
       : undefined;
 
-  const { jobs } = await fetchRecruitJobs({ tags, search, sort });
+  const page =
+    typeof resolvedSearchParams.page === "string"
+      ? parseInt(resolvedSearchParams.page)
+      : 1;
+
+  const { jobs, totalPages, totalCount } = await fetchRecruitJobs({
+    tags,
+    search,
+    sort,
+    page,
+    limit: 12,
+  });
   const allTags = await getAllTags();
 
   return (
@@ -56,6 +69,9 @@ export default async function RecruitPage({ searchParams }: PageProps) {
               </h1>
               <p className="text-muted-foreground text-lg">
                 Deep Crawl로 분석한 개발자 채용 공고를 만나보세요.
+                <span className="ml-2 text-sm bg-muted px-2 py-1 rounded-full">
+                  Total {totalCount}
+                </span>
               </p>
             </div>
 
@@ -85,6 +101,14 @@ export default async function RecruitPage({ searchParams }: PageProps) {
                 </div>
               ))}
             </div>
+
+            {/* Pagination Implementation */}
+            {jobs.length > 0 && (
+              <div className="mt-12">
+                <PaginationControl currentPage={page} totalPages={totalPages} />
+              </div>
+            )}
+
             {/* Empty State */}
             {jobs.length === 0 && (
               <div className="flex flex-col items-center justify-center py-32 text-center border rounded-2xl border-dashed">

@@ -32,7 +32,7 @@ export default async function SquadDetailPage({ params }: PageProps) {
   const supabase = await createClient();
 
   // Fetch Squad with Relations
-  const { data: squad, error } = await supabase
+  const { data: squadData, error } = await supabase
     .from("squads")
     .select(
       `
@@ -44,20 +44,23 @@ export default async function SquadDetailPage({ params }: PageProps) {
         user_id, role,
         profile:user_id (id, nickname, avatar_url)
       )
-    `
+    `,
     )
     .eq("id", id)
     .single();
+
+  const squad = squadData as any;
 
   if (error || !squad) {
     notFound();
   }
 
   // Fetch Current User
+  // Fetch Current User
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const currentUserId = session?.user?.id;
+    data: { user },
+  } = await supabase.auth.getUser();
+  const currentUserId = user?.id;
 
   // Determine User Role
   // @ts-ignore
@@ -260,8 +263,8 @@ export default async function SquadDetailPage({ params }: PageProps) {
                     {squad.place_type === "online"
                       ? "온라인"
                       : squad.place_type === "offline"
-                      ? "오프라인"
-                      : "온/오프라인 혼합"}
+                        ? "오프라인"
+                        : "온/오프라인 혼합"}
                   </span>
                 </div>
               </div>

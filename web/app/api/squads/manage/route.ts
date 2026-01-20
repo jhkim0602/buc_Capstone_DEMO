@@ -11,6 +11,20 @@ export async function POST(request: Request) {
     }
 
     if (action === "accept") {
+      // Ensure User Profile Exists (Defensive Check)
+      const profile = await prisma.profiles.findUnique({
+        where: { id: user_id },
+      });
+
+      if (!profile) {
+        await prisma.profiles.create({
+          data: {
+            id: user_id,
+            nickname: "User",
+          },
+        });
+      }
+
       // Transaction: Update App -> Add Member -> Increment Count
       await prisma.$transaction([
         // Update Application

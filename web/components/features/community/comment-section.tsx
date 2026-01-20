@@ -11,8 +11,18 @@ import { Loader2, CornerDownRight } from "lucide-react";
 import { toast } from "sonner";
 import { Database } from "@/lib/database.types";
 
-type Comment = Database["public"]["Tables"]["comments"]["Row"] & {
-  author: Database["public"]["Tables"]["profiles"]["Row"] | null;
+type Comment = Omit<
+  Database["public"]["Tables"]["comments"]["Row"],
+  "post_id" | "author" | "is_accepted" | "created_at" | "updated_at"
+> & {
+  author: {
+    nickname: string | null;
+    avatar_url: string | null;
+  } | null;
+  post_id: string | null;
+  is_accepted: boolean | null;
+  created_at: string | Date | null;
+  updated_at: string | Date | null;
 };
 
 interface CommentSectionProps {
@@ -119,10 +129,13 @@ export function CommentSection({
                   {comment.author?.nickname || "익명"}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(comment.created_at), {
-                    addSuffix: true,
-                    locale: ko,
-                  })}
+                  {formatDistanceToNow(
+                    new Date(comment.created_at || new Date()),
+                    {
+                      addSuffix: true,
+                      locale: ko,
+                    },
+                  )}
                 </span>
               </div>
               <p className="text-sm whitespace-pre-wrap leading-relaxed">

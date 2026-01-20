@@ -7,9 +7,27 @@ import { Database } from "@/lib/database.types";
 import { Eye, Heart, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Post = Database["public"]["Tables"]["posts"]["Row"] & {
-  author: Database["public"]["Tables"]["profiles"]["Row"] | null;
+type Post = Omit<
+  Database["public"]["Tables"]["posts"]["Row"],
+  | "category"
+  | "views"
+  | "likes"
+  | "has_accepted_answer"
+  | "created_at"
+  | "updated_at"
+  | "author"
+> & {
+  author: {
+    nickname: string | null;
+    avatar_url: string | null;
+  } | null;
   comments_count?: number;
+  category: string;
+  views: number | null;
+  likes: number | null;
+  has_accepted_answer: boolean | null;
+  created_at: string | Date | null;
+  updated_at: string | Date | null;
 };
 
 interface PostListItemProps {
@@ -30,7 +48,7 @@ export function PostListItem({ post, href, className }: PostListItemProps) {
       href={href}
       className={cn(
         "block group py-4 px-2 hover:bg-muted/30 transition-colors",
-        className
+        className,
       )}
     >
       <div className="flex items-start justify-between gap-4">
@@ -41,14 +59,14 @@ export function PostListItem({ post, href, className }: PostListItemProps) {
               {post.category === "qna"
                 ? "질문/답변"
                 : post.category === "tech"
-                ? "기술토론"
-                : post.category.toUpperCase()}
+                  ? "기술토론"
+                  : post.category.toUpperCase()}
             </span>
             <span className="w-0.5 h-0.5 rounded-full bg-muted-foreground/30" />
             <span>{post.author?.nickname || "익명"}</span>
             <span className="w-0.5 h-0.5 rounded-full bg-muted-foreground/30" />
             <span>
-              {formatDistanceToNow(new Date(post.created_at), {
+              {formatDistanceToNow(new Date(post.created_at || new Date()), {
                 addSuffix: true,
                 locale: ko,
               })}

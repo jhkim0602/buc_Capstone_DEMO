@@ -1,10 +1,13 @@
-import { supabase } from "./supabase";
+import { supabase } from "@/lib/supabase/client";
 import {
   User,
   Session,
   AuthError,
   PostgrestError,
 } from "@supabase/supabase-js";
+
+// Client-side singleton for auth operations
+// imported from @/lib/supabase/client
 
 export type UserPreferences = Record<string, string | number | boolean | null>;
 
@@ -26,7 +29,7 @@ export interface UserProfile {
 // 로그인 함수
 export async function signIn(
   email: string,
-  password: string
+  password: string,
 ): Promise<{
   user: User | null;
   session: Session | null;
@@ -47,7 +50,7 @@ export async function signIn(
 // 회원가입 함수
 export async function signUp(
   email: string,
-  password: string
+  password: string,
 ): Promise<{
   user: User | null;
   session: Session | null;
@@ -76,10 +79,18 @@ export async function signOut(): Promise<{ error: AuthError | null }> {
 
 // 현재 사용자 가져오기
 export async function getCurrentUser(): Promise<User | null> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user;
+  } catch (error: any) {
+    if (error.name === "AbortError" || error.message === "AbortError") {
+      return null;
+    }
+    console.error("getCurrentUser Error:", error);
+    return null;
+  }
 }
 
 // 현재 세션 가져오기
@@ -92,45 +103,86 @@ export async function getCurrentSession(): Promise<Session | null> {
 
 // 사용자 프로필 가져오기
 export async function getUserProfile(
-  userId: string
+  userId: string,
+  userObject?: User | null,
 ): Promise<UserProfile | null> {
   try {
+    console.log("[getUserProfile] Querying profiles table for:", userId);
+
+    // Safety timeout: Abort query if it hangs for more than 2 seconds
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), 2000);
+
     const { data, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userId)
+      .abortSignal(abortController.signal)
       .single();
 
+    clearTimeout(timeoutId);
+
+    console.log("[getUserProfile] Query result:", {
+      found: !!data,
+      error: error?.code,
+    });
+
     if (error) {
-      // 프로필이 없는 경우 자동 생성 시도
-      if (error.code === "PGRST116") {
-        console.log("사용자 프로필이 없습니다. 자동 생성 시도...");
-        const user = await getCurrentUser();
-        if (user) {
-          const { profile, error: createError } = await upsertUserProfile({
-            id: userId,
-            nickname:
-              user.user_metadata?.username ||
-              user.user_metadata?.full_name ||
-              user.email?.split("@")[0] ||
-              "user",
-            avatar_url: user.user_metadata?.avatar_url,
-          });
+      // P2002 or PGRST116: Profile missing
+      // if (error.code === "PGRST116" || error.code === "P2002") {
+      //   console.log("사용자 프로필이 없습니다. 자동 생성 시도...");
+      //   const user = userObject || (await getCurrentUser());
+      //   if (user) {
+      //     console.log("[getUserProfile] Attempting to upsert new profile...");
+      //     const { profile: newProfile, error: createError } =
+      //       await upsertUserProfile({
+      //         id: userId,
+      //         nickname:
+      //           user.user_metadata?.full_name ||
+      //           user.user_metadata?.username ||
+      //           user.email?.split("@")[0] ||
+      //           "User",
+      //         avatar_url: user.user_metadata?.avatar_url,
+      //       });
 
-          if (createError) {
-            console.error("프로필 생성 실패:", createError);
-            return null;
-          }
-
-          return profile;
-        }
-      }
-
+      //     if (createError) {
+      //       console.error("프로필 생성 실패:", createError);
+      //       return null;
+      //     }
+      //     console.log("[getUserProfile] New profile created.");
+      //     return newProfile;
+      //   }
+      // }
       console.error("사용자 프로필 조회 실패:", error);
       return null;
     }
 
-    return data as UserProfile;
+    // Check if profile needs sync (e.g. it is the default "User" fallback)
+    const profile = data as UserProfile;
+    // if (profile && (profile.nickname === "User" || !profile.avatar_url)) {
+    //   const user = userObject || (await getCurrentUser());
+    //   if (
+    //     user &&
+    //     (user.user_metadata?.full_name || user.user_metadata?.avatar_url)
+    //   ) {
+    //     console.log("프로필 동기화 시도...");
+    //     const { profile: updatedProfile } = await upsertUserProfile({
+    //       id: userId,
+    //       nickname:
+    //         user.user_metadata.full_name ||
+    //         user.user_metadata.username ||
+    //         profile.nickname,
+    //       avatar_url: user.user_metadata.avatar_url || profile.avatar_url,
+    //       bio: profile.bio, // Keep existing fields
+    //       reputation: profile.reputation,
+    //       tier: profile.tier,
+    //       tech_stack: profile.tech_stack,
+    //     });
+    //     return updatedProfile || profile;
+    //   }
+    // }
+
+    return profile;
   } catch (error) {
     console.error("사용자 프로필 조회 중 예외 발생:", error);
     return null;
@@ -139,7 +191,7 @@ export async function getUserProfile(
 
 // 사용자 프로필 생성/업데이트
 export async function upsertUserProfile(
-  profile: Partial<UserProfile>
+  profile: Partial<UserProfile>,
 ): Promise<{
   profile: UserProfile | null;
   error: PostgrestError | null;
@@ -156,11 +208,16 @@ export async function upsertUserProfile(
     updated_at: new Date().toISOString(),
   };
 
+  console.log("[upsertUserProfile] Upserting profile data:", dbProfile.id);
   const { data, error } = await supabase
     .from("profiles")
     .upsert(dbProfile as any) // any casting to avoid excessive type mismatch with Partial
     .select()
     .single();
+  console.log("[upsertUserProfile] Upsert finished:", {
+    success: !!data,
+    error,
+  });
 
   return {
     profile: data as UserProfile | null,
@@ -210,7 +267,7 @@ export async function signInWithGithub(): Promise<{
 
 // 비밀번호 재설정
 export async function resetPassword(
-  email: string
+  email: string,
 ): Promise<{ error: AuthError | null }> {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/auth/reset-password`,
