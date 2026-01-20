@@ -12,9 +12,19 @@ interface PostDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { PostActions } from "@/components/features/community/post-actions";
+
 export default async function PostDetailPage({ params }: PostDetailPageProps) {
   const { id } = await params;
   const post = await getPost(id);
+
+  const supabase = createServerComponentClient({ cookies });
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const isAuthor = session?.user?.id === post?.author_id;
 
   if (!post) {
     notFound();
@@ -24,22 +34,26 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
     <div className="max-w-4xl mx-auto py-8">
       {/* Meta */}
       <div className="mb-8 border-b pb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Badge
-            variant="outline"
-            className="text-primary border-primary/20 bg-primary/5"
-          >
-            {post.category?.toUpperCase()}
-          </Badge>
-          {post.tags?.map((tag) => (
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
             <Badge
-              key={tag}
-              variant="secondary"
-              className="text-muted-foreground"
+              variant="outline"
+              className="text-primary border-primary/20 bg-primary/5"
             >
-              #{tag}
+              {post.category?.toUpperCase()}
             </Badge>
-          ))}
+            {post.tags?.map((tag) => (
+              <Badge
+                key={tag}
+                variant="secondary"
+                className="text-muted-foreground"
+              >
+                #{tag}
+              </Badge>
+            ))}
+          </div>
+          {/* Actions (Delete) */}
+          <PostActions postId={post.id} isAuthor={isAuthor} />
         </div>
 
         <h1 className="text-3xl font-bold mb-6 leading-tight">{post.title}</h1>

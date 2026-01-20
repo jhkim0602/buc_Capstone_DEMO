@@ -107,84 +107,25 @@ export async function getUserProfile(
   userObject?: User | null,
 ): Promise<UserProfile | null> {
   try {
-    console.log("[getUserProfile] Querying profiles table for:", userId);
-
-    // Safety timeout: Abort query if it hangs for more than 2 seconds
-    const abortController = new AbortController();
-    const timeoutId = setTimeout(() => abortController.abort(), 2000);
-
     const { data, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userId)
-      .abortSignal(abortController.signal)
       .single();
 
-    clearTimeout(timeoutId);
-
-    console.log("[getUserProfile] Query result:", {
-      found: !!data,
-      error: error?.code,
-    });
-
     if (error) {
-      // P2002 or PGRST116: Profile missing
-      // if (error.code === "PGRST116" || error.code === "P2002") {
-      //   console.log("사용자 프로필이 없습니다. 자동 생성 시도...");
-      //   const user = userObject || (await getCurrentUser());
-      //   if (user) {
-      //     console.log("[getUserProfile] Attempting to upsert new profile...");
-      //     const { profile: newProfile, error: createError } =
-      //       await upsertUserProfile({
-      //         id: userId,
-      //         nickname:
-      //           user.user_metadata?.full_name ||
-      //           user.user_metadata?.username ||
-      //           user.email?.split("@")[0] ||
-      //           "User",
-      //         avatar_url: user.user_metadata?.avatar_url,
-      //       });
-
-      //     if (createError) {
-      //       console.error("프로필 생성 실패:", createError);
-      //       return null;
-      //     }
-      //     console.log("[getUserProfile] New profile created.");
-      //     return newProfile;
-      //   }
-      // }
-      console.error("사용자 프로필 조회 실패:", error);
+      // If profile doesn't exist (PGRST116), just return null.
+      // The UI should handle null profiles (e.g. showing basic user info from metadata).
+      // We purposely avoid auto-creating here to preventing potential loops/locks.
+      if (error.code !== "PGRST116") {
+        console.error("Error fetching user profile:", error);
+      }
       return null;
     }
 
-    // Check if profile needs sync (e.g. it is the default "User" fallback)
-    const profile = data as UserProfile;
-    // if (profile && (profile.nickname === "User" || !profile.avatar_url)) {
-    //   const user = userObject || (await getCurrentUser());
-    //   if (
-    //     user &&
-    //     (user.user_metadata?.full_name || user.user_metadata?.avatar_url)
-    //   ) {
-    //     console.log("프로필 동기화 시도...");
-    //     const { profile: updatedProfile } = await upsertUserProfile({
-    //       id: userId,
-    //       nickname:
-    //         user.user_metadata.full_name ||
-    //         user.user_metadata.username ||
-    //         profile.nickname,
-    //       avatar_url: user.user_metadata.avatar_url || profile.avatar_url,
-    //       bio: profile.bio, // Keep existing fields
-    //       reputation: profile.reputation,
-    //       tier: profile.tier,
-    //       tech_stack: profile.tech_stack,
-    //     });
-    //     return updatedProfile || profile;
-    //   }
-    // }
-
-    return profile;
+    return data as UserProfile;
   } catch (error) {
-    console.error("사용자 프로필 조회 중 예외 발생:", error);
+    console.error("Unexpected error in getUserProfile:", error);
     return null;
   }
 }

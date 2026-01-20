@@ -1,0 +1,49 @@
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = params;
+    const userId = session.user.id;
+
+    // Verify ownership
+    const post = await prisma.posts.findUnique({
+      where: { id },
+      select: { author_id: true },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    if (post.author_id !== userId) {
+      return NextResponse.json(
+        { error: "Forbidden: You can only delete your own posts" },
+        { status: 403 },
+      );
+    }
+
+    await prisma.posts.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("API: Delete Post Error", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

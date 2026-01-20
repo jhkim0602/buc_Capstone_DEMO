@@ -21,6 +21,7 @@ import { fetchDevEventById } from "@/lib/server/dev-events";
 // Components
 import ApplicationButton from "@/components/features/community/squad/application-button";
 import ApplicantManager from "@/components/features/community/squad/applicant-manager";
+import { SquadActions } from "@/components/features/community/squad-actions";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -233,6 +234,13 @@ export default async function SquadDetailPage({ params }: PageProps) {
                   <Button variant="outline" className="w-full">
                     모집글 수정하기
                   </Button>
+
+                  {/* Management Actions */}
+                  <SquadActions
+                    squadId={squad.id}
+                    isLeader={isLeader}
+                    status={squad.status}
+                  />
                 </div>
               ) : (
                 <div className="pt-2">
