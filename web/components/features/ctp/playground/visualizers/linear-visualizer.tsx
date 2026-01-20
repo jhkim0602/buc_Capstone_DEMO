@@ -9,6 +9,7 @@ interface LinearItem {
   label?: string; // e.g. index or variable name 'i', 'j'
   isHighlighted?: boolean;
   color?: string; // custom color override
+  isGhost?: boolean; // for capacity visualization (empty slots)
 }
 
 interface LinearVisualizerProps {
@@ -22,6 +23,11 @@ export function LinearVisualizer({
   emptyMessage = "No Elements",
   orientation = "horizontal"
 }: LinearVisualizerProps) {
+
+  // Defensive check: If data is not an array (e.g. stale 2D data), return null or empty to prevent crash
+  if (!Array.isArray(data)) {
+    return null;
+  }
 
   return (
     <div className={cn(
@@ -56,7 +62,9 @@ export function LinearVisualizer({
                "w-16 h-16 rounded-xl flex items-center justify-center text-xl font-bold shadow-sm border-b-4 transition-colors duration-300",
                item.isHighlighted
                  ? "bg-primary text-primary-foreground border-primary-foreground/20 z-10"
-                 : "bg-background border-border text-foreground hover:border-primary/50"
+                 : item.isGhost
+                   ? "bg-muted/30 border-dashed border-border text-muted-foreground/30"
+                   : "bg-background border-border text-foreground hover:border-primary/50"
             )}>
               {item.value}
             </div>

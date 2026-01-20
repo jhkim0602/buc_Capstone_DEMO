@@ -1,6 +1,6 @@
 "use client";
 
-import { CTP_DATA } from "@/mocks/ctp-data";
+import { CTP_DATA } from "@/lib/ctp-curriculum";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

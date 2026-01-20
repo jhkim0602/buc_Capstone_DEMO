@@ -2,10 +2,12 @@ import { create } from 'zustand';
 
 export type PlayState = 'idle' | 'playing' | 'paused' | 'completed';
 
+import { VisualItem } from "../common/types";
+
 export interface VisualStep {
   id: string; // unique step id
   description: string; // what happened in this step?
-  data: any; // snapshot of data structure state (e.g. array content)
+  data: any | VisualItem[] | VisualItem[][]; // snapshot of data structure state
   highlightedIndices?: number[]; // indices to highlight
   activeLine?: number; // code line number associated with this step
 }
@@ -13,7 +15,7 @@ export interface VisualStep {
 interface CTPState {
   // Code Editor State
   code: string;
-  language: 'typescript' | 'javascript' | 'python' | 'cpp' | 'java';
+  // language is always 'python' implicitly
   setCode: (code: string) => void;
 
   // Execution State
@@ -34,7 +36,6 @@ interface CTPState {
 
 export const useCTPStore = create<CTPState>((set, get) => ({
   code: '',
-  language: 'python',
   setCode: (code) => set({ code }),
 
   steps: [],

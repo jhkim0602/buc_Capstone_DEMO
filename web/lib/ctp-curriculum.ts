@@ -37,12 +37,25 @@ export const CTP_DATA: CTPCategory[] = [
         subConcepts: [
           { id: "1d-array", title: "1차원 배열 기초" },
           { id: "2d-array", title: "2차원 배열 & 행렬" },
-          { id: "char-array", title: "문자열 (Char Array)" },
-          { id: "dynamic-array", title: "동적 배열 (Vector/ArrayList)" },
-          { id: "memory", title: "메모리 구조와 캐시" }
+          { id: "string", title: "문자열 (Char Array)" },
+          { id: "vector", title: "동적 배열 (Vector/ArrayList)" },
+          { id: "memory-cache", title: "메모리 구조와 캐시" }
         ]
       },
-      { id: "linked-list", title: "연결 리스트 (Linked List)", description: "노드 기반 불연속 할당, 단일/이중", difficulty: "Medium" },
+      {
+        id: "linked-list",
+        title: "연결 리스트 (Linked List)",
+        description: "노드 기반 불연속 할당, 단일/이중",
+        difficulty: "Medium",
+        isImportant: true,
+        subConcepts: [
+          { id: "singly", title: "단일 연결 리스트 (Singly)" },
+          { id: "doubly", title: "이중 연결 리스트 (Doubly)" },
+          { id: "circular", title: "원형 연결 리스트 (Circular)" },
+          { id: "two-pointers", title: "투 포인터 (Two Pointers)" },
+          { id: "memory", title: "메모리 구조 (Memory)" }
+        ]
+      },
       { id: "stack", title: "스택 (Stack)", description: "LIFO 구조, 재귀, 후위 표기법", difficulty: "Easy" },
       { id: "queue", title: "큐 & 덱 (Queue & Deque)", description: "FIFO 구조, BFS, 캐시 구현", difficulty: "Easy" },
       { id: "hash-table", title: "해시 테이블 (Hash Table)", description: "Key-Value 매핑 (배열 기반 구현 포함)", difficulty: "Medium", isImportant: true },

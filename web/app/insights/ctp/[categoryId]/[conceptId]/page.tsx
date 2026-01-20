@@ -1,6 +1,6 @@
 "use client";
 
-import { CTP_DATA } from "@/mocks/ctp-data";
+import { CTP_DATA } from "@/lib/ctp-curriculum";
 import { CTPWikiLayout } from "@/components/features/ctp/layout/ctp-wiki-layout";
 import { getCtpContent } from "@/lib/ctp-content-registry";
 import { notFound } from "next/navigation";

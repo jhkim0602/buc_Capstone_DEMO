@@ -1,0 +1,112 @@
+import { PracticeProblem } from "../../../../../../shared/ctp-practice";
+import { ComplexityData } from "../../../../../../shared/ctp-complexity";
+
+export const CIRCULAR_LL_CONFIG = {
+  title: "Circular Linked List (원형 연결 리스트)",
+  description: "끝이 없는 고리 형태의 리스트입니다. 마지막 노드(Tail)가 다시 첫 번째 노드(Head)를 가리킵니다.",
+  tags: ["Cycle", "Round Robin", "Scheduling", "Infinite Loop"],
+
+  story: {
+    problem: `놀이공원의 회전목마(Merry-Go-Round)를 타본 적 있나요?\n맨 앞 말이 달린다고 맨 끝 말이 멈추지 않습니다. 계속 돌고 돌죠.\n\n음악 스트리밍 앱에서 '전곡 반복 재생'을 켰을 때, 마지막 곡이 끝나면 다시 첫 곡으로 돌아가는 원리도 이와 같습니다.`,
+    definition: "마지막 노드(Tail)의 Next 포인터가 NULL이 아니라, 다시 Head를 가리키는 연결 리스트.",
+    analogy: "수건 돌리기 게임. 사람들이 원형으로 앉아있어서, 계속 오른쪽으로 전달해도 끝이 나지 않고 다시 처음 사람에게 돌아옵니다.",
+    playgroundLimit: "주의! 반복문을 `while (cur != null)`로 돌리면 영원히 끝나지 않는 무한 루프에 빠집니다. 종료 조건(`cur != head`)을 잘 설정해야 합니다."
+  },
+
+  features: [
+    { title: "끝이 없음 (Infinite)", description: "NULL 포인터가 없습니다. 계속 순회하면 데이터를 무한히 반복해서 읽을 수 있습니다." },
+    { title: "시작이 곧 끝", description: "어떤 노드에서 시작하든, 계속 가면 다시 제자리로 돌아옵니다. 특정 노드를 'Head'라고 부르기 애매할 때도 있습니다." },
+    { title: "라운드 로빈 (Round Robin)", description: "OS 스케줄러가 여러 프로세스에게 공평하게 시간을 나눠줄 때, 이 구조를 사용하여 순서대로 실행시킵니다." },
+  ],
+
+  deepDive: {
+      interviewProbablity: "Low",
+      realWorldUseCases: [
+          "CPU 스케줄링 (Round Robin): 프로세스 A -> B -> C -> A -> ...",
+          "멀티플레이어 게임 턴 관리: 플레이어 1 -> 2 -> 3 -> 1 ...",
+          "스트리밍 버퍼: 링 버퍼(Ring Buffer) 구현 시 사용됩니다."
+      ],
+      performanceTrap: "순회 코드를 짤 때 `do-while` 문을 쓰거나, `head` 도착 여부를 체크하지 않으면 프로그램이 멈추지 않습니다."
+  },
+
+  comparison: {
+      vs: "Singly Linked List",
+      pros: ["마지막에서 처음으로 이동 가능", "무한 반복 구현 용이"],
+      cons: ["종료 조건 구현이 까다로움", "무한 루프 버그 위험"]
+  },
+
+  complexity: {
+    access: "O(N)",
+    search: "O(N)",
+    insertion: "O(1)",
+    deletion: "O(1)",
+  } as ComplexityData,
+
+  practiceProblems: [
+    {
+      id: 1158,
+      title: "요세푸스 문제",
+      tier: "Silver IV",
+      description: "원형 큐(Circular Queue)나 원형 리스트를 이용해 자연스럽게 시뮬레이션 할 수 있습니다."
+    }
+  ] as PracticeProblem[],
+
+  implementation: [
+    {
+      language: 'python' as const,
+      description: "Tail의 next를 Head로 연결해주는 것이 핵심입니다.",
+      code: `class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+# 1. 노드 생성
+n1 = Node('A')
+n2 = Node('B')
+n3 = Node('C')
+
+# 2. 원형 연결
+n1.next = n2
+n2.next = n3
+n3.next = n1  # Tail -> Head
+
+# 3. 무한 순회 (10번만)
+cur = n1
+for _ in range(10):
+    print(cur.data, end=" -> ")
+    cur = cur.next
+# 결과: A -> B -> C -> A -> B -> C ...`
+    }
+  ],
+
+  initialCode: {
+    python: `# Python Circular Linked List
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
+
+head = Node(1)
+tail = Node(2)
+
+head.next = tail
+tail.next = head  # *핵심: 원형 연결*
+
+# 안전한 순회 (한 바퀴만 돌기)
+print(f"Start: {head.val}")
+curr = head.next
+
+while curr != head:
+    print(f"Visit: {curr.val}")
+    curr = curr.next
+
+print("Back to Head!")`,
+  },
+
+  commandReference: {
+     python: [
+        { label: '연결', code: 'tail.next = head' },
+        { label: '종료조건', code: 'curr != head' }
+     ]
+  }
+};

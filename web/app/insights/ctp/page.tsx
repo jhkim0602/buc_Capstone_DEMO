@@ -1,6 +1,6 @@
 "use client";
 
-import { CTP_DATA } from "@/mocks/ctp-data";
+import { CTP_DATA } from "@/lib/ctp-curriculum";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BookOpen, Layers, Zap, Code } from "lucide-react";
 import Link from "next/link";

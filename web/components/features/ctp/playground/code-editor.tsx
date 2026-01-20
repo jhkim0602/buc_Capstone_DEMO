@@ -7,7 +7,6 @@ import { useRef } from "react";
 interface CodeEditorProps {
   initialCode?: string;
   value?: string; // Controlled value
-  language?: string;
   onChange?: (value: string | undefined) => void;
   readOnly?: boolean;
 }
@@ -15,7 +14,6 @@ interface CodeEditorProps {
 export function CodeEditor({
   initialCode = "",
   value,
-  language = "typescript",
   onChange,
   readOnly = false
 }: CodeEditorProps) {
@@ -36,8 +34,8 @@ export function CodeEditor({
     <div className="h-full w-full min-h-[300px] rounded-md overflow-hidden border border-border/50">
       <Editor
         height="100%"
-        defaultLanguage={language}
-        language={language}
+        defaultLanguage="python"
+        language="python"
         defaultValue={initialCode}
         value={value}
         theme={theme === "dark" ? "vs-dark" : "light"}

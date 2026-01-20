@@ -15,7 +15,11 @@ const DEMO_SECTIONS = [
   { id: "practice", title: "추천 문제" },
 ];
 
+import { useSearchParams } from "next/navigation";
+
 export function CTPRightSidebar() {
+  const searchParams = useSearchParams();
+  const activeView = searchParams.get("view");
   const [activeSection, setActiveSection] = useState("intro");
 
   useEffect(() => {
@@ -47,6 +51,11 @@ export function CTPRightSidebar() {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  // If no 'view' param, we are on the Landing Page -> Hide TOC
+  if (!activeView) {
+    return null;
+  }
 
   return (
     <aside className="hidden xl:block w-64 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto pl-6 pr-6 py-8 border-l border-border/40">

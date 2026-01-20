@@ -1,9 +1,9 @@
 "use client";
 
-import { CTP_DATA } from "@/mocks/ctp-data";
+import { CTP_DATA } from "@/lib/ctp-curriculum";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PanelLeftOpen } from "lucide-react";
 
@@ -14,6 +14,7 @@ interface CTPSubSidebarProps {
 
 export function CTPSubSidebar({ isMainSidebarOpen, onOpenMainSidebar }: CTPSubSidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   // ... existing logic ...
   const segments = pathname.split("/");
   const categoryId = segments[3];
@@ -61,21 +62,29 @@ export function CTPSubSidebar({ isMainSidebarOpen, onOpenMainSidebar }: CTPSubSi
         </div>
 
         <nav className="space-y-0.5">
-          {concept.subConcepts.map((sub, idx) => (
-            <Link
-              key={sub.id}
-              href={`#${sub.id}`} // In a real implementation, this might link to sections or sub-pages
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors",
-                idx === 0 // Mock 'active' state for the first item for now or check hash
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40" />
-              <span className="truncate">{sub.title}</span>
-            </Link>
-          ))}
+          {concept.subConcepts.map((sub, idx) => {
+            const isActive = searchParams.get("view") === sub.id || (!searchParams.get("view") && idx === -1);
+            return (
+              <Link
+                key={sub.id}
+                href={`?view=${sub.id}`}
+                replace={true}
+                scroll={false}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors",
+                  isActive
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <span className={cn(
+                  "w-1.5 h-1.5 rounded-full",
+                   isActive ? "bg-primary" : "bg-current opacity-40"
+                )} />
+                <span className="truncate">{sub.title}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </aside>

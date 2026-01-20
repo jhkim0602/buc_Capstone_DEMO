@@ -64,6 +64,8 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
 
   const handleRun = () => {
     if (onRun) {
+      // If code is empty (initial state), use initialCode
+      // CodeEditor updates store synchronously on change, so 'code' should be current.
       onRun(code || initialCode);
     }
   };
@@ -166,33 +168,24 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
 
            <div className="h-6 w-px bg-border mx-1" />
 
-           <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => {
+           <Button size="sm" variant="default" className="h-8 text-xs gap-1.5 bg-green-600 hover:bg-green-700 text-white" onClick={() => {
               reset();
-              handleRun(); // Re-run to update logic if code changed, but reset state
+              handleRun();
            }}>
-             <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Reset
+             <Play className="w-3.5 h-3.5 fill-current" />
+             <span className="hidden sm:inline">Run Code</span>
            </Button>
-        </div>
 
-        <div className="flex items-center gap-2">
-           <select
-              className="h-6 text-[10px] font-mono bg-transparent border border-border rounded px-1 text-muted-foreground focus:outline-none focus:border-primary"
-              value={useCTPStore((state) => state.language)}
-              onChange={(e) => {
-                 const lang = e.target.value as any;
-                 useCTPStore.setState({ language: lang });
-                 // Optional: Trigger a parent callback to reset initial code for the new language
-              }}
-           >
-              <option value="python">Python</option>
-              <option value="javascript">JavaScript</option>
-              <option value="cpp">C++</option>
-              <option value="java">Java</option>
-           </select>
-        </div>
-      </div>
+           <div className="h-4 w-px bg-border mx-1" />
 
-      <ResizablePanelGroup direction="horizontal">
+           <Badge variant="outline" className="text-[10px] font-mono border-yellow-500/30 text-yellow-600 bg-yellow-500/5 h-6 px-2 gap-1.5">
+               <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+               Python 3.10
+           </Badge>
+         </div>
+       </div>
+
+       <ResizablePanelGroup direction="horizontal">
         {/* Left: Visualizer */}
         <ResizablePanel defaultSize={50} minSize={30}>
            <div className="h-full w-full bg-muted/5 p-6 relative overflow-hidden flex flex-col">
@@ -221,7 +214,6 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
            <CodeEditor
              initialCode={initialCode}
              value={code}
-             language={useCTPStore((state) => state.language)}
              onChange={(val) => setCode(val || "")}
            />
         </ResizablePanel>
