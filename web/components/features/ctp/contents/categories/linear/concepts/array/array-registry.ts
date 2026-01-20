@@ -1,9 +1,4 @@
-import { LinearVisualizer } from "@/components/features/ctp/playground/visualizers/linear-visualizer";
-import { GridVisualizer } from "@/components/features/ctp/playground/visualizers/grid-visualizer";
-import { MemoryLayoutVisualizer } from "@/components/features/ctp/playground/visualizers/memory-layout-visualizer";
-import { StringInternVisualizer } from "@/components/features/ctp/playground/visualizers/string-intern-visualizer";
-import { VectorVisualizer } from "@/components/features/ctp/playground/visualizers/vector-visualizer";
-import { CacheLocalitySim } from "@/components/features/ctp/playground/visualizers/cache-locality-sim";
+import { ArrayGraphVisualizer } from "@/components/features/ctp/playground/visualizers/array/graph/array-graph-visualizer";
 import { CTPModule } from "@/components/features/ctp/common/types";
 
 // Modules
@@ -19,6 +14,10 @@ import { useStringSimulation } from "./sub-concepts/string/logic";
 import { VECTOR_CONFIG } from "./sub-concepts/vector/config";
 import { useVectorSimulation } from "./sub-concepts/vector/logic";
 
+import { StringGraphVisualizer } from "@/components/features/ctp/playground/visualizers/array/graph/string-graph-visualizer";
+import { VectorGraphVisualizer } from "@/components/features/ctp/playground/visualizers/array/graph/vector-graph-visualizer";
+import { CacheGraphVisualizer } from "@/components/features/ctp/playground/visualizers/array/graph/cache-graph-visualizer";
+
 import { MEMORY_CACHE_CONFIG } from "./sub-concepts/memory-cache/config";
 import { useMemorySimulation } from "./sub-concepts/memory-cache/logic";
 
@@ -27,30 +26,30 @@ export const ARRAY_MODULES: Record<string, CTPModule> = {
   '1d-array': {
     config: ARRAY_1D_CONFIG,
     useSim: useArray1DSimulation,
-    Visualizer: LinearVisualizer
+    Visualizer: ArrayGraphVisualizer
   },
   // 2D Array
   '2d-array': {
     config: ARRAY_2D_CONFIG,
     useSim: useArray2DSimulation,
-    Visualizer: GridVisualizer
+    Visualizer: ArrayGraphVisualizer
   },
   // String
   'string': {
     config: STRING_CONFIG,
     useSim: useStringSimulation,
-    Visualizer: StringInternVisualizer
+    Visualizer: StringGraphVisualizer
   },
   // Vector
   'vector': {
     config: VECTOR_CONFIG,
     useSim: useVectorSimulation,
-    Visualizer: VectorVisualizer
+    Visualizer: VectorGraphVisualizer
   },
   // Memory & Cache
   'memory-cache': {
     config: MEMORY_CACHE_CONFIG,
     useSim: useMemorySimulation,
-    Visualizer: CacheLocalitySim
+    Visualizer: CacheGraphVisualizer
   }
 };

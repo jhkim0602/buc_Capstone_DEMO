@@ -15,33 +15,39 @@ const DEMO_SECTIONS = [
   { id: "practice", title: "추천 문제" },
 ];
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 
 export function CTPRightSidebar() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const activeView = searchParams.get("view");
   const [activeSection, setActiveSection] = useState("intro");
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        rootMargin: "-20% 0px -35% 0px", // Adjust trigger zone
-        threshold: 0.1
-      }
-    );
+    // Small delay to ensure DOM is ready after route transition
+    const timeoutId = setTimeout(() => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(entry.target.id);
+            }
+          });
+        },
+        {
+          rootMargin: "-20% 0px -35% 0px",
+          threshold: 0.1
+        }
+      );
 
-    const sections = document.querySelectorAll("section[id]");
-    sections.forEach((section) => observer.observe(section));
+      const sections = document.querySelectorAll("section[id]");
+      sections.forEach((section) => observer.observe(section));
 
-    return () => observer.disconnect();
-  }, []);
+      return () => observer.disconnect();
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [pathname, searchParams]); // Re-run when path OR query params change
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();

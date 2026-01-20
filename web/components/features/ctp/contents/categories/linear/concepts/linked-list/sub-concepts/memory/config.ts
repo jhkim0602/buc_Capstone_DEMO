@@ -20,18 +20,18 @@ export const MEMORY_LL_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "Medium",
-      realWorldUseCases: [
-          "OS 커널: 리스트 구현 시 거의 항상 Sentinel Node를 사용해 안정성을 높입니다.",
-          "고성능 컴퓨팅: 메모리 풀(Memory Pool)을 사용해 노드들을 한곳에 모아 할당하여 캐시 효율을 높이는 기법을 씁니다."
-      ],
-      performanceTrap: "노드 하나마다 `malloc`(`new`)을 호출하는 건 시스템 콜 비용이 큽니다. 수백만 개의 노드를 만들면 할당 시간만으로도 시스템이 멈칫할 수 있습니다."
+    interviewProbablity: "Medium",
+    realWorldUseCases: [
+      "OS 커널: 리스트 구현 시 거의 항상 Sentinel Node를 사용해 안정성을 높입니다.",
+      "고성능 컴퓨팅: 메모리 풀(Memory Pool)을 사용해 노드들을 한곳에 모아 할당하여 캐시 효율을 높이는 기법을 씁니다."
+    ],
+    performanceTrap: "노드 하나마다 `malloc`(`new`)을 호출하는 건 시스템 콜 비용이 큽니다. 수백만 개의 노드를 만들면 할당 시간만으로도 시스템이 멈칫할 수 있습니다."
   },
 
   comparison: {
-      vs: "Array Memory Layout",
-      pros: ["메모리 할당/해제가 자유로움 (Fragmentation 허용)"],
-      cons: ["Cache Locality 최악", "노드당 포인터 메모리 추가 소모"]
+    vs: "Array Memory Layout",
+    pros: ["메모리 할당/해제가 자유로움 (Fragmentation 허용)"],
+    cons: ["Cache Locality 최악", "노드당 포인터 메모리 추가 소모"]
   },
 
   complexity: {
@@ -76,7 +76,8 @@ class Node:
         self.next = next
 
 # 실제 데이터: 1 -> 2
-head = Node(1, Node(2))
+head = Node(1)
+head.next = Node(2)
 
 # 0. Dummy Node 생성 (Sentinel)
 dummy = Node(-1) # 값은 상관 없음
@@ -97,9 +98,9 @@ print(f"Head Data: {real_head.val}")`,
   },
 
   commandReference: {
-     python: [
-        { label: 'Dummy', code: 'd = Node(-1)' },
-        { label: 'Connect', code: 'd.next = head' }
-     ]
+    python: [
+      { label: 'Dummy', code: 'd = Node(-1)' },
+      { label: 'Connect', code: 'd.next = head' }
+    ]
   }
 };

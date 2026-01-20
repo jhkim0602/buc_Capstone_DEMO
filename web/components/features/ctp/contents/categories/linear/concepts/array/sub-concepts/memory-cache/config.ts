@@ -20,19 +20,19 @@ export const MEMORY_CACHE_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "Medium",
-      realWorldUseCases: [
-          "고성능 게임 엔진: 데이터 지향 설계(DOD)의 핵심이 바로 캐시 효율 최적화입니다.",
-          "행렬 곱셈 최적화: Loop Tiling 기법을 통해 캐시 적중률(Hit Rate)을 극대화합니다.",
-          "데이터베이스 인덱스: B-Tree 노드 크기를 디스크 페이지 크기에 맞추는 이유도 이와 비슷합니다."
-      ],
-      performanceTrap: "LinkedList는 메모리 여기저기에 흩어져 있어 캐시 효율이 최악입니다. 성능이 중요하다면 무조건 배열(Array/Vector)을 쓰세요."
+    interviewProbablity: "Medium",
+    realWorldUseCases: [
+      "고성능 게임 엔진: 데이터 지향 설계(DOD)의 핵심이 바로 캐시 효율 최적화입니다.",
+      "행렬 곱셈 최적화: Loop Tiling 기법을 통해 캐시 적중률(Hit Rate)을 극대화합니다.",
+      "데이터베이스 인덱스: B-Tree 노드 크기를 디스크 페이지 크기에 맞추는 이유도 이와 비슷합니다."
+    ],
+    performanceTrap: "LinkedList는 메모리 여기저기에 흩어져 있어 캐시 효율이 최악입니다. 성능이 중요하다면 무조건 배열(Array/Vector)을 쓰세요."
   },
 
   comparison: {
-     vs: "Random Access (Pointer Chasing)",
-     pros: ["연속된 메모리 접근 시 프리패칭(Prefetching) 효과 극대화", "CPU 파이프라인 효율 증가"],
-     cons: ["메모리 정렬(Alignment) 신경 써야 함", "False Sharing 같은 하드웨어 레벨 버그 가능성"]
+    vs: "Random Access (Pointer Chasing)",
+    pros: ["연속된 메모리 접근 시 프리패칭(Prefetching) 효과 극대화", "CPU 파이프라인 효율 증가"],
+    cons: ["메모리 정렬(Alignment) 신경 써야 함", "False Sharing 같은 하드웨어 레벨 버그 가능성"]
   },
 
   complexity: {
@@ -91,7 +91,25 @@ for c in range(8):
         access_memory(r, c)`,
   },
 
-  commandReference: {
-     python: [{ label: '접근', code: 'access_memory(row, col)' }]
-  }
+  guide: [
+    {
+      title: "캐시 지역성 (Locality)",
+      items: [
+        {
+          label: "행 우선 접근 (Row-Major)",
+          code: "for r in range(N):\n    for c in range(N):\n        access(r, c)",
+          description: "메모리에 저장된 순서대로 쭉 읽습니다. 캐시 히트율이 매우 높습니다.",
+          tags: ["Spatial Locality", "Fast"],
+          isEditable: true
+        },
+        {
+          label: "열 우선 접근 (Col-Major)",
+          code: "for c in range(N):\n    for r in range(N):\n        access(r, c)",
+          description: "메모리를 띄엄띄엄 읽어서 캐시 라인을 계속 갈아치워야(Eviction) 합니다.",
+          tags: ["Cache Miss", "Slow"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };

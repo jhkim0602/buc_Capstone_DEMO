@@ -3,10 +3,10 @@ import { useCallback } from "react";
 
 // For chart
 interface CostData {
-  step: number;
-  cost: number;
-  isResize: boolean;
-  capacity: number;
+    step: number;
+    cost: number;
+    isResize: boolean;
+    capacity: number;
 }
 
 // Helper to create visual items with Capacity (Ghosts)
@@ -31,102 +31,91 @@ const toVectorItems = (arr: number[], capacity: number) => {
 };
 
 export function useVectorSimulation() {
-  const setSteps = useCTPStore((state) => state.setSteps);
-  const setPlayState = useCTPStore((state) => state.setPlayState);
+    const setSteps = useCTPStore((state) => state.setSteps);
+    const setPlayState = useCTPStore((state) => state.setPlayState);
 
-  const runSimulation = useCallback((codeInput: string) => {
-    const lines = codeInput.split('\n');
-    const newSteps: VisualStep[] = [];
+    const runSimulation = useCallback((codeInput: string) => {
+        const lines = codeInput.split('\n');
+        const newSteps: VisualStep[] = [];
 
-    // Simulation State
-    let simulatedArr: number[] = [];
-    let capacity = 2; // Demo default (Python impl detail varies, but 2 is good for demo)
-    const costHistory: CostData[] = [];
-    let stepCounter = 0;
+        // Simulation State
+        let simulatedArr: number[] = [];
+        let capacity = 2; // Demo default (Python impl detail varies, but 2 is good for demo)
+        const costHistory: CostData[] = [];
+        let stepCounter = 0;
 
-    // Initial state
-    newSteps.push({
-        id: 'init',
-        description: `List Initialized. Size: 0, Capacity: ${capacity}`,
-        data: {
-            data: toVectorItems([], capacity),
-            costHistory: [],
-            capacity,
-            size: 0
-        },
-        activeLine: 0
-    });
+        // Initial state
 
-    lines.forEach((line, lineIdx) => {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('#')) return;
+        lines.forEach((line, lineIdx) => {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('#')) return;
 
-      // Python: append(x)
-      let pushVal: number | null = null;
-      if (trimmed.includes('.append(')) {
-          const match = trimmed.match(/\((\d+)\)/);
-          if (match) pushVal = parseInt(match[1]);
-          else pushVal = stepCounter * 10;
-      }
+            // Python: append(x)
+            let pushVal: number | null = null;
+            if (trimmed.includes('.append(')) {
+                const match = trimmed.match(/\((\d+)\)/);
+                if (match) pushVal = parseInt(match[1]);
+                else pushVal = stepCounter * 10;
+            }
 
-      if (pushVal !== null) {
-          stepCounter++;
-          let currentCost = 1;
+            if (pushVal !== null) {
+                stepCounter++;
+                let currentCost = 1;
 
-          // Check Resize need
-          if (simulatedArr.length >= capacity) {
-               // Resize Event!
-               // Python growth is approx 1.125 + const, but simplistic 2x is easier for algo visualization
-               capacity *= 2;
-               currentCost = simulatedArr.length; // Cost is N
+                // Check Resize need
+                if (simulatedArr.length >= capacity) {
+                    // Resize Event!
+                    // Python growth is approx 1.125 + const, but simplistic 2x is easier for algo visualization
+                    capacity *= 2;
+                    currentCost = simulatedArr.length; // Cost is N
 
-               costHistory.push({
-                   step: stepCounter,
-                   cost: currentCost,
-                   isResize: true,
-                   capacity
-               });
+                    costHistory.push({
+                        step: stepCounter,
+                        cost: currentCost,
+                        isResize: true,
+                        capacity
+                    });
 
-               newSteps.push({
-                   id: `step-${lineIdx}-resize`,
-                   description: `⚠️ Resize Triggered! New Capacity ${capacity}. Cost: O(N)`,
-                   data: {
-                       data: toVectorItems([...simulatedArr], capacity),
-                       costHistory: [...costHistory], // snapshot
-                       capacity,
-                       size: simulatedArr.length
-                   },
-                   activeLine: lineIdx + 1
-               });
-          } else {
-              costHistory.push({
-                   step: stepCounter,
-                   cost: 1,
-                   isResize: false,
-                   capacity
-               });
-          }
+                    newSteps.push({
+                        id: `step-${lineIdx}-resize`,
+                        description: `⚠️ Resize Triggered! New Capacity ${capacity}. Cost: O(N)`,
+                        data: {
+                            data: toVectorItems([...simulatedArr], capacity),
+                            costHistory: [...costHistory], // snapshot
+                            capacity,
+                            size: simulatedArr.length
+                        },
+                        activeLine: lineIdx + 1
+                    });
+                } else {
+                    costHistory.push({
+                        step: stepCounter,
+                        cost: 1,
+                        isResize: false,
+                        capacity
+                    });
+                }
 
-          simulatedArr.push(pushVal);
+                simulatedArr.push(pushVal);
 
-          newSteps.push({
-             id: `step-${lineIdx}`,
-             description: `append(${pushVal}). Size: ${simulatedArr.length}/${capacity}. Cost: O(1)`,
-             data: {
-                 data: toVectorItems([...simulatedArr], capacity),
-                 costHistory: [...costHistory],
-                 capacity,
-                 size: simulatedArr.length
-             },
-             activeLine: lineIdx + 1
-          });
-      }
-    });
+                newSteps.push({
+                    id: `step-${lineIdx}`,
+                    description: `append(${pushVal}). Size: ${simulatedArr.length}/${capacity}. Cost: O(1)`,
+                    data: {
+                        data: toVectorItems([...simulatedArr], capacity),
+                        costHistory: [...costHistory],
+                        capacity,
+                        size: simulatedArr.length
+                    },
+                    activeLine: lineIdx + 1
+                });
+            }
+        });
 
-    setSteps(newSteps);
-    setPlayState('playing');
+        setSteps(newSteps);
+        setPlayState('playing');
 
-  }, [setSteps, setPlayState]);
+    }, [setSteps, setPlayState]);
 
-  return { runSimulation };
+    return { runSimulation };
 }

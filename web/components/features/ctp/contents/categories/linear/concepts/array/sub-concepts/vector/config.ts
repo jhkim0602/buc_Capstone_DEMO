@@ -20,19 +20,19 @@ export const VECTOR_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "Medium",
-      realWorldUseCases: [
-          "Java ArrayList / C++ std::vector: 가장 많이 쓰는 기본 리스트입니다.",
-          "JSON 파싱: 데이터가 몇 개나 들어올지 모를 때 무조건 동적 배열을 씁니다.",
-          "버퍼(Buffer): 데이터가 스트림으로 계속 들어올 때 유동적으로 저장합니다."
-      ],
-      performanceTrap: "아무 생각 없이 `append`만 하면 중간중간 복사 비용(Reallocation)이 발생해 느려질 수 있습니다. 대략적인 크기를 안다면 미리 할당하세요!"
+    interviewProbablity: "Medium",
+    realWorldUseCases: [
+      "Java ArrayList / C++ std::vector: 가장 많이 쓰는 기본 리스트입니다.",
+      "JSON 파싱: 데이터가 몇 개나 들어올지 모를 때 무조건 동적 배열을 씁니다.",
+      "버퍼(Buffer): 데이터가 스트림으로 계속 들어올 때 유동적으로 저장합니다."
+    ],
+    performanceTrap: "아무 생각 없이 `append`만 하면 중간중간 복사 비용(Reallocation)이 발생해 느려질 수 있습니다. 대략적인 크기를 안다면 미리 할당하세요!"
   },
 
   comparison: {
-      vs: "LinkedList",
-      pros: ["인덱스로 즉시 접근 가능 (O(1))", "메모리가 연속적이라 캐시 효율 좋음"],
-      cons: ["중간 삽입/삭제가 느림 (O(N))", "사용하지 않는 예비 공간(Slack) 낭비"]
+    vs: "LinkedList",
+    pros: ["인덱스로 즉시 접근 가능 (O(1))", "메모리가 연속적이라 캐시 효율 좋음"],
+    cons: ["중간 삽입/삭제가 느림 (O(N))", "사용하지 않는 예비 공간(Slack) 낭비"]
   },
 
   complexity: {
@@ -83,12 +83,37 @@ for i in range(30):
 # 결과: 메모리가 매번 늘지 않고, 가끔씩 '왕창' 늘어납니다!`,
   },
 
-  commandReference: {
-     python: [
-        { label: '추가', code: 'lst.append(x)' },
-        { label: '삽입', code: 'lst.insert(i, x)' },
-        { label: '크기', code: 'len(lst)' },
-        { label: '메모리', code: 'sys.getsizeof(lst)' }
-     ]
-  }
+  guide: [
+    {
+      title: "기본 연산",
+      items: [
+        {
+          label: "데이터 추가 (Append)",
+          code: "lst.append(x)",
+          description: "맨 뒤에 데이터를 추가합니다. 공간이 남으면 O(1), 꽉 차면 O(N)입니다.",
+          tags: ["Amortized O(1)"],
+          isEditable: true
+        },
+        {
+          label: "중간 삽입",
+          code: "lst.insert(1, 99)",
+          description: "1번 인덱스에 99를 끼워넣습니다. 뒤에 있는 데이터가 다 밀려나야 하므로 느립니다.",
+          tags: ["O(N)", "Shift"],
+          isEditable: true
+        }
+      ]
+    },
+    {
+      title: "메모리 관찰",
+      items: [
+        {
+          label: "크기 확인",
+          code: "print(len(lst), sys.getsizeof(lst))",
+          description: "논리적 개수(len)와 실제 할당된 물리적 크기(Capacity)의 차이를 비교해보세요.",
+          tags: ["Inspection"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };

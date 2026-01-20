@@ -20,19 +20,19 @@ export const CIRCULAR_LL_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "Low",
-      realWorldUseCases: [
-          "CPU 스케줄링 (Round Robin): 프로세스 A -> B -> C -> A -> ...",
-          "멀티플레이어 게임 턴 관리: 플레이어 1 -> 2 -> 3 -> 1 ...",
-          "스트리밍 버퍼: 링 버퍼(Ring Buffer) 구현 시 사용됩니다."
-      ],
-      performanceTrap: "순회 코드를 짤 때 `do-while` 문을 쓰거나, `head` 도착 여부를 체크하지 않으면 프로그램이 멈추지 않습니다."
+    interviewProbablity: "Low",
+    realWorldUseCases: [
+      "CPU 스케줄링 (Round Robin): 프로세스 A -> B -> C -> A -> ...",
+      "멀티플레이어 게임 턴 관리: 플레이어 1 -> 2 -> 3 -> 1 ...",
+      "스트리밍 버퍼: 링 버퍼(Ring Buffer) 구현 시 사용됩니다."
+    ],
+    performanceTrap: "순회 코드를 짤 때 `do-while` 문을 쓰거나, `head` 도착 여부를 체크하지 않으면 프로그램이 멈추지 않습니다."
   },
 
   comparison: {
-      vs: "Singly Linked List",
-      pros: ["마지막에서 처음으로 이동 가능", "무한 반복 구현 용이"],
-      cons: ["종료 조건 구현이 까다로움", "무한 루프 버그 위험"]
+    vs: "Singly Linked List",
+    pros: ["마지막에서 처음으로 이동 가능", "무한 반복 구현 용이"],
+    cons: ["종료 조건 구현이 까다로움", "무한 루프 버그 위험"]
   },
 
   complexity: {
@@ -103,10 +103,37 @@ while curr != head:
 print("Back to Head!")`,
   },
 
-  commandReference: {
-     python: [
-        { label: '연결', code: 'tail.next = head' },
-        { label: '종료조건', code: 'curr != head' }
-     ]
-  }
+  guide: [
+    {
+      title: "원형 연결 (Circular)",
+      items: [
+        {
+          label: "마지막 연결",
+          code: "tail.next = head",
+          description: "마지막 노드가 다시 첫 번째 노드를 가리키게 하여 고리를 만듭니다.",
+          tags: ["Loop"],
+          isEditable: false
+        }
+      ]
+    },
+    {
+      title: "순회 주의사항",
+      items: [
+        {
+          label: "무한 루프 방지",
+          code: "curr != head",
+          description: "일반 리스트처럼 None(NULL)을 찾으면 안 됩니다. 다시 head로 돌아왔는지 체크하세요!",
+          tags: ["Termination"],
+          isEditable: true
+        },
+        {
+          label: "안전한 순회 패턴",
+          code: "if not head: return\n\ncurr = head\nwhile True:\n    print(curr.val)\n    curr = curr.next\n    if curr == head: break",
+          description: "do-while 문이 없는 파이썬에서 가장 안전하게 한 바퀴만 도는 패턴입니다.",
+          tags: ["Pattern"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };

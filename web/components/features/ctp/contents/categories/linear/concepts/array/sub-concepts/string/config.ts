@@ -20,19 +20,19 @@ export const STRING_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "Medium",
-      realWorldUseCases: [
-          "보안(Security): DB 비밀번호나 네트워크 소켓 경로는 절대 변하면 안 되므로 불변 문자열을 씁니다.",
-          "HashMap Key: 불변이므로 해시값(HashCode)이 변하지 않아 캐싱해두고 빠르게 찾을 수 있습니다.",
-          "대규모 로그 처리: 수많은 'INFO' 로그 문자열은 Pool 덕분에 메모리를 거의 차지하지 않습니다."
-      ],
-      performanceTrap: "반복문 안에서 `+=` 연산자로 문자열 합치기 금지! 반드시 `list.append()` 후 `join()` 하거나 `StringBuilder`를 쓰세요."
+    interviewProbablity: "Medium",
+    realWorldUseCases: [
+      "보안(Security): DB 비밀번호나 네트워크 소켓 경로는 절대 변하면 안 되므로 불변 문자열을 씁니다.",
+      "HashMap Key: 불변이므로 해시값(HashCode)이 변하지 않아 캐싱해두고 빠르게 찾을 수 있습니다.",
+      "대규모 로그 처리: 수많은 'INFO' 로그 문자열은 Pool 덕분에 메모리를 거의 차지하지 않습니다."
+    ],
+    performanceTrap: "반복문 안에서 `+=` 연산자로 문자열 합치기 금지! 반드시 `list.append()` 후 `join()` 하거나 `StringBuilder`를 쓰세요."
   },
 
   comparison: {
-     vs: "Mutable String (C언어 char[])",
-     pros: ["공유해도 값이 바뀔 걱정이 없음 (Side-effect Free)", "해시 키로 사용하기 적합"],
-     cons: ["단순 수정 연산 시 오버헤드 큼 (전체 복사 발생)"]
+    vs: "Mutable String (C언어 char[])",
+    pros: ["공유해도 값이 바뀔 걱정이 없음 (Side-effect Free)", "해시 키로 사용하기 적합"],
+    cons: ["단순 수정 연산 시 오버헤드 큼 (전체 복사 발생)"]
   },
 
   complexity: {
@@ -105,12 +105,51 @@ c = sys.intern(c)
 print(f"After intern, a is c: {a is c}") # True`,
   },
 
-  commandReference: {
-     python: [
-        { label: '길이', code: 'len(s)' },
-        { label: '자르기', code: 's[start:end]' },
-        { label: '검색', code: 's.find("x")' },
-        { label: '배열로', code: 'list(s)' }
-     ]
-  }
+  guide: [
+    {
+      title: "문자열 불변성 (Immutability)",
+      items: [
+        {
+          label: "리터럴 할당",
+          code: "a = 'Hello'",
+          description: "Pool에 'Hello'가 있으면 재사용하고, 없으면 새로 만듭니다.",
+          tags: ["Pool"],
+          isEditable: true
+        },
+        {
+          label: "변수 복사",
+          code: "b = a",
+          description: "문자열 복사는 단순히 '참조(Reference)'만 복사하므로 매우 빠릅니다.",
+          tags: ["Reference"],
+          isEditable: true
+        },
+        {
+          label: "값 비교 (is)",
+          code: "print(a is b)",
+          description: "True면 두 변수가 완전히 같은 메모리 주소를 가리키는 것입니다.",
+          tags: ["Address"],
+          isEditable: true
+        }
+      ]
+    },
+    {
+      title: "새로운 객체 생성",
+      items: [
+        {
+          label: "강제 생성 (Join)",
+          code: "c = ''.join(['He', 'llo'])",
+          description: "런타임 연산 결과는 Pool이 아닌 일반 Heap에 새로 생성됩니다.",
+          tags: ["Heap"],
+          isEditable: true
+        },
+        {
+          label: "Interning (강제 등록)",
+          code: "import sys\nc = sys.intern(c)",
+          description: "Heap에 있는 문자열을 Pool로 옮겨서 중복을 제거합니다.",
+          tags: ["Optimization"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };

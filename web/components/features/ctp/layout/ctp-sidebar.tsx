@@ -30,11 +30,7 @@ export function CTPSidebar({ isOpen, onClose }: CTPSidebarProps) {
     <AnimatePresence mode="wait">
       {isOpen && (
         <motion.nav
-          initial={{ width: 0, opacity: 0 }}
-          animate={{ width: 256, opacity: 1 }}
-          exit={{ width: 0, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-[calc(100vh-4rem)] sticky top-16 border-r border-border/40 bg-background/50 backdrop-blur hidden lg:flex flex-col py-4 z-20 pl-6 pr-4 overflow-hidden"
+          className="h-[calc(100vh-4rem)] sticky top-16 border-r border-border/40 bg-background/50 backdrop-blur hidden lg:flex flex-col py-4 z-20 pl-6 pr-4 overflow-hidden min-w-[256px]"
         >
           {/* Header & Toggle */}
           <div className="flex items-center justify-between mb-6">
@@ -81,7 +77,7 @@ export function CTPSidebar({ isOpen, onClose }: CTPSidebarProps) {
                           key={concept.id}
                           href={href}
                           className={cn(
-                            "group flex items-center justify-between py-1.5 px-3 rounded-md text-sm transition-all",
+                            "group flex items-center justify-between py-1.5 px-3 rounded-md text-sm transition-colors",
                             isActive
                               ? "bg-primary/10 text-primary font-medium"
                               : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -89,14 +85,14 @@ export function CTPSidebar({ isOpen, onClose }: CTPSidebarProps) {
                         >
                           <span className="truncate">{concept.title.split(" (")[0]}</span>
                           {isActive && (
-                            <motion.div
-                              layoutId="active-nav-indicator"
-                              className="w-1 h-1 rounded-full bg-primary"
+                            <div
+                              className="w-1.5 h-1.5 rounded-full bg-primary"
                             />
                           )}
                         </Link>
                       );
-                    })}
+                    })
+                    }
                   </div>
                 </div>
               );

@@ -1,5 +1,19 @@
 import { ComponentType } from "react";
 
+// [NEW] Guidebook Interfaces
+export interface GuideItem {
+  label: string;
+  code: string;
+  description?: string;
+  tags?: string[]; // e.g. ["Read-Only", "Pattern"]
+  isEditable?: boolean;
+}
+
+export interface GuideSection {
+  title: string;
+  items: GuideItem[];
+}
+
 export interface CTPModuleConfig {
   title: string;
   description: string;
@@ -11,15 +25,21 @@ export interface CTPModuleConfig {
     insertion: string;
     deletion: string;
   };
-  practiceProblems?: any[]; // Replace with specific type if available
-  implementation?: any[];   // Replace with specific type if available
+  practiceProblems?: any[];
+  implementation?: any[];
   initialCode?: Record<string, string>;
+
+  // Legacy
   commandReference?: Record<string, { label: string; code: string }[]>;
+
+  // [NEW] Interactive Guide
+  guide?: GuideSection[];
+
   story?: {
-    problem: string;      // "왜 이것이 필요한가?" (배경/문제 제기)
-    definition: string;   // "교과서적 핵심 정의" (형식적 정의)
-    analogy: string;      // "이것은 마치..." (일상 생활 비유)
-    playgroundLimit?: string; // "아래에서 무엇을 해볼까요?" (Playground 실습 가이드)
+    problem: string;
+    definition: string;
+    analogy: string;
+    playgroundLimit?: string;
   };
 }
 

@@ -20,19 +20,19 @@ export const SINGLY_LL_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "Very High",
-      realWorldUseCases: [
-          "Undo/Redo 기능: 이전 상태로 돌아가는 스택 구현에 쓰입니다.",
-          "음악 플레이어 재생목록: 다음 곡, 이전 곡으로 넘어갑니다.",
-          "OS 파일 시스템: 파일 조각들이 디스크 여기저기 흩어져 연결되어 있습니다."
-      ],
-      performanceTrap: "`get(i)` 연산이 O(N)이라는 걸 잊지 마세요. 반복문에서 `list.get(i)`를 호출하면 전체 성능은 O(N^2)으로 곤두박질 칩니다."
+    interviewProbablity: "Very High",
+    realWorldUseCases: [
+      "Undo/Redo 기능: 이전 상태로 돌아가는 스택 구현에 쓰입니다.",
+      "음악 플레이어 재생목록: 다음 곡, 이전 곡으로 넘어갑니다.",
+      "OS 파일 시스템: 파일 조각들이 디스크 여기저기 흩어져 연결되어 있습니다."
+    ],
+    performanceTrap: "`get(i)` 연산이 O(N)이라는 걸 잊지 마세요. 반복문에서 `list.get(i)`를 호출하면 전체 성능은 O(N^2)으로 곤두박질 칩니다."
   },
 
   comparison: {
-      vs: "Array",
-      pros: ["중간 삽입/삭제가 매우 빠름 (O(1))", "메모리 크기 제한 없음"],
-      cons: ["인덱스 접근 불가능 (O(N))", "다음 주소를 저장할 추가 메모리 필요 (Overhead)"]
+    vs: "Array",
+    pros: ["중간 삽입/삭제가 매우 빠름 (O(1))", "메모리 크기 제한 없음"],
+    cons: ["인덱스 접근 불가능 (O(N))", "다음 주소를 저장할 추가 메모리 필요 (Overhead)"]
   },
 
   complexity: {
@@ -118,11 +118,70 @@ node20.next = new_node      # 20 -> 25
 # 결과: 10 -> 20 -> 25 -> 30`,
   },
 
-  commandReference: {
-     python: [
-        { label: '노드', code: 'Node(val)' },
-        { label: '연결', code: 'node.next = other' },
-        { label: '이동', code: 'cur = cur.next' }
-     ]
-  }
+  guide: [
+    {
+      title: "기본 조작 (Read-Only)",
+      items: [
+        {
+          label: "초기화",
+          code: "head = Node(1)",
+          description: "새로운 노드를 생성하고 head 포인터가 가리키게 합니다.",
+          tags: ["Initialization"],
+          isEditable: false
+        },
+        {
+          label: "노드 연결",
+          code: "head.next = Node(2)",
+          description: "head 노드의 다음(next)으로 새로운 노드를 연결합니다.",
+          tags: ["Linking", "O(1)"],
+          isEditable: false
+        }
+      ]
+    },
+    {
+      title: "순회 (Traversal)",
+      items: [
+        {
+          label: "변수 선언",
+          code: "curr = head",
+          description: "탐색을 위해 현재 위치를 가리킬 curr 변수를 선언합니다.",
+          tags: ["Pointer"],
+          isEditable: true
+        },
+        {
+          label: "한 칸 이동",
+          code: "curr = curr.next",
+          description: "curr 포인터를 다음 노드로 이동시킵니다. 만약 다음이 없다면 None이 됩니다.",
+          tags: ["Movement", "O(1)"],
+          isEditable: true
+        },
+        {
+          label: "값 확인",
+          code: "print(curr.val)",
+          description: "현재 가리키고 있는 노드의 값을 출력합니다.",
+          tags: ["Access"],
+          isEditable: true
+        }
+      ]
+    },
+    {
+      title: "수정 및 삽입 (Modification)",
+      items: [
+        {
+          label: "값 변경",
+          code: "curr.val = 99",
+          description: "현재 노드의 값을 99로 변경합니다.",
+          tags: ["Update", "O(1)"],
+          isEditable: true
+        },
+        {
+          label: "중간 삽입 패턴",
+          code: "new_node.next = curr.next\ncurr.next = new_node",
+          description: "새 노드를 중간에 끼워넣는 표준 패턴입니다. (순서 중요!)",
+          tags: ["Pattern", "O(1)"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };

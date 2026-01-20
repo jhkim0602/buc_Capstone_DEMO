@@ -21,19 +21,19 @@ export const ARRAY_1D_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "High",
-      realWorldUseCases: [
-          "Pixel Buffer: 모니터 화면의 픽셀들은 거대한 1차원 배열입니다.",
-          "Lookup Table: 구구단 표처럼 미리 계산된 값을 저장해두고 바로 찾아봅니다.",
-          "String: 문자열도 사실 문자들이 모인 1차원 배열입니다."
-      ],
-      performanceTrap: "배열의 맨 앞, 혹은 중간에 데이터를 끼워넣지 마세요. 뒤에 있는 친구들이 모두 한 칸씩 밀려나야 해서 매우 느려집니다 (O(N))."
+    interviewProbablity: "High",
+    realWorldUseCases: [
+      "Pixel Buffer: 모니터 화면의 픽셀들은 거대한 1차원 배열입니다.",
+      "Lookup Table: 구구단 표처럼 미리 계산된 값을 저장해두고 바로 찾아봅니다.",
+      "String: 문자열도 사실 문자들이 모인 1차원 배열입니다."
+    ],
+    performanceTrap: "배열의 맨 앞, 혹은 중간에 데이터를 끼워넣지 마세요. 뒤에 있는 친구들이 모두 한 칸씩 밀려나야 해서 매우 느려집니다 (O(N))."
   },
 
   comparison: {
-      vs: "LinkedList",
-      pros: ["압도적인 조회 속도 (인덱스만 알면 됨)", "메모리 낭비 없음 (데이터만 딱 저장)"],
-      cons: ["크기를 미리 정해야 함", "중간에 끼워넣거나 삭제하기 불편함"]
+    vs: "LinkedList",
+    pros: ["압도적인 조회 속도 (인덱스만 알면 됨)", "메모리 낭비 없음 (데이터만 딱 저장)"],
+    cons: ["크기를 미리 정해야 함", "중간에 끼워넣거나 삭제하기 불편함"]
   },
 
   complexity: {
@@ -95,12 +95,51 @@ arr.append(40)
 arr.pop()`,
   },
 
-  commandReference: {
-     python: [
-         { label: '초기화', code: 'arr = [1, 2]' },
-         { label: '읽기', code: 'arr[i]' },
-         { label: '쓰기', code: 'arr[i] = v' },
-         { label: '추가', code: 'arr.append(v)' }
-     ]
-  }
+  guide: [
+    {
+      title: "기본 연산",
+      items: [
+        {
+          label: "읽기 (Access)",
+          code: "val = arr[0]",
+          description: "인덱스를 사용하여 값에 즉시 접근합니다. 가장 빠릅니다. O(1)",
+          tags: ["Access", "Fast"],
+          isEditable: true
+        },
+        {
+          label: "쓰기 (Update)",
+          code: "arr[0] = 99",
+          description: "해당 인덱스의 값을 덮어씁니다. O(1)",
+          tags: ["Update"],
+          isEditable: true
+        },
+        {
+          label: "초기화",
+          code: "arr = [1, 2, 3, 4, 5]",
+          description: "새로운 배열을 생성합니다.",
+          tags: ["Init"],
+          isEditable: true
+        }
+      ]
+    },
+    {
+      title: "Python List 특징",
+      items: [
+        {
+          label: "Append (맨 뒤 추가)",
+          code: "arr.append(10)",
+          description: "사실 파이썬 리스트는 동적 배열입니다. 맨 뒤 추가는 O(1)입니다.",
+          tags: ["Append"],
+          isEditable: true
+        },
+        {
+          label: "Pop (맨 뒤 삭제)",
+          code: "arr.pop()",
+          description: "맨 뒤의 요소를 제거하고 반환합니다. O(1)",
+          tags: ["Pop"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };

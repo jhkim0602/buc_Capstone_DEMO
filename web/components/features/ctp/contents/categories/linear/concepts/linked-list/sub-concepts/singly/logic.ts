@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useCTPStore, VisualStep } from "@/components/features/ctp/store/use-ctp-store";
-import { LinkedListNode } from "@/components/features/ctp/playground/visualizers/linked-list-visualizer";
+import { LinkedListNode } from "@/components/features/ctp/playground/visualizers/linked-list/legacy/linked-list-visualizer";
 
 export function useSinglyLinkedListSim() {
     const { setSteps } = useCTPStore();
@@ -11,12 +11,6 @@ export function useSinglyLinkedListSim() {
         const lines = code.split('\n');
 
         // Initial State
-        steps.push({
-            id: 'init',
-            description: "시뮬레이션을 시작합니다. 코드를 한 줄씩 실행하며 메모리 상태를 확인해봅시다.",
-            data: [],
-            activeLine: 0
-        });
 
         // Simple Regex-based "Mock Interpreter"
         // This is a simplified logic tailored for the educational script provided in config.ts
@@ -106,7 +100,7 @@ export function useSinglyLinkedListSim() {
                 });
 
                 // Step for moving to node 3
-                 const nodesStep3 = JSON.parse(JSON.stringify(nodes));
+                const nodesStep3 = JSON.parse(JSON.stringify(nodes));
                 nodesStep3[1].label = "";
                 nodesStep3[2].label = "Curr";
                 nodesStep3[2].isHighlighted = true;
@@ -131,8 +125,8 @@ export function useSinglyLinkedListSim() {
             // 6. Insert Middle (node20 = head.next ...)
             // Catching specific instruction context from config.ts
             else if (trimmed.includes('new_node = Node(25)')) {
-                 // Nothing visual yet, just creation in memory
-                 steps.push({
+                // Nothing visual yet, just creation in memory
+                steps.push({
                     id: `step-${lineIdx}`,
                     description: `삽입할 새로운 노드(25)를 생성합니다. 아직 리스트에 연결되지는 않았습니다.`,
                     data: nodes,
@@ -143,7 +137,7 @@ export function useSinglyLinkedListSim() {
                 // Visualizing the first link of insertion
                 // This is hard to show perfectly without 2D positioning, but we can imply it.
                 // We'll skip complex intermediate state and show final result in next step for simple parser.
-                 steps.push({
+                steps.push({
                     id: `step-${lineIdx}`,
                     description: `새 노드(25)의 다음(Next)이 30을 가리키게 합니다. (25 -> 30)`,
                     data: nodes,

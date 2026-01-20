@@ -14,10 +14,10 @@ import { useMemorySim } from "./sub-concepts/memory/logic";
 
 // Visualizers
 import {
-  SinglyLinkedListVisualizer,
-  DoublyLinkedListVisualizer,
-  CircularLinkedListVisualizer
-} from "@/components/features/ctp/playground/visualizers/linked-list-visualizer";
+  SinglyLinkedListGraphVisualizer as SinglyLinkedListVisualizer,
+  DoublyLinkedListGraphVisualizer as DoublyLinkedListVisualizer,
+  CircularLinkedListGraphVisualizer as CircularLinkedListVisualizer
+} from "@/components/features/ctp/playground/visualizers/linked-list/graph/linked-list-graph-visualizer";
 
 import { CTPModule } from "@/components/features/ctp/common/types";
 

@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { ChevronDown, ChevronUp, Lightbulb } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 import { CTPModule } from "./types";
 import { useCTPStore } from "../store/use-ctp-store";
 import { CTPIntro } from "../contents/shared/ctp-intro";
@@ -9,6 +12,7 @@ import { CTPComplexity } from "../contents/shared/ctp-complexity";
 import { CTPPractice } from "../contents/shared/ctp-practice";
 import { CTPImplementation } from "../contents/shared/ctp-implementation";
 import { CTPPlayground } from "../playground/ctp-playground";
+import { CTPGuidePanel } from "../contents/shared/ctp-guide-panel";
 
 interface CTPModuleLoaderProps {
   module: CTPModule;
@@ -44,7 +48,7 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
     <div className="space-y-12 pb-20">
       {/* 1. Overview */}
       <CTPIntro
-        category={category}
+        category={category || ""}
         title={config.title || "Untitled"}
         description={config.description || ""}
         tags={config.tags || []}
@@ -61,28 +65,29 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
           아래 에디터에서 코드를 작성하고 실행하여 자료구조의 동작 원리를 확인해보세요!
         </p>
 
-        {/* Dynamic Command Reference Grid */}
-        {config.commandReference && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-            {(config.commandReference.python || config.commandReference.global || []).map((cmd: any, idx: number) => (
-              <div key={idx} className="bg-muted/50 border border-border rounded px-3 py-2 flex flex-col justify-center">
-                <span className="text-[10px] text-muted-foreground font-semibold mb-0.5">{cmd.label}</span>
-                <code className="text-xs font-mono text-primary truncate" title={cmd.code}>{cmd.code}</code>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <CTPPlayground
-          initialCode={config.initialCode?.python ?? ""}
-          onRun={runSimulation}
-          visualizer={
-            <Visualizer
-              data={currentData}
-              emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
+        {/* [NEW] Interactive Guide Layout */}
+        <div className="flex flex-col gap-6">
+          {/* Main Visualizer & Editor Area */}
+          <div className="w-full">
+            <CTPPlayground
+              initialCode={config.initialCode?.python ?? ""}
+              onRun={runSimulation}
+              visualizer={
+                <Visualizer
+                  data={currentData}
+                  emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
+                />
+              }
             />
-          }
-        />
+          </div>
+
+          {/* Guide Panel (Bottom Toggle) */}
+          {config.guide && (
+            <div className="w-full">
+              <GuideToggleSection guide={config.guide} />
+            </div>
+          )}
+        </div>
       </section>
 
       {/* 4. Complexity */}
@@ -93,6 +98,49 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
 
       {/* 6. Practice Problems */}
       {config.practiceProblems && <CTPPractice problems={config.practiceProblems} />}
+    </div>
+  );
+}
+
+function GuideToggleSection({ guide }: { guide: import("./types").GuideSection[] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border rounded-lg bg-card shadow-sm overflow-hidden">
+      <Button
+        variant="ghost"
+        className="w-full flex items-center justify-between p-4 h-auto hover:bg-muted/40 rounded-none from-muted/10 to-transparent bg-gradient-to-r"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 p-2 rounded-full">
+            <Lightbulb className="w-4 h-4 text-primary" />
+          </div>
+          <div className="text-left flex flex-col">
+            <span className="font-bold text-sm text-foreground/90">Playground Guide & Patterns</span>
+            <span className="text-xs text-muted-foreground font-normal">
+              {isOpen ? "가이드 접기" : "자주 쓰는 코드 패턴과 설명 보기"}
+            </span>
+          </div>
+        </div>
+        {isOpen ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+      </Button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="border-t"
+          >
+            <div className="p-1 bg-muted/5">
+              <CTPGuidePanel guide={guide} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -20,19 +20,19 @@ export const TWO_POINTERS_LL_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "High",
-      realWorldUseCases: [
-          "무한 루프 방지: 시스템 프로세스가 교착 상태나 루프에 빠졌는지 감지할 때 유용합니다.",
-          "네트워크 패킷 분석: 순환되는 경로가 있는지 탐지합니다.",
-          "중간값 찾기: 데이터 스트림에서 빠르게 중간 위치를 찾아야 할 때 사용합니다."
-      ],
-      performanceTrap: "Fast 포인터가 `next.next`로 이동하므로, `NULL` 체크를 꼼꼼히 안 하면 런타임 에러(NPE)가 터지기 쉽습니다."
+    interviewProbablity: "High",
+    realWorldUseCases: [
+      "무한 루프 방지: 시스템 프로세스가 교착 상태나 루프에 빠졌는지 감지할 때 유용합니다.",
+      "네트워크 패킷 분석: 순환되는 경로가 있는지 탐지합니다.",
+      "중간값 찾기: 데이터 스트림에서 빠르게 중간 위치를 찾아야 할 때 사용합니다."
+    ],
+    performanceTrap: "Fast 포인터가 `next.next`로 이동하므로, `NULL` 체크를 꼼꼼히 안 하면 런타임 에러(NPE)가 터지기 쉽습니다."
   },
 
   comparison: {
-      vs: "Naive Iteration",
-      pros: ["한 번의 순회(One Pass)로 해결 가능", "추가 메모리(O(N)) 불필요 (공간복잡도 O(1))"],
-      cons: ["직관적이지 않음 (Why it works?)"]
+    vs: "Naive Iteration",
+    pros: ["한 번의 순회(One Pass)로 해결 가능", "추가 메모리(O(N)) 불필요 (공간복잡도 O(1))"],
+    cons: ["직관적이지 않음 (Why it works?)"]
   },
 
   complexity: {
@@ -90,25 +90,89 @@ class Node:
         self.next = next
 
 # 1 -> 2 -> 3 -> 4 -> 5
-head = Node(1, Node(2, Node(3, Node(4, Node(5)))))
+head = Node(1)
+curr = head
 
+curr.next = Node(2)
+curr = curr.next
+
+curr.next = Node(3)
+curr = curr.next
+
+curr.next = Node(4)
+curr = curr.next
+
+curr.next = Node(5)
+curr = curr.next
+
+# Initialize Pointers
 slow = head
 fast = head
 
-print("Start Race!")
-while fast and fast.next:
-    slow = slow.next      # 1 step
-    fast = fast.next.next # 2 steps
-    print(f"Slow: {slow.val}, Fast: {fast.val if fast else 'END'}")
+# Loop (Simulating Floyd's Runner)
+# Round 1
+slow = slow.next
+fast = fast.next.next
 
-# Fast가 끝났을 때 Slow는?
-print(f"Middle Node: {slow.val}") # 3`,
+# Round 2
+slow = slow.next
+fast = fast.next.next
+
+# Result: Slow is at Middle (3)!
+middle = slow
+print(f"Middle: {middle.val}")`,
   },
 
-  commandReference: {
-     python: [
-        { label: 'Slow', code: 's = s.next' },
-        { label: 'Fast', code: 'f = f.next.next' }
-     ]
-  }
+  guide: [
+    {
+      title: "기본 설정 (Setup)",
+      items: [
+        {
+          label: "포인터 초기화",
+          code: "slow = head\nfast = head",
+          description: "두 포인터를 모두 시작점(head)에 둡니다.",
+          tags: ["Initialization"],
+          isEditable: true
+        }
+      ]
+    },
+    {
+      title: "Floyd's Cycle (토끼와 거북이)",
+      items: [
+        {
+          label: "한 칸 이동 (Slow)",
+          code: "slow = slow.next",
+          description: "거북이는 한 번에 한 칸씩 이동합니다.",
+          tags: ["Slow", "x1"],
+          isEditable: true
+        },
+        {
+          label: "두 칸 이동 (Fast)",
+          code: "fast = fast.next.next",
+          description: "토끼는 한 번에 두 칸씩 이동합니다. (속도 차이 발생)",
+          tags: ["Fast", "x2"],
+          isEditable: true
+        },
+        {
+          label: "만남 확인",
+          code: "if slow == fast:\n    print('Cycle found!')",
+          description: "두 포인터가 만난다면 사이클이 존재한다는 증거입니다.",
+          tags: ["Check"],
+          isEditable: true
+        }
+      ]
+    },
+    {
+      title: "Window Sliding (투 포인터)",
+      items: [
+        {
+          label: "간격 벌리기",
+          code: "fast = fast.next",
+          description: "초기에 fast만 먼저 출발시켜 두 포인터 사이의 간격을 만듭니다.",
+          tags: ["Gap"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };

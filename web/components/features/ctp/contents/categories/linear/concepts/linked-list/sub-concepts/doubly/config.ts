@@ -20,19 +20,19 @@ export const DOUBLY_LL_CONFIG = {
   ],
 
   deepDive: {
-      interviewProbablity: "High",
-      realWorldUseCases: [
-          "웹 브라우저 방문 기록: 뒤로 가기 / 앞으로 가기",
-          "LRU Cache: 가장 최근에 쓴 데이터를 맨 앞으로, 오래된 걸 맨 뒤로 옮길 때 양방향 이동이 필수입니다.",
-          "텍스트 에디터: 커서 이동이 자유로워야 하므로 이중 연결 리스트를 많이 씁니다."
-      ],
-      performanceTrap: "구현이 복잡해서 버그가 나기 쉽습니다. 특히 노드 삽입/삭제 시 `next`와 `prev` 링크 4개를 모두 정확히 연결해야 합니다."
+    interviewProbablity: "High",
+    realWorldUseCases: [
+      "웹 브라우저 방문 기록: 뒤로 가기 / 앞으로 가기",
+      "LRU Cache: 가장 최근에 쓴 데이터를 맨 앞으로, 오래된 걸 맨 뒤로 옮길 때 양방향 이동이 필수입니다.",
+      "텍스트 에디터: 커서 이동이 자유로워야 하므로 이중 연결 리스트를 많이 씁니다."
+    ],
+    performanceTrap: "구현이 복잡해서 버그가 나기 쉽습니다. 특히 노드 삽입/삭제 시 `next`와 `prev` 링크 4개를 모두 정확히 연결해야 합니다."
   },
 
   comparison: {
-      vs: "Singly Linked List",
-      pros: ["뒤로 가기 가능", "삭제 시 이전 노드 탐색 불필요"],
-      cons: ["메모리 사용량 증가", "구현 복잡도 증가"]
+    vs: "Singly Linked List",
+    pros: ["뒤로 가기 가능", "삭제 시 이전 노드 탐색 불필요"],
+    cons: ["메모리 사용량 증가", "구현 복잡도 증가"]
   },
 
   complexity: {
@@ -103,10 +103,37 @@ while curr:
     curr = curr.next`,
   },
 
-  commandReference: {
-     python: [
-        { label: '이전', code: 'node.prev' },
-        { label: '다음', code: 'node.next' }
-     ]
-  }
+  guide: [
+    {
+      title: "기본 조작 (Birectional)",
+      items: [
+        {
+          label: "이전 노드 (Prev)",
+          code: "curr.prev",
+          description: "현재 노드의 바로 앞 노드를 가리킵니다. (Head는 prev가 None입니다)",
+          tags: ["Back", "O(1)"],
+          isEditable: false
+        },
+        {
+          label: "양방향 연결",
+          code: "n1.next = n2\nn2.prev = n1",
+          description: "두 노드를 서로 연결해야 합니다. 하나라도 빠뜨리면 끊어진 다리가 됩니다.",
+          tags: ["Linking", "Pattern"],
+          isEditable: false
+        }
+      ]
+    },
+    {
+      title: "삽입/삭제 패턴",
+      items: [
+        {
+          label: "중간 삽입",
+          code: "new_node.prev = prev\nnew_node.next = next\nprev.next = new_node\nnext.prev = new_node",
+          description: "총 4개의 포인터를 수정해야 합니다. 순서에 주의하세요!",
+          tags: ["Complexity"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };
