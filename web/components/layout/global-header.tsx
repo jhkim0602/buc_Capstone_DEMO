@@ -66,8 +66,7 @@ export function GlobalHeader() {
   const isTechBlog = pathname && pathname.startsWith("/insights/tech-blog");
 
   // Use URL filters hook for Tech Blog state (synced via URL)
-  const { blogType, selectedBlog, handleBlogTypeChange, handleBlogChange } =
-    useUrlFilters();
+  const { selectedBlog, handleBlogChange } = useUrlFilters();
 
   // 현재 활성화된 메인 카테고리 찾기
   const currentCategory = Object.keys(MENUS).find((key) =>

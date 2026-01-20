@@ -43,21 +43,14 @@ export async function fetchAvailableBlogs() {
     }
 
     // 중복 제거하면서 카테고리 정보 유지
-    const companies = Array.from(
+    const companies = (Array.from(
       new Map((companyData || []).map((item: any) => [item.author, item])),
-    ).map(([author, item]: [string, any]) => ({
+    ) as [string, any][]).map(([author, item]) => ({
       author,
       blog_type: "company" as const,
       category: item.category,
     }));
 
-    const individuals = Array.from(
-      new Map((personalData || []).map((item: any) => [item.author, item])),
-    ).map(([author, item]: [string, any]) => ({
-      author,
-      blog_type: "personal" as const,
-      category: item.category,
-    }));
     // 기업 블로그를 사용자 접근성을 고려한 정렬 순서로 정렬
     const companySortOrder = [
       "토스",
@@ -104,10 +97,6 @@ export async function fetchAvailableBlogs() {
       return aIndex - bIndex;
     });
 
-    // 개인 블로그 정렬 (알파벳 순)
-    const sortedPersonals = individuals.sort((a: AuthorInfo, b: AuthorInfo) =>
-      a.author.localeCompare(b.author),
-    );
     return {
       companies: sortedCompanies,
       individuals: [],
