@@ -1,4 +1,4 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase/client";
 
 export interface Blog {
   id: number;
@@ -17,7 +17,6 @@ export interface Blog {
 }
 
 export const fetchWeeklyPopularBlogs = async (limit = 10): Promise<Blog[]> => {
-  const supabase = createClientComponentClient();
   const { data, error } = await supabase
     .from("blogs")
     .select("*")
@@ -33,7 +32,6 @@ export const fetchWeeklyPopularBlogs = async (limit = 10): Promise<Blog[]> => {
 };
 
 export const incrementViews = async (id: number) => {
-  const supabase = createClientComponentClient();
   // Using RPC is better for atomicity, but for now we just define the method
   const { error } = await supabase.rpc("increment_views", { blog_id: id });
   if (error) {
@@ -42,8 +40,6 @@ export const incrementViews = async (id: number) => {
 };
 
 export const fetchAvailableBlogs = async () => {
-  const supabase = createClientComponentClient();
-
   // Fetch distinct authors/blogs
   const { data, error } = await supabase
     .from("blogs")

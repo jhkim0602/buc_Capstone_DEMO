@@ -1,8 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabase as supabaseClient } from "@/lib/supabase/client";
+const supabase = supabaseClient as any;
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // 블로그 데이터 타입 정의
 export interface Blog {
@@ -43,13 +44,20 @@ export async function fetchAvailableBlogs() {
 
     // 중복 제거하면서 카테고리 정보 유지
     const companies = Array.from(
-      new Map((companyData || []).map((item) => [item.author, item]))
-    ).map(([author, item]) => ({
+      new Map((companyData || []).map((item: any) => [item.author, item])),
+    ).map(([author, item]: [string, any]) => ({
       author,
       blog_type: "company" as const,
       category: item.category,
     }));
 
+    const individuals = Array.from(
+      new Map((personalData || []).map((item: any) => [item.author, item])),
+    ).map(([author, item]: [string, any]) => ({
+      author,
+      blog_type: "personal" as const,
+      category: item.category,
+    }));
     // 기업 블로그를 사용자 접근성을 고려한 정렬 순서로 정렬
     const companySortOrder = [
       "토스",
@@ -96,6 +104,10 @@ export async function fetchAvailableBlogs() {
       return aIndex - bIndex;
     });
 
+    // 개인 블로그 정렬 (알파벳 순)
+    const sortedPersonals = individuals.sort((a: AuthorInfo, b: AuthorInfo) =>
+      a.author.localeCompare(b.author),
+    );
     return {
       companies: sortedCompanies,
       individuals: [],
@@ -140,7 +152,7 @@ export async function fetchBlogs({
   if (search && search.trim()) {
     const searchTerm = search.trim();
     query = query.or(
-      `title.ilike.%${searchTerm}%,author.ilike.%${searchTerm}%`
+      `title.ilike.%${searchTerm}%,author.ilike.%${searchTerm}%`,
     );
   }
 
@@ -178,7 +190,7 @@ export async function fetchBlogs({
 
 // 블로그 생성
 export async function createBlog(
-  blogData: Omit<Blog, "id" | "created_at" | "updated_at">
+  blogData: Omit<Blog, "id" | "created_at" | "updated_at">,
 ) {
   const { data, error } = await supabase
     .from("blogs")
@@ -196,7 +208,7 @@ export async function createBlog(
 // 블로그 수정
 export async function updateBlog(
   id: number,
-  blogData: Partial<Omit<Blog, "id" | "created_at" | "updated_at">>
+  blogData: Partial<Omit<Blog, "id" | "created_at" | "updated_at">>,
 ) {
   const { data, error } = await supabase
     .from("blogs")

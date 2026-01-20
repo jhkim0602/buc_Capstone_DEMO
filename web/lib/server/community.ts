@@ -5,18 +5,32 @@ function serialize<T>(data: T): T {
   return JSON.parse(JSON.stringify(data));
 }
 
-export async function getPosts(category?: string) {
+export async function getPosts(category?: string, page = 1, limit = 15) {
   try {
-    const rawPosts = await prisma.posts.findMany({
-      where: category && category !== "all" ? { category } : {},
-      include: {
-        profiles: true, // author
-        _count: {
-          select: { comments: true },
+    const where = category && category !== "all" ? { category } : {};
+
+    // Pagination
+    const pageNum = Math.max(1, page);
+    const limitNum = Math.max(1, limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [totalCount, rawPosts] = await Promise.all([
+      prisma.posts.count({ where }),
+      prisma.posts.findMany({
+        where,
+        include: {
+          profiles: true, // author
+          _count: {
+            select: { comments: true },
+          },
         },
-      },
-      orderBy: { created_at: "desc" },
-    });
+        orderBy: { created_at: "desc" },
+        skip,
+        take: limitNum,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limitNum);
 
     const posts = rawPosts.map((post) => ({
       ...post,
@@ -26,10 +40,14 @@ export async function getPosts(category?: string) {
       _count: undefined,
     }));
 
-    return serialize(posts);
+    return {
+      posts: serialize(posts),
+      totalCount,
+      totalPages,
+    };
   } catch (error) {
     console.error("Error fetching posts:", error);
-    return [];
+    return { posts: [], totalCount: 0, totalPages: 0 };
   }
 }
 

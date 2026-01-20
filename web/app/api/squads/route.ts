@@ -26,11 +26,27 @@ export async function POST(request: Request) {
     if (missing.length > 0) {
       return NextResponse.json(
         { error: `Missing required fields: ${missing.join(", ")}` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const leaderId = user_id;
+
+    // Ensure Basic Profile Exists (Fix for foreign key constraint)
+    const profile = await prisma.profiles.findUnique({
+      where: { id: leaderId },
+    });
+
+    if (!profile) {
+      // Create a minimal profile if it doesn't exist
+      await prisma.profiles.create({
+        data: {
+          id: leaderId,
+          nickname: "User", // Default nickname
+          // other fields have defaults or are optional
+        },
+      });
+    }
 
     // Transaction: Create Squad + Add Leader
     const squad = await prisma.$transaction(async (tx) => {

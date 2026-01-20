@@ -27,3 +27,58 @@ export async function fetchRecentSquads(limit = 9) {
 
   return squads;
 }
+
+export async function fetchSquads({ page = 1, limit = 9 } = {}) {
+  const supabase = await createClient();
+
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  // 1. Get Count
+  const { count } = await supabase
+    .from("squads")
+    .select("*", { count: "exact", head: true });
+
+  // 2. Get Data
+  const { data: squads, error } = await supabase
+    .from("squads")
+    .select(
+      `
+      *,
+      leader:leader_id (
+        id, nickname, avatar_url, tier
+      )
+    `,
+    )
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("Failed to fetch squads:", error);
+    return { squads: [], totalCount: 0, totalPages: 0 };
+  }
+
+  // 3. Map Activity
+  const { fetchDevEvents } = await import("./dev-events");
+  const { events } = await fetchDevEvents();
+  const eventMap = new Map(events.map((e) => [e.id, e.title]));
+
+  const enhancedSquads =
+    (squads as any[])?.map((s) => ({
+      ...s,
+      // @ts-ignore
+      leader: s.leader,
+      activity: s.activity_id
+        ? {
+            id: s.activity_id,
+            title: eventMap.get(s.activity_id) || "알 수 없는 활동",
+          }
+        : null,
+    })) || [];
+
+  return {
+    squads: enhancedSquads,
+    totalCount: count || 0,
+    totalPages: Math.ceil((count || 0) / limit),
+  };
+}

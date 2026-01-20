@@ -1,8 +1,8 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase/client";
 import { Database } from "@/lib/database.types";
 
 export const uploadCommunityImage = async (file: File): Promise<string> => {
-  const supabase = createClientComponentClient<Database>();
+  // const supabase = createClientComponentClient<Database>(); // Use singleton
 
   const fileExt = file.name.split(".").pop();
   const fileName = `${Math.random()

@@ -10,6 +10,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { RecruitingSquadsWidget } from "@/components/features/community/recruiting-squads-widget";
 import { ClosingSoonWidget } from "@/components/features/career/closing-soon-widget";
 import { fetchRecentSquads } from "@/lib/server/squads";
+import { PaginationControl } from "@/components/ui/pagination-control";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,18 @@ export default async function ActivitiesPage({ searchParams }: PageProps) {
       ? resolvedSearchParams.search
       : undefined;
 
-  const { events } = await fetchDevEvents({ search, category, tags });
+  const page =
+    typeof resolvedSearchParams.page === "string"
+      ? parseInt(resolvedSearchParams.page)
+      : 1;
+
+  const { events, totalPages, totalCount } = await fetchDevEvents({
+    search,
+    category,
+    tags,
+    page,
+    limit: 12,
+  });
   const allTags = await getAllEventTags(category);
   const recentSquads = await fetchRecentSquads(5);
   const closingEvents = await fetchClosingSoonEvents();
@@ -51,6 +63,9 @@ export default async function ActivitiesPage({ searchParams }: PageProps) {
               <p className="text-muted-foreground text-lg">
                 해커톤, 컨퍼런스, 다양한 개발자 행사를 통해 커리어를
                 성장시키세요.
+                <span className="ml-2 text-sm bg-muted px-2 py-1 rounded-full">
+                  Total {totalCount}
+                </span>
               </p>
             </div>
 
@@ -80,6 +95,16 @@ export default async function ActivitiesPage({ searchParams }: PageProps) {
                 </div>
               ))}
             </div>
+            {/* Pagination */}
+            {events.length > 0 && (
+              <div className="mt-12">
+                <PaginationControl
+                  currentPage={page}
+                  totalPages={totalPages || 0}
+                />
+              </div>
+            )}
+
             {/* Empty State */}
             {events.length === 0 && (
               <div className="flex flex-col items-center justify-center py-32 text-center border rounded-2xl border-dashed">

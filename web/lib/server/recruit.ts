@@ -8,22 +8,30 @@ export async function fetchRecruitJobs({
   search,
   tags,
   sort = "latest",
+  page = 1,
+  limit = 12,
 }: {
   search?: string;
   tags?: string[];
   sort?: "latest" | "deadline" | "view";
-} = {}) {
+  page?: number;
+  limit?: number;
+} = {}): Promise<{
+  jobs: RecruitJob[];
+  totalCount: number;
+  totalPages: number;
+}> {
   try {
     const filePath = path.join(
       process.cwd(),
       "public",
       "data",
-      "recruit-jobs.json"
+      "recruit-jobs.json",
     );
 
     if (!fs.existsSync(filePath)) {
       console.warn("recruit-jobs.json not found");
-      return { jobs: [], totalCount: 0 };
+      return { jobs: [], totalCount: 0, totalPages: 0 };
     }
 
     const fileContents = fs.readFileSync(filePath, "utf8");
@@ -38,7 +46,7 @@ export async function fetchRecruitJobs({
         (job) =>
           job.title.toLowerCase().includes(searchTerm) ||
           job.company.toLowerCase().includes(searchTerm) ||
-          job.tags.some((tag) => tag.toLowerCase().includes(searchTerm))
+          job.tags.some((tag) => tag.toLowerCase().includes(searchTerm)),
       );
     }
 
@@ -46,7 +54,7 @@ export async function fetchRecruitJobs({
     if (tags && tags.length > 0) {
       const lowerTags = tags.map((t) => t.toLowerCase());
       filteredJobs = filteredJobs.filter((job) =>
-        job.tags.some((jobTag) => lowerTags.includes(jobTag.toLowerCase()))
+        job.tags.some((jobTag) => lowerTags.includes(jobTag.toLowerCase())),
       );
     }
 
@@ -73,13 +81,24 @@ export async function fetchRecruitJobs({
       );
     });
 
+    // Pagination
+    const pageNum = Math.max(1, page);
+    const limitNum = Math.max(1, limit);
+    const totalCount = filteredJobs.length;
+    const totalPages = Math.ceil(totalCount / limitNum);
+
+    const startIndex = (pageNum - 1) * limitNum;
+    const endIndex = startIndex + limitNum;
+    const paginatedJobs = filteredJobs.slice(startIndex, endIndex);
+
     return {
-      jobs: filteredJobs,
-      totalCount: filteredJobs.length,
+      jobs: paginatedJobs,
+      totalCount,
+      totalPages,
     };
   } catch (e) {
     console.error("Failed to load recruit jobs:", e);
-    return { jobs: [], totalCount: 0 };
+    return { jobs: [], totalCount: 0, totalPages: 0 };
   }
 }
 

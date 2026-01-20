@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase/client";
 import { Blog } from "@/lib/supabase";
 
 interface UseBlogDataParams {
@@ -18,7 +18,7 @@ export function useBlogData(params: UseBlogDataParams) {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const supabase = createClientComponentClient();
+  // const supabase = createClientComponentClient();
 
   useEffect(() => {
     const fetchBlogs = async () => {

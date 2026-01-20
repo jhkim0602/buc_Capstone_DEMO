@@ -3,14 +3,21 @@ import { Button } from "@/components/ui/button";
 import { getPosts } from "@/lib/server/community";
 import { PostListItem } from "@/components/features/community/post-list-item";
 import { PenSquare } from "lucide-react";
+import { PaginationControl } from "@/components/ui/pagination-control";
 
 interface BoardPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function BoardPage({ searchParams }: BoardPageProps) {
-  const { category = "all" } = await searchParams;
-  const posts = await getPosts(category);
+  const resolvedSearchParams = await searchParams;
+  const category = resolvedSearchParams.category || "all";
+  const page =
+    typeof resolvedSearchParams.page === "string"
+      ? parseInt(resolvedSearchParams.page)
+      : 1;
+
+  const { posts, totalPages, totalCount } = await getPosts(category, page, 10);
 
   const categories = [
     { id: "all", label: "전체" },
@@ -54,14 +61,22 @@ export default async function BoardPage({ searchParams }: BoardPageProps) {
       {/* Post List */}
       <div className="flex flex-col divide-y border-t border-b">
         {posts.length > 0 ? (
-          posts.map((post) => (
-            //@ts-ignore
-            <PostListItem
-              key={post.id}
-              post={post}
-              href={`/community/board/${post.id}`}
-            />
-          ))
+          <>
+            {posts.map((post) => (
+              //@ts-ignore
+              <PostListItem
+                key={post.id}
+                post={post}
+                href={`/community/board/${post.id}`}
+              />
+            ))}
+            <div className="py-8">
+              <PaginationControl
+                currentPage={page}
+                totalPages={totalPages || 0}
+              />
+            </div>
+          </>
         ) : (
           <div className="py-20 text-center text-muted-foreground bg-muted/30">
             <div className="flex flex-col items-center gap-2">
