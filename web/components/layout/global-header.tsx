@@ -12,6 +12,7 @@ import { useUrlFilters } from "@/hooks/use-url-filters";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { NotificationCenter } from "@/components/features/notification/notification-center";
 // 메뉴 구조 정의
 const MENUS = {
   insights: {
@@ -120,7 +121,6 @@ export function GlobalHeader() {
 
           <div className="flex items-center gap-3">
             {/* Tech Blog Specific Filters */}
-            {/* Tech Blog Specific Filters */}
             {isTechBlog && (
               <div className="flex items-center gap-2 mr-2">
                 <div className="hidden md:block">
@@ -132,6 +132,7 @@ export function GlobalHeader() {
               </div>
             )}
 
+            <NotificationCenter />
             <ThemeToggle />
             {!isFlutterWebView() && (
               <UserMenu onLoginClick={() => setIsAuthModalOpen(true)} />

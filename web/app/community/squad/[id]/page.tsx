@@ -22,6 +22,7 @@ import { fetchDevEventById } from "@/lib/server/dev-events";
 import ApplicationButton from "@/components/features/community/squad/application-button";
 import ApplicantManager from "@/components/features/community/squad/applicant-manager";
 import { SquadActions } from "@/components/features/community/squad-actions";
+import { CreateWorkspaceDialog } from "@/components/features/workspace/dialogs/create-workspace-dialog";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -234,6 +235,12 @@ export default async function SquadDetailPage({ params }: PageProps) {
                   <Button variant="outline" className="w-full">
                     모집글 수정하기
                   </Button>
+
+                  <CreateWorkspaceDialog fromSquadId={squad.id}>
+                    <Button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0">
+                      🚀 워크스페이스로 전환하기
+                    </Button>
+                  </CreateWorkspaceDialog>
 
                   {/* Management Actions */}
                   <SquadActions

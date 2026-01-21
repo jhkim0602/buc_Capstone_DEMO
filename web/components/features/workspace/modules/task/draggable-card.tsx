@@ -14,6 +14,7 @@ interface DraggableTaskCardProps {
 
   showDueDate: boolean;
   cardProperties?: string[];
+  onDelete?: () => void;
 }
 
 export function DraggableTaskCard({
@@ -24,21 +25,22 @@ export function DraggableTaskCard({
   showAssignee,
   showDueDate,
   showPriority,
-  cardProperties
+  cardProperties,
+  onDelete,
 }: DraggableTaskCardProps & { showPriority?: boolean }) {
   const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-      isDragging
-   } = useSortable({
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: task.id,
     data: {
-       type: 'Task',
-       task,
-    }
+      type: "Task",
+      task,
+    },
   });
 
   const style = {
@@ -47,27 +49,40 @@ export function DraggableTaskCard({
   };
 
   if (isDragging) {
-     return (
-        <div ref={setNodeRef} style={style} className="opacity-30">
-          <TaskCard task={task} customFields={customFields} showTags={showTags} showAssignee={showAssignee} showDueDate={showDueDate} showPriority={showPriority} cardProperties={cardProperties} />
-        </div>
-     );
+    return (
+      <div ref={setNodeRef} style={style} className="opacity-30">
+        <TaskCard
+          task={task}
+          customFields={customFields}
+          showTags={showTags}
+          showAssignee={showAssignee}
+          showDueDate={showDueDate}
+          showPriority={showPriority}
+          cardProperties={cardProperties}
+        />
+      </div>
+    );
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group/card touch-none">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative group/card touch-none"
+    >
       {/* Content Container - Click works here without triggering drag */}
       <div onClick={onClick} className="w-full h-full relative z-10">
         <TaskCard
-           task={task}
-           customFields={customFields}
-           showTags={showTags}
-           showAssignee={showAssignee}
-           showDueDate={showDueDate}
-           showPriority={showPriority}
-           cardProperties={cardProperties}
-           dragHandleProps={{...listeners, ...attributes}}
-           onEdit={onClick}
+          task={task}
+          customFields={customFields}
+          showTags={showTags}
+          showAssignee={showAssignee}
+          showDueDate={showDueDate}
+          showPriority={showPriority}
+          cardProperties={cardProperties}
+          dragHandleProps={{ ...listeners, ...attributes }}
+          onEdit={onClick}
+          onDelete={onDelete}
         />
       </div>
     </div>

@@ -5,6 +5,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
   schemas   = ["auth", "public"]
 }
 
@@ -487,6 +489,13 @@ model profiles {
   squad_applications squad_applications[]
   squad_members      squad_members[]
   squads             squads[]
+  
+  // Workspace & Notification Relations
+  workspace_members  workspace_members[]
+  workspace_invites  workspace_invites[]
+  workspace_docs     workspace_docs[]
+  kanban_tasks       kanban_tasks[]
+  notifications      notifications[]
 
   @@schema("public")
 }
@@ -521,9 +530,149 @@ model squad_members {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+
+// --- WORKSPACE SYSTEM ---
+
+model workspaces {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name        String
+  description String?
+  icon_url    String?
+  
+  // Optional link to origin squad
+  from_squad_id String? @unique @db.Uuid
+  
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  members     workspace_members[]
+  invites     workspace_invites[]
+  
+  columns     kanban_columns[]
+  tags        kanban_tags[]
+  docs        workspace_docs[]
+
+  squad       squads?  @relation(fields: [from_squad_id], references: [id])
+
+  @@schema("public")
+}
+
+model workspace_members {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  workspace_id String   @db.Uuid
+  user_id      String   @db.Uuid
+  
+  role         String   @default("member") // owner, admin, member, viewer
+  joined_at    DateTime @default(now())
+
+  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  user         profiles   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([workspace_id, user_id])
+  @@schema("public")
+}
+
+model workspace_invites {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  workspace_id String   @db.Uuid
+  email        String
+  token        String   @unique
+  role         String   @default("member")
+  inviter_id   String   @db.Uuid
+  
+  expires_at   DateTime
+  created_at   DateTime @default(now())
+
+  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  inviter      profiles   @relation(fields: [inviter_id], references: [id])
+
+  @@schema("public")
+}
+
+// --- FEATURES ---
+
+model kanban_columns {
+  id           String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  workspace_id String         @db.Uuid
+  title        String
+  category     String?        @default("todo")
+  order        Int
+  tasks        kanban_tasks[]
+
+  workspace    workspaces     @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model kanban_tags {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  workspace_id String   @db.Uuid
+  name         String
+  color        String
+  created_at   DateTime @default(now())
+
+  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  @@unique([workspace_id, name])
+  @@schema("public")
+}
+
+model kanban_tasks {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  column_id   String   @db.Uuid
+  title       String
+  description String?
+  assignee_id String?  @db.Uuid
+  priority    String?  @default("medium")
+  tags        String[]
+  order       Int
+  due_date    DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  column      kanban_columns @relation(fields: [column_id], references: [id], onDelete: Cascade)
+  assignee    profiles?      @relation(fields: [assignee_id], references: [id])
+
+  @@schema("public")
+}
+
+model workspace_docs {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  workspace_id String   @db.Uuid
+  title        String
+  content      String?
+  author_id    String   @db.Uuid
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  author       profiles   @relation(fields: [author_id], references: [id])
+
+  @@schema("public")
+}
+
+// --- GLOBAL NOTIFICATION SYSTEM ---
+
+model notifications {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id     String   @db.Uuid
+  type        String   // INVITE, SQUAD, COMMENT, SYSTEM
+  title       String
+  message     String
+  link        String?
+  is_read     Boolean  @default(false)
+  created_at  DateTime @default(now())
+
+  user        profiles @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model squads {
   id                 String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   leader_id          String?              @db.Uuid
+  workspace          workspaces?
   type               String
   title              String
   content            String

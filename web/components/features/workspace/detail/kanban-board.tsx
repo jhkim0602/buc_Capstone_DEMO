@@ -1,684 +1,680 @@
 "use client";
 
-import { useWorkspaceStore, Task, TaskStatus, CustomFieldConfig, ViewColumn } from "../store/mock-data";
-import { DndContext, DragOverlay, useDraggable, useDroppable, closestCorners, DragStartEvent, DragEndEvent, useSensors, useSensor, PointerSensor, KeyboardSensor, closestCenter } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy, horizontalListSortingStrategy, useSortable, sortableKeyboardCoordinates, arrayMove } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { KanbanColumn } from "../views/kanban/column";
-import { GroupBy } from "../views/kanban/column";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-
-import { TaskCard } from "../modules/task/card";
-import { TaskDetailModal } from "../modules/task/detail-modal";
-import { DraggablePropertySettings } from "../modules/view-settings/property-settings";
-import { ViewCreationWizard } from "../modules/view-settings/view-creation-wizard";
-import { ViewManagerModal } from "../modules/view-settings/view-manager-modal";
-import { useKanbanDrag } from "../views/kanban/hooks/use-kanban-drag";
+import useSWR, { useSWRConfig } from "swr";
+import { useWorkspaceStore, Task } from "../store/mock-data";
 import { useState, useMemo, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
-// AdvancedTaskModal import removed
-import { SmartTagPicker } from "../modules/tag/picker";
-import { TagManagerModal } from "../modules/tag/tag-manager-modal";
-import { PriorityManagerModal } from "../modules/priority/priority-manager-modal"; // Import New Modal
-import { Plus, MessageSquare, CheckSquare, MoreHorizontal, Pen, Trash, Users, KanbanSquare, Settings2, Layout, PlusCircle, List, Calendar as CalendarIcon, Tag as TagIcon, GripVertical, AlertTriangle, ChevronRight } from "lucide-react";
+import {
+  KanbanSquare,
+  Plus,
+  Settings2,
+  Trash,
+  Pen,
+  Calendar as CalendarIcon,
+  AlertTriangle,
+  Users,
+  Layout,
+  Tag as TagIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { TaskDetailModal } from "../modules/task/detail-modal";
+import { ViewCreationWizard } from "../modules/view-settings/view-creation-wizard";
+import { ViewManagerModal } from "../modules/view-settings/view-manager-modal";
+import { TagManagerModal } from "../modules/tag/tag-manager-modal";
+import { PriorityManagerModal } from "../modules/priority/priority-manager-modal";
+import { StatusManagerModal } from "../modules/status-manager-modal";
+import { NotebookTab } from "../modules/notebook-tab";
+
+import { KanbanView } from "../views/kanban/kanban-view";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { SlidersHorizontal, Eye, Filter } from "lucide-react";
+import { DraggablePropertySettings } from "../modules/view-settings/property-settings";
+import { cn } from "@/lib/utils";
+import { Eye } from "lucide-react";
 
 interface KanbanBoardProps {
   projectId: string;
   onNavigateToDoc?: (docId: string) => void;
 }
 
-// type GroupBy is imported from ../views/kanban/column
-
-// --- Helper Component for Property Settings ---
-
-// DraggablePropertySettings moved to ../modules/view-settings/property-settings
-
 export function KanbanBoard({ projectId, onNavigateToDoc }: KanbanBoardProps) {
-  const { tasks, projects, createTask, updateTaskStatus, updateTask, addColumnToView, renameColumnInView, deleteColumnFromView, updateColumnInView, moveColumnInView, tags, priorities, reorderPriorities, reorderTags, updateViewCardProperties, updateView, deleteView, activeTaskId, setActiveTaskId } = useWorkspaceStore();
-  const project = projects.find(p => p.id === projectId);
+  const {
+    createTask,
+    updateTaskStatus,
+    updateTask,
+    addColumnToView,
+    renameColumnInView,
+    deleteColumnFromView,
+    updateColumnInView,
+    moveColumnInView,
+    tags,
+    priorities,
+    reorderPriorities,
+    reorderTags,
+    updateViewCardProperties,
+    updateView,
+    deleteView,
+    activeTaskId,
+    setActiveTaskId,
+    projects,
+    tasks: storeTasks,
+    syncProjectData,
+  } = useWorkspaceStore();
+
+  const { data: boardData, isLoading } = useSWR(
+    `/api/workspaces/${projectId}/board`,
+    async (url) => {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch board data");
+      return res.json();
+    },
+  );
+
+  const { mutate } = useSWRConfig();
+
+  // --- Sync Logic ---
+  useEffect(() => {
+    if (boardData) {
+      syncProjectData(projectId, {
+        columns: boardData.columns,
+        tasks: boardData.tasks,
+        members: boardData.members,
+        views: boardData.views,
+        tags: boardData.tags,
+      });
+    }
+  }, [boardData, projectId, syncProjectData]);
+
+  useEffect(() => {
+    if (boardData?.tags) {
+      reorderTags(boardData.tags);
+    }
+  }, [boardData?.tags, reorderTags]);
+
+  const project = useMemo(
+    () => projects.find((p) => p.id === projectId) || null,
+    [projects, projectId],
+  );
+  const tasks = storeTasks.filter((t) => t.projectId === projectId);
+
+  // --- View State ---
+  const [activeViewId, setActiveViewId] = useState<string>("default");
+  const [viewType, setViewType] = useState<"kanban" | "table">("kanban");
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [viewToEdit, setViewToEdit] = useState<any>(null);
+  const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
+  const [isPriorityManagerOpen, setIsPriorityManagerOpen] = useState(false);
+  const [isStatusManagerOpen, setIsStatusManagerOpen] = useState(false);
 
   // View Settings State
   const [showTags, setShowTags] = useState(true);
   const [showAssignee, setShowAssignee] = useState(true);
   const [showDueDate, setShowDueDate] = useState(true);
   const [showPriority, setShowPriority] = useState(true);
-  const [filterTagIds, setFilterTagIds] = useState<string[]>([]);
-  const [isWizardOpen, setIsWizardOpen] = useState(false);
-  const [viewToEdit, setViewToEdit] = useState<any>(null); // Should be BoardView type
-  const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
-  const [isPriorityManagerOpen, setIsPriorityManagerOpen] = useState(false);
 
-  // useKanbanDrag hook replaces activeId, activeColumn, and handlers
-  // useKanbanDrag hook will be called after columns definition
-
-// useKanbanDrag hook replaces activeId, activeColumn, and handlers
-// useKanbanDrag hook will be called after columns definition
-
-  const [isAddingColumn, setIsAddingColumn] = useState(false);
-  const [newColumnTitle, setNewColumnTitle] = useState("");
-  const [newColumnCategory, setNewColumnCategory] = useState<'todo' | 'in-progress' | 'done'>('todo');
-
-
-  // Initialize activeViewId with the first view's ID
-  const [activeViewId, setActiveViewId] = useState<string>(
-     project?.views[0]?.id || ''
-  );
-
-  // Active View Logic
+  // Determine Active View
   const activeView = useMemo(() => {
-     if (!project) return null;
-     return project.views.find(v => v.id === activeViewId) || project.views[0];
+    if (!project) return null;
+    if (activeViewId === "default" && project.views.length > 0)
+      return project.views[0];
+    return project.views.find((v) => v.id === activeViewId) || project.views[0];
   }, [project, activeViewId]);
 
-  const groupBy = activeView?.groupBy || 'status';
+  // Determine Columns (Shared Logic)
+  const groupBy = activeView?.groupBy || "status";
 
-  // Helper Functions for Tab Visualization
-  const getViewColor = (type: string) => {
-     switch (type) {
-        case 'kanban': return 'bg-blue-500';
-        case 'list': return 'bg-green-500';
-        case 'calendar': return 'bg-orange-500';
-        default: return 'bg-gray-500';
-     }
-  };
-
-  const getViewIcon = (type: string) => {
-     switch (type) {
-        case 'kanban': return <KanbanSquare className="h-5 w-5 text-white" />;
-        case 'list': return <List className="h-5 w-5 text-white" />;
-        case 'calendar': return <CalendarIcon className="h-5 w-5 text-white" />;
-        default: return <Layout className="h-5 w-5 text-white" />;
-     }
-  };
-
-  // Derive Columns based on GroupBy state
   const columns = useMemo(() => {
     if (!project) return [];
-    if (groupBy === 'assignee') {
-       // 1. Generate columns for each member
-       const memberColumns = project.members.map(m => ({
-           id: m.id,
-           title: m.name,
-           statusId: m.name,
-           icon: m.avatar || 'U',
-           color: m.role === 'leader' ? 'violet' : 'blue'
-       }));
-
-       // 2. Add 'Unassigned' column
-       const unassignedColumn = {
-           id: 'unassigned',
-           title: 'Unassigned',
-           statusId: 'unassigned',
-           icon: '❓',
-           color: 'slate'
-       };
-       return [unassignedColumn, ...memberColumns];
-    } else if (groupBy === 'priority') {
-        const priorityColumns = priorities
-          .sort((a, b) => a.order - b.order)
-          .map(p => ({
-            id: p.id,
-            title: p.name, // Use priority name as title
-            statusId: p.id, // We use priority ID as the key for filtering
-            color: p.color.split(' ')[0].replace('bg-', '').replace('-100', ''), // Extract basic color name for column header
-            category: 'todo' as const // Dummy category for now
+    if (groupBy === "assignee") {
+      const memberColumns = project.members.map((m) => ({
+        id: m.id,
+        title: m.name,
+        statusId: m.name,
+        icon: m.avatar || "U",
+        color: m.role === "leader" ? "violet" : "blue",
+      }));
+      const unassignedColumn = {
+        id: "unassigned",
+        title: "Unassigned",
+        statusId: "unassigned",
+        icon: "❓",
+        color: "slate",
+      };
+      return [unassignedColumn, ...memberColumns];
+    } else if (groupBy === "priority") {
+      const priorityColumns = priorities
+        .sort((a, b) => a.order - b.order)
+        .map((p) => ({
+          id: p.id,
+          title: p.name,
+          statusId: p.id,
+          color: p.color.split(" ")[0].replace("bg-", "").replace("-100", ""),
+          category: "todo" as const,
         }));
-
-        // Add 'No Priority' column
-        const noPriorityColumn = {
-            id: 'no-priority',
-            title: 'No Priority',
-            statusId: 'no-priority',
-            color: 'slate',
-            category: 'todo' as const
-        };
-
-        return [noPriorityColumn, ...priorityColumns];
-    } else if (groupBy === 'tag') {
-        const tagColumns = tags.map(t => ({
-            id: t.id,
-            title: t.name,
-            statusId: t.id,
-            color: t.color.replace('bg-', '').replace('-100', '').replace('-500', ''),
-            category: 'todo' as const
-        }));
-
-        const noTagColumn = {
-            id: 'no-tag',
-            title: 'No Tag',
-            statusId: 'no-tag',
-            color: 'slate',
-            category: 'todo' as const
-        };
-
-        return [noTagColumn, ...tagColumns];
+      const noPriorityColumn = {
+        id: "no-priority",
+        title: "No Priority",
+        statusId: "no-priority",
+        color: "slate",
+        category: "todo" as const,
+      };
+      return [noPriorityColumn, ...priorityColumns];
+    } else if (groupBy === "tag") {
+      const tagColumns = tags.map((t) => ({
+        id: t.id,
+        title: t.name,
+        statusId: t.id,
+        color: t.color
+          .replace("bg-", "")
+          .replace("-100", "")
+          .replace("-500", ""),
+        category: "todo" as const,
+      }));
+      const noTagColumn = {
+        id: "no-tag",
+        title: "No Tag",
+        statusId: "no-tag",
+        color: "slate",
+        category: "todo" as const,
+      };
+      return [noTagColumn, ...tagColumns];
     } else {
-       // For status -> Use columns from the Active View (pre-populated by addView)
-       return activeView?.columns || [];
+      return (activeView?.columns || []).map((col: any, index: number) => {
+        // Assign default colors if missing
+        let color = col.color;
+        if (!color) {
+          if (col.category === "done") color = "Green";
+          else if (col.category === "in-progress") color = "Blue";
+          else if (
+            col.title.toLowerCase().includes("todo") ||
+            col.category === "todo"
+          )
+            color = "Gray";
+          else {
+            const colors = [
+              "Gray",
+              "Blue",
+              "Green",
+              "Orange",
+              "Red",
+              "Violet",
+              "Pink",
+              "Indigo",
+            ];
+            color = colors[index % colors.length];
+          }
+        }
+
+        return {
+          ...col,
+          color,
+          category: col.category || "todo", // Ensure category exists
+        };
+      });
     }
   }, [project, groupBy, activeView, priorities, tags]);
 
-  // Apply Filter and Sort based on view settings
-  const filteredAndSortedColumns = useMemo(() => {
-     let result = [...columns];
-
-     // Filter Empty Columns
-     if (activeView?.showEmptyGroups === false) {
-        result = result.filter(c => !['no-priority', 'no-tag', 'unassigned'].includes(c.id));
-     }
-
-     // Sort Columns
-     if (activeView?.columnOrder && activeView.columnOrder.length > 0) {
-         const orderMap = new Map(activeView.columnOrder.map((id, index) => [id, index]));
-         result.sort((a, b) => {
-             const indexA = orderMap.has(a.id) ? orderMap.get(a.id)! : 999;
-             const indexB = orderMap.has(b.id) ? orderMap.get(b.id)! : 999;
-             return indexA - indexB;
-         });
-     }
-
-     return result;
+  const displayColumns = useMemo(() => {
+    let result = [...columns];
+    if (activeView?.showEmptyGroups === false) {
+      result = result.filter(
+        (c) => !["no-priority", "no-tag", "unassigned"].includes(c.id),
+      );
+    }
+    if (activeView?.columnOrder && activeView.columnOrder.length > 0) {
+      const orderMap = new Map(
+        activeView.columnOrder.map((id: string, index: number) => [id, index]),
+      );
+      result.sort((a, b) => {
+        const indexA = orderMap.has(a.id) ? orderMap.get(a.id)! : 999;
+        const indexB = orderMap.has(b.id) ? orderMap.get(b.id)! : 999;
+        return indexA - indexB;
+      });
+    }
+    return result;
   }, [columns, activeView?.showEmptyGroups, activeView?.columnOrder]);
 
-  const displayColumns = filteredAndSortedColumns;
+  // --- Handlers ---
 
-  // Update columnIds to use displayColumns
-  const columnIds = useMemo(() => displayColumns.map(c => c.id), [displayColumns]);
-
-  // Filter Tasks
-  const projectTasks = tasks.filter(t => {
-     if (t.projectId !== projectId) return false;
-     // Apply Tag Filter
-     if (filterTagIds.length > 0) {
-        if (!t.tags || t.tags.length === 0) return false;
-        // Match ANY selected tag (OR logic) - or change to AND if preferred
-        const hasTag = t.tags.some(tagId => filterTagIds.includes(tagId));
-        if (!hasTag) return false;
-     }
-     return true;
-  });
-
-  // Handlers moved to useKanbanDrag
-  const {
-     activeId,
-     activeColumn,
-     sensors,
-     handleDragStart,
-     handleDragEnd,
-     handleDragOver
-  } = useKanbanDrag({
-     columns: displayColumns,
-     groupBy,
-     activeViewId: activeView?.id || '',
-     projectId,
-     updateTaskStatus,
-     updateTask,
-     moveColumnInView,
-     reorderTask: useWorkspaceStore(state => state.reorderTask), // Select it directly if possible or destructure above
-     priorities,
-     tags,
-     reorderPriorities,
-     reorderTags,
-     tasks,
-     updateView
-  });
-
-  const handleAddColumn = () => {
-    if (!newColumnTitle.trim() || !activeView) {
-       setIsAddingColumn(false);
-       return;
+  const handleCreateColumn = async (title: string, category: string) => {
+    try {
+      await fetch(`/api/workspaces/${projectId}/board/columns`, {
+        method: "POST",
+        body: JSON.stringify({ title, category }),
+      });
+      mutate(`/api/workspaces/${projectId}/board`);
+    } catch (e) {
+      console.error("Failed to create column", e);
     }
-    // Default: Status ID = Title converted to slug.
-    // In a real app, we might check for status existence or create a new Status entity separately.
-    addColumnToView(projectId, activeView.id, newColumnTitle, newColumnCategory);
-    setNewColumnTitle("");
-    setIsAddingColumn(false);
-    // Reset category to todo for next time
-    setNewColumnCategory('todo');
+  };
+
+  const handleUpdateColumn = async (columnId: string, updates: any) => {
+    try {
+      await fetch(`/api/workspaces/${projectId}/board/columns/${columnId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      mutate(`/api/workspaces/${projectId}/board`);
+    } catch (e) {
+      console.error("Failed to update column", e);
+    }
+  };
+
+  const handleDeleteColumn = async (columnId: string) => {
+    if (
+      !confirm(
+        "이 섹션을 삭제하시겠습니까? 포함된 모든 태스크가 함께 삭제됩니다.",
+      )
+    )
+      return;
+    try {
+      const res = await fetch(
+        `/api/workspaces/${projectId}/board/columns/${columnId}`,
+        { method: "DELETE" },
+      );
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      mutate(`/api/workspaces/${projectId}/board`);
+    } catch (e: any) {
+      console.error("Failed to delete column", e);
+      alert(`섹션 삭제 실패: ${e.message}`);
+    }
+  };
+
+  const handleCreateTask = async (taskProps: any) => {
+    try {
+      let targetColumnId =
+        taskProps.columnId || taskProps.status || taskProps.statusId;
+      const isUUID = (str: string) => /^[0-9a-f]{8}-/.test(str);
+      if (!targetColumnId || !isUUID(targetColumnId)) {
+        const fallbackCol = boardData?.columns?.find(
+          (c: any) =>
+            (c.category && c.category === targetColumnId) ||
+            c.title.toLowerCase().replace(/\s+/g, "-") === targetColumnId ||
+            c.category === "todo",
+        );
+        if (fallbackCol) targetColumnId = fallbackCol.id;
+      }
+      const payload = {
+        title: taskProps.title || "New Task",
+        columnId: targetColumnId,
+        assigneeId: taskProps.assigneeId,
+        priority: taskProps.priorityId,
+        tags: taskProps.tags,
+      };
+      if (!payload.columnId) {
+        alert("태스크를 생성할 섹션(컬럼)을 찾을 수 없습니다.");
+        return;
+      }
+      const res = await fetch(`/api/workspaces/${projectId}/board/tasks`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      mutate(`/api/workspaces/${projectId}/board`);
+    } catch (e: any) {
+      console.error("Failed to create task", e);
+      alert(`태스크 생성 실패: ${e.message}`);
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    if (!confirm("이 태스크를 삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch(
+        `/api/workspaces/${projectId}/board/tasks/${taskId}`,
+        { method: "DELETE" },
+      );
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      mutate(`/api/workspaces/${projectId}/board`);
+    } catch (e: any) {
+      console.error("Failed to delete task", e);
+      alert(`태스크 삭제 실패: ${e.message}`);
+    }
+  };
+
+  const handleUpdateTask = async (taskId: string, updates: Partial<Task>) => {
+    try {
+      await fetch(`/api/workspaces/${projectId}/board/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      mutate(`/api/workspaces/${projectId}/board`);
+    } catch (e) {
+      console.error("Failed to update task", e);
+    }
+  };
+
+  const handleMoveColumn = async (
+    viewId: string,
+    fromIndex: number,
+    toIndex: number,
+  ) => {
+    const reordered = [...displayColumns];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, moved);
+    const items = reordered.map((col, index) => ({ id: col.id, order: index }));
+    try {
+      await fetch(`/api/workspaces/${projectId}/board/reorder`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "column", items }),
+      });
+      mutate(`/api/workspaces/${projectId}/board`);
+    } catch (e) {
+      console.error("Failed to move column", e);
+    }
+  };
+
+  const handleReorderTask = async (
+    taskId: string,
+    newStatus: string,
+    newIndex: number,
+  ) => {
+    const targetColumn = displayColumns.find(
+      (col) =>
+        (groupBy === "status" &&
+          (col.id === newStatus ||
+            ("statusId" in col && col.statusId === newStatus) ||
+            col.title.toLowerCase().replace(/\s+/g, "-") === newStatus)) ||
+        col.id === newStatus,
+    );
+    const targetColumnId = targetColumn?.id || newStatus;
+    // Logic specific to reordering is complex to duplicate fully without projectTasks context
+    // But since we are at container level, we can use projectTasks!
+    const projectTasks = tasks; // Alias
+    const otherTasks = projectTasks.filter((t) => {
+      // Simplified Logic: Assuming Status Grouping for drag/drop
+      const isInTarget =
+        t.columnId === targetColumnId || t.status === newStatus;
+      return isInTarget && t.id !== taskId;
+    });
+    otherTasks.sort((a, b) => a.order - b.order);
+    otherTasks.splice(newIndex, 0, {
+      id: taskId,
+      columnId: targetColumnId,
+    } as any);
+    const items = otherTasks.map((t, index) => ({
+      id: t.id,
+      order: index,
+      columnId: targetColumnId,
+    }));
+
+    try {
+      await fetch(`/api/workspaces/${projectId}/board/reorder`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "task", items }),
+      });
+      mutate(`/api/workspaces/${projectId}/board`);
+    } catch (e) {
+      console.error("Failed to reorder task", e);
+    }
   };
 
   if (!project) return <div>Project not found</div>;
 
-
-
-
-
   return (
     <div className="h-full flex gap-4 overflow-hidden pr-2">
-       {/* Main Board Area */}
-       <div className="flex-1 flex flex-col h-full overflow-hidden bg-background rounded-2xl border shadow-sm relative z-10">
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b">
-             <div className="flex items-center gap-4">
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                  {/* Show View Name based on grouping */}
-                  {activeView?.name || (groupBy === 'status' ? '진행 상태 칸반보드' : groupBy === 'priority' ? '우선순위별 칸반보드' : groupBy === 'tag' ? '태그별 칸반보드' : '담당자별 칸반보드')}
-                  {(groupBy === 'assignee' || groupBy === 'priority' || groupBy === 'tag') && <span className="text-xs font-normal text-muted-foreground ml-2">(Auto-generated)</span>}
-                  <Badge variant="secondary" className="font-normal text-muted-foreground ml-2">{projectTasks.length}개</Badge>
-                </h2>
-                {projectTasks.length >= 450 && (
-                  <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 animate-pulse">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span className="text-sm font-medium">태스크 생성 제한(500개)에 근접했습니다 ({projectTasks.length}/500)</span>
-                  </div>
-                )}
-             </div>
-
-             <div className="flex items-center gap-2">
-                 {groupBy === 'status' && (
-                    <DropdownMenu>
-                       <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="sm" className="h-9 border-dashed">
-                             <Plus className="h-3.5 w-3.5 mr-1.5" />
-                             섹션 관리
-                          </Button>
-                       </DropdownMenuTrigger>
-                       <DropdownMenuContent align="end" className="w-[320px] p-0">
-                          <div className="p-4 space-y-5">
-                             <div className="flex items-center justify-between">
-                                <h4 className="font-semibold text-sm">섹션 관리</h4>
-                             </div>
-
-                             {/* Category Groups */}
-                             {['todo', 'in-progress', 'done'].map((cat) => {
-                                 const catColumns = activeView?.columns.filter((c: any) => (c.category || c.statusId || 'todo') === cat) || [];
-                                 const isAddingToThis = newColumnCategory === cat && isAddingColumn;
-
-                                 return (
-                                     <div key={cat} className="space-y-1">
-                                         {/* Category Header */}
-                                         <div className="flex items-center justify-between group">
-                                             <span className="text-xs font-medium text-muted-foreground pl-1">
-                                                {cat === 'todo' ? '할 일' : cat === 'in-progress' ? '진행 중' : '완료'}
-                                             </span>
-                                             <Button
-                                                variant="secondary"
-                                                size="sm"
-                                                className="h-6 w-6 p-0 shadow-sm hover:bg-primary hover:text-white transition-colors"
-                                                onClick={() => {
-                                                    setNewColumnCategory(cat as any);
-                                                    setIsAddingColumn(true);
-                                                }}
-                                             >
-                                                 <Plus className="h-3.5 w-3.5" />
-                                             </Button>
-                                         </div>
-
-                                         {/* Columns List */}
-                                         <div className="space-y-0.5">
-                                             {catColumns.map((col: any) => (
-                                                 <div key={col.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted/50 text-sm group/item">
-                                                     <div className="text-muted-foreground/50">
-                                                        <GripVertical className="h-3.5 w-3.5 opacity-0 group-hover/item:opacity-100 transition-opacity cursor-grab" />
-                                                     </div>
-                                                     <div className={cn(
-                                                        "w-2 h-2 rounded-full shrink-0",
-                                                        cat === 'todo' ? "bg-slate-500" : cat === 'in-progress' ? "bg-blue-500" : "bg-green-500"
-                                                     )} />
-                                                     <span className="flex-1 truncate">{col.title}</span>
-                                                     <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
-                                                 </div>
-                                             ))}
-                                         </div>
-
-                                         {/* Inline Add Input */}
-                                         {isAddingToThis && (
-                                            <div className="flex items-center gap-2 px-1 py-1">
-                                                <Input
-                                                    autoFocus
-                                                    value={newColumnTitle}
-                                                    onChange={(e) => setNewColumnTitle(e.target.value)}
-                                                    placeholder="섹션 이름..."
-                                                    className="h-7 text-sm"
-                                                    onKeyDown={(e) => {
-                                                        if(e.nativeEvent.isComposing) return;
-                                                        if(e.key === 'Enter') handleAddColumn();
-                                                        if(e.key === 'Escape') setIsAddingColumn(false);
-                                                    }}
-                                                />
-                                            </div>
-                                         )}
-                                     </div>
-                                 );
-                             })}
-                          </div>
-
-                          {/* Footer Info? Or keep clean. */}
-                       </DropdownMenuContent>
-                    </DropdownMenu>
-                 )}
-
-                {/* View Options Menu (Notion-style) */}
-                <Popover>
-                   <PopoverTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-                         <Settings2 className="h-4 w-4" />
-                      </Button>
-                   </PopoverTrigger>
-                   <PopoverContent align="end" className="w-64 p-2">
-                      <div className="space-y-4">
-                         {/* Properties Section */}
-                         <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground px-1 uppercase tracking-wider">
-                               <Eye className="h-3 w-3" /> 속성 / 순서
-                             </div>
-
-                             <DraggablePropertySettings
-                                properties={activeView?.cardProperties || ['priority', 'tags', 'title', 'assignee', 'dueDate']}
-                                visibility={{
-                                   'tags': showTags,
-                                   'assignee': showAssignee,
-                                   'dueDate': showDueDate,
-                                   'priority': showPriority
-                                }}
-                                onToggle={(prop) => {
-                                   if(prop === 'tags') setShowTags(!showTags);
-                                   if(prop === 'assignee') setShowAssignee(!showAssignee);
-                                   if(prop === 'dueDate') setShowDueDate(!showDueDate);
-                                   if(prop === 'priority') setShowPriority(!showPriority);
-                                }}
-                                onReorder={(newOrder) => {
-                                   if (activeView) {
-                                       updateViewCardProperties(activeView.id, newOrder);
-                                   }
-                                }}
-                             />
-                          </div>
-
-                         <Separator />
-
-                         {/* Filter Section */}
-                         {/* Removed Tag Filter Section */}
-                         <div className="px-1 space-y-1">
-                             <Button size="sm" variant="ghost" className="w-full justify-start h-8 px-2 text-muted-foreground hover:text-foreground"
-                                onClick={() => {
-                                   setIsTagManagerOpen(true);
-                                }}
-                             >
-                                <TagIcon className="h-3 w-3 mr-2" /> 태그 관리
-                             </Button>
-                             <Button size="sm" variant="ghost" className="w-full justify-start h-8 px-2 text-muted-foreground hover:text-foreground"
-                                onClick={() => {
-                                   setIsPriorityManagerOpen(true);
-                                }}
-                             >
-                                <SlidersHorizontal className="h-3 w-3 mr-2" /> 우선순위 관리
-                             </Button>
-                         </div>
-                      </div>
-                   </PopoverContent>
-                </Popover>
-             </div>
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-background rounded-2xl border shadow-sm relative z-10">
+        {/* Header with Tabs */}
+        <div className="flex items-center justify-between px-6 py-3 border-b bg-muted/10">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <KanbanSquare className="h-4 w-4 text-muted-foreground" />
+              <h2 className="text-sm font-semibold flex items-center gap-2">
+                {activeView?.name || "메인 보드"}
+                <Badge
+                  variant="secondary"
+                  className="font-normal text-[10px] h-5 px-1.5"
+                >
+                  {tasks.length}
+                </Badge>
+              </h2>
+            </div>
+            {tasks.length >= 450 && (
+              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 animate-pulse text-[10px]">
+                <AlertTriangle className="h-3 w-3" />
+                <span>Limit: {tasks.length}/500</span>
+              </div>
+            )}
           </div>
 
-          <DndContext onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd} collisionDetection={closestCorners} sensors={sensors}>
-            <div className="flex gap-4 h-full overflow-x-auto pb-4 items-start px-6 pt-6">
-               <SortableContext items={displayColumns.map(c => c.id)} strategy={horizontalListSortingStrategy}>
-                 {(displayColumns as any[]).map(col => {
-                   const colTasks = projectTasks.filter(t => {
-                     if (groupBy === 'status') {
-                        if ('statusId' in col) {
-                           return t.status === col.statusId;
+          <div className="flex items-center gap-2">
+            {/* View Settings Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 text-xs gap-1.5 text-muted-foreground hover:text-foreground"
+                >
+                  <Settings2 className="h-3.5 w-3.5" />
+                  보기 설정
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[280px] p-4">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      <Eye className="h-3 w-3" /> 속성 표시
+                    </div>
+                    <DraggablePropertySettings
+                      properties={
+                        activeView?.cardProperties || [
+                          "priority",
+                          "tags",
+                          "title",
+                          "assignee",
+                          "dueDate",
+                        ]
+                      }
+                      visibility={{
+                        tags: showTags,
+                        assignee: showAssignee,
+                        dueDate: showDueDate,
+                        priority: showPriority,
+                      }}
+                      onToggle={(prop) => {
+                        if (prop === "tags") setShowTags(!showTags);
+                        if (prop === "assignee") setShowAssignee(!showAssignee);
+                        if (prop === "dueDate") setShowDueDate(!showDueDate);
+                        if (prop === "priority") setShowPriority(!showPriority);
+                      }}
+                      onReorder={(newOrder) => {
+                        if (activeView) {
+                          updateViewCardProperties(activeView.id, newOrder);
                         }
-                        return t.status === col.id;
-                     }
-                     // For assignee view, filter tasks by assignee name matching column.title
-                     // For 'unassigned', we check if !task.assignee
-                     if (groupBy === 'assignee') {
-                        if (col.id === 'unassigned') return !t.assignee;
-                        return t.assignee === col.title;
-                     }
-
-                     if (groupBy === 'priority') {
-                        if (col.id === 'no-priority') return !t.priorityId;
-                        // Match task.priorityId with the column's statusId (which stores the priority ID)
-                        return t.priorityId === ('statusId' in col ? col.statusId : col.id);
-                     }
-
-                     if (groupBy === 'tag') {
-                        if (col.id === 'no-tag') return !t.tags || t.tags.length === 0;
-                        // For simplicity in Kanban, we grouping by the FIRST tag.
-                        // Real-world tag kanban is complex due to 1:N relationship.
-                        return t.tags && t.tags[0] === ('statusId' in col ? col.statusId : col.id);
-                     }
-
-                     return false; // Fallback
-                   });
-
-                   return (
-                     <KanbanColumn
-                       key={col.id}
-                       id={col.id}
-                       column={col} // Pass full column object for overlay
-                       title={col.title}
-                       color={('color' in col) ? col.color : undefined}
-                       tasks={colTasks}
-                       customFields={project.customFields || []}
-                       groupBy={groupBy}
-                       icon={('avatar' in col) ? col.avatar as string : undefined}
-                       onTaskClick={setActiveTaskId}
-                       onCreateTask={() => {
-                           const defaultProps: any = { projectId, title: 'New Task', customFieldValues: [] };
-                           if (groupBy === 'status') {
-                              defaultProps.status = ('statusId' in col) ? col.statusId : col.id;
-                           } else if (groupBy === 'assignee') {
-                             defaultProps.status = 'todo'; // Default status for assignee view
-                             if (col.id !== 'unassigned') defaultProps.assignee = col.title;
-                           } else if (groupBy === 'priority') {
-                             defaultProps.status = 'todo'; // Default status for priority view
-                             if (col.id !== 'no-priority') defaultProps.priorityId = ('statusId' in col ? col.statusId : col.id);
-                           } else if (groupBy === 'tag') {
-                             defaultProps.status = 'todo';
-                             if (col.id !== 'no-tag') defaultProps.tags = [('statusId' in col ? col.statusId : col.id)];
-                           }
-                           const newTaskId = createTask(defaultProps);
-                           if (newTaskId) {
-                               setActiveTaskId(newTaskId);
-                           }
-                       }}
-                       onRename={(newTitle: string) => activeView ? renameColumnInView(activeView.id, col.id, newTitle) : null}
-                       onUpdate={(updates: any) => activeView ? updateColumnInView(activeView.id, col.id, updates) : null}
-                       onDelete={() => activeView ? deleteColumnFromView(activeView.id, col.id) : null}
-                       viewSettings={{ showTags, showAssignee, showDueDate, showPriority, cardProperties: activeView?.cardProperties }}
-                       category={('category' in col) ? (col as any).category : undefined}
-                     />
-                   );
-                 })}
-               </SortableContext>
-
-
-            </div>
-
-            <DragOverlay>
-               {activeId ? (
-                  <TaskCard
-                    task={tasks.find(t => t.id === activeId)!}
-                    customFields={project.customFields || []}
-                     isOverlay
-                     showTags={showTags}
-                     showAssignee={showAssignee}
-
-                      showDueDate={showDueDate}
-                      showPriority={showPriority}
-                   />
-               ) : activeColumn ? (
-                  <KanbanColumn
-                     id={(activeColumn as any).id}
-                     column={activeColumn as any}
-                     title={(activeColumn as any).title}
-                     color={'color' in activeColumn ? (activeColumn as any).color : undefined}
-                     tasks={projectTasks.filter(t => {
-                       const col = activeColumn as any;
-                       if (groupBy === 'status') {
-                          if ('statusId' in col) return t.status === col.statusId;
-                          return t.status === col.id;
-                       }
-                        if (groupBy === 'assignee') {
-                           if (col.id === 'unassigned') return !t.assignee || t.assignee === 'unassigned';
-                           return t.assignee === col.title;
-                        }
-
-                         if (groupBy === 'priority') {
-                             if (col.id === 'no-priority') return !t.priorityId;
-                             return t.priorityId === ('statusId' in col ? col.statusId : col.id);
-                         }
-
-                         if (groupBy === 'tag') {
-                            if (col.id === 'no-tag') return !t.tags || t.tags.length === 0;
-                            return t.tags && t.tags[0] === ('statusId' in col ? col.statusId : col.id);
-                         }
-
-                        return false;
-                      })}
-                     customFields={project.customFields || []}
-                     groupBy={groupBy}
-                     icon={'avatar' in activeColumn ? (activeColumn as any).avatar as string : undefined}
-                     // Pass dummy handlers for overlay
-                     onTaskClick={() => {}}
-                     onCreateTask={() => {}}
-                     onRename={() => {}}
-                     onUpdate={() => {}}
-                     onDelete={() => {}}
-                     category={'category' in activeColumn ? (activeColumn as any).category : undefined}
-                     viewSettings={{ showTags, showAssignee, showDueDate, showPriority, cardProperties: activeView?.cardProperties }}
-                     isOverlay
-                     className="rotate-2 scale-105 shadow-2xl opacity-90 ring-1 ring-primary/20"
-                  />
-               ) : null}
-            </DragOverlay>
-          </DndContext>
-       </div>
-
-        {/* Right-Side Notebook Tabs */}
-        <div className="w-14 flex flex-col gap-4 pt-10">
-           {project?.views.map((view) => (
-               <div key={view.id} className="relative group">
-                   <NotebookTab
-                      label={view.name}
-                      active={activeViewId === view.id}
-                      onClick={() => setActiveViewId(view.id)}
-                      color={view.color ? `bg-${view.color}-500` : (view.groupBy === 'status' ? 'bg-green-500' : 'bg-blue-500')}
-                      icon={
-                          view.icon ? <span className="text-xl leading-none">{view.icon}</span> :
-                          view.groupBy === 'status' ? <KanbanSquare className="h-5 w-5 text-white" /> :
-                          view.groupBy === 'assignee' ? <Users className="h-5 w-5 text-white" /> :
-                          view.groupBy === 'tag' ? <TagIcon className="h-5 w-5 text-white" /> :
-                          <Layout className="h-5 w-5 text-white" />
-                       }
-                   />
-                   {/* Settings Menu Removed from here */ }
+                      }}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="space-y-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="w-full justify-start h-8 px-2 text-muted-foreground"
+                      onClick={() => setViewToEdit(activeView)}
+                    >
+                      <Pen className="mr-2 h-3 w-3" /> 이름 수정
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="w-full justify-start h-8 px-2 text-muted-foreground"
+                      onClick={() => setIsTagManagerOpen(true)}
+                    >
+                      <TagIcon className="mr-2 h-4 w-4" /> 태그 관리
+                    </Button>
+                  </div>
                 </div>
-            ))}
+              </PopoverContent>
+            </Popover>
 
-           {/* Add View Button (Max 6 limit) */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs gap-1.5 text-muted-foreground hover:text-foreground"
+              onClick={() => setIsStatusManagerOpen(true)}
+            >
+              <Layout className="h-3.5 w-3.5" />
+              섹션 관리
+            </Button>
 
-
-           {/* View Settings Button (Moved here) */}
-           {activeView && (
-               <DropdownMenu>
-                   <DropdownMenuTrigger asChild>
-                       <div> {/* Wrapper to avoid forwardRef issues with custom component */}
-                           <NotebookTab
-                               label="뷰 관리"
-                               active={false}
-                               onClick={() => {}} // Triggered by Dropdown
-                               color="bg-muted-foreground/10"
-                               icon={<Settings2 className="h-5 w-5 text-muted-foreground" />}
-                           />
-                       </div>
-                   </DropdownMenuTrigger>
-                   <DropdownMenuContent align="start" side="right" className="w-48 ml-2">
-                       <DropdownMenuLabel>
-                           현재 뷰: <span className="text-primary">{activeView.name}</span>
-                       </DropdownMenuLabel>
-                       <DropdownMenuSeparator />
-                       <DropdownMenuItem onClick={() => setViewToEdit(activeView)}>
-                           <Pen className="mr-2 h-4 w-4" />
-                           이름 및 색상 수정
-                       </DropdownMenuItem>
-                       {!activeView.isSystem && (
-                           <DropdownMenuItem
-                               className="text-red-600 focus:text-red-600"
-                               onClick={() => {
-                                   if (confirm("정말 이 뷰를 삭제하시겠습니까?")) {
-                                        deleteView(projectId, activeView.id);
-                                        const firstView = project.views.find(v => v.id !== activeView.id);
-                                        if (firstView) setActiveViewId(firstView.id);
-                                   }
-                               }}
-                           >
-                               <Trash className="mr-2 h-4 w-4" />
-                               뷰 삭제하기
-                           </DropdownMenuItem>
-                       )}
-                   </DropdownMenuContent>
-               </DropdownMenu>
-           )}
+            <Button
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => {
+                // Create task in first column
+                const firstCol = displayColumns[0];
+                handleCreateTask({
+                  title: "New Task",
+                  columnId: firstCol?.id,
+                });
+              }}
+            >
+              <Plus className="h-3.5 w-3.5 mr-1.5" /> 새로 만들기
+            </Button>
+          </div>
         </div>
 
-        <ViewCreationWizard
+        {/* View Content */}
+        <div className="flex-1 overflow-hidden relative">
+          <KanbanView
             projectId={projectId}
-            isOpen={isWizardOpen}
-            onClose={() => setIsWizardOpen(false)}
-            onCreated={(viewId) => {
-                setActiveViewId(viewId);
+            tasks={tasks}
+            activeView={activeView}
+            groupBy={groupBy}
+            displayColumns={displayColumns}
+            priorities={priorities}
+            tags={tags}
+            onUpdateTask={handleUpdateTask}
+            onMoveColumn={handleMoveColumn}
+            onReorderTask={handleReorderTask}
+            onUpdateView={updateView}
+            reorderPriorities={reorderPriorities}
+            reorderTags={reorderTags}
+            onCreateColumn={handleCreateColumn}
+            onDeleteColumn={handleDeleteColumn}
+            onTaskClick={setActiveTaskId}
+            onCreateTask={handleCreateTask}
+            onDeleteTask={handleDeleteTask}
+            viewSettings={{
+              showTags,
+              showAssignee,
+              showDueDate,
+              showPriority,
+              cardProperties: activeView?.cardProperties,
             }}
-        />
+          />
+        </div>
+      </div>
 
-        <ViewManagerModal
-            projectId={projectId}
-            isOpen={!!viewToEdit}
-            onClose={() => setViewToEdit(null)}
-            view={viewToEdit}
-        />
+      {/* Right-Side Notebook Tabs (Navigation) */}
+      <div className="w-14 flex flex-col gap-4 pt-10">
+        {project?.views.map((view) => (
+          <NotebookTab
+            key={view.id}
+            label={view.name}
+            active={activeViewId === view.id}
+            onClick={() => setActiveViewId(view.id)}
+            color={
+              view.color
+                ? `bg-${view.color}-500`
+                : view.groupBy === "status"
+                  ? "bg-green-500"
+                  : view.groupBy === "assignee"
+                    ? "bg-blue-500"
+                    : "bg-gray-500"
+            }
+            icon={
+              view.groupBy === "status" ? (
+                <KanbanSquare className="h-5 w-5 text-white" />
+              ) : view.groupBy === "assignee" ? (
+                <Users className="h-5 w-5 text-white" />
+              ) : view.groupBy === "tag" ? (
+                <TagIcon className="h-5 w-5 text-white" />
+              ) : (
+                <Layout className="h-5 w-5 text-white" />
+              )
+            }
+          />
+        ))}
+        {/* Simple Add View Button */}
+        <div
+          className="w-10 h-10 rounded-full bg-muted flex items-center justify-center cursor-pointer hover:bg-muted/80 ml-2"
+          onClick={() => setIsWizardOpen(true)}
+        >
+          <Plus className="h-5 w-5 text-muted-foreground" />
+        </div>
+      </div>
 
-        <TagManagerModal
-            isOpen={isTagManagerOpen}
-            onClose={() => setIsTagManagerOpen(false)}
+      {/* Modals */}
+      {activeTaskId && (
+        <TaskDetailModal
+          taskId={activeTaskId}
+          task={tasks.find((t) => t.id === activeTaskId)}
+          members={project.members}
+          detailedTags={tags} // Use system tags
+          availableTags={tags.map((t) => t.name)}
+          onClose={() => setActiveTaskId(null)}
+          onUpdate={handleUpdateTask}
+          onDelete={handleDeleteTask}
         />
-        <PriorityManagerModal
-            isOpen={isPriorityManagerOpen}
-            onClose={() => setIsPriorityManagerOpen(false)}
-        />
+      )}
+
+      <ViewCreationWizard
+        projectId={projectId}
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onCreated={(viewId) => setActiveViewId(viewId)}
+      />
+
+      <ViewManagerModal
+        projectId={projectId}
+        isOpen={!!viewToEdit}
+        onClose={() => setViewToEdit(null)}
+        view={viewToEdit}
+      />
+
+      <TagManagerModal
+        isOpen={isTagManagerOpen}
+        onClose={() => setIsTagManagerOpen(false)}
+        workspaceId={projectId}
+        tags={tags}
+        onTagsUpdate={() => mutate(`/api/workspaces/${projectId}/board`)}
+      />
+
+      <PriorityManagerModal
+        isOpen={isPriorityManagerOpen}
+        onClose={() => setIsPriorityManagerOpen(false)}
+      />
+
+      <StatusManagerModal
+        isOpen={isStatusManagerOpen}
+        onClose={() => setIsStatusManagerOpen(false)}
+        columns={displayColumns}
+        onAddColumn={addColumnToView}
+        onDeleteColumn={deleteColumnFromView}
+        onUpdateColumn={updateColumnInView}
+        onMoveColumn={moveColumnInView}
+        projectId={projectId}
+        activeViewId={activeView?.id || ""}
+      />
     </div>
   );
 }
-
-function NotebookTab({ label, active, onClick, color, icon }: { label: string, active: boolean, onClick: () => void, color: string, icon: React.ReactNode }) {
-   return (
-      <div
-         onClick={onClick}
-         className={cn(
-            "w-14 h-12 rounded-r-xl shadow-md flex items-center justify-center cursor-pointer transition-all relative group hover:w-16",
-            color,
-            active ? "w-16 translate-x-[-10px] z-20 shadow-lg" : "opacity-80 hover:opacity-100 z-0"
-         )}
-         title={label}
-      >
-         {icon}
-         {/* Connector to simulate paper tab */}
-         {active && (
-            <div className={cn("absolute left-0 top-0 bottom-0 w-4 -ml-2 rounded-l-md", color)} />
-         )}
-      </div>
-   );
-}
-
-

@@ -216,6 +216,109 @@ async function main() {
   }
   console.log(`스쿼드 ${squadsData.length}개 생성 완료`);
 
+  // 5. 워크스페이스 및 칸반 보드 데이터 생성
+  const workspaceName = "졸업작품 프로젝트";
+
+  // 워크스페이스 생성
+  const workspace = await prisma.workspaces.create({
+    data: {
+      name: workspaceName,
+      created_at: new Date(),
+    },
+  });
+  console.log("워크스페이스 생성:", workspaceName);
+
+  // 워크스페이스 멤버 추가
+  await prisma.workspace_members.create({
+    data: {
+      workspace_id: workspace.id,
+      user_id: userId,
+      role: "owner",
+    },
+  });
+  console.log("워크스페이스 멤버 추가 완료");
+
+  // 칸반 태그 생성 (DB Persistence 확인용)
+  const tagsData = [
+    { name: "Bug", color: "red" },
+    { name: "Feature", color: "blue" },
+    { name: "Enhancement", color: "purple" },
+  ];
+
+  for (const tag of tagsData) {
+    await prisma.kanban_tags.create({
+      data: {
+        workspace_id: workspace.id,
+        name: tag.name,
+        color: tag.color,
+      },
+    });
+  }
+  console.log("칸반 태그 생성 완료");
+
+  // 칸반 컬럼 생성
+  const columnsData = [
+    { title: "To Do", category: "todo", order: 0 },
+    { title: "In Progress", category: "in-progress", order: 1 },
+    { title: "Done", category: "done", order: 2 },
+  ];
+
+  const createdColumns = [];
+  for (const col of columnsData) {
+    const newCol = await prisma.kanban_columns.create({
+      data: {
+        workspace_id: workspace.id,
+        title: col.title,
+        category: col.category,
+        order: col.order,
+      },
+    });
+    createdColumns.push(newCol);
+  }
+  console.log("칸반 컬럼 생성 완료");
+
+  // 칸반 태스크 생성
+  const tasksData = [
+    {
+      title: "로그인 페이지 UI 구현",
+      description: "Shadcn UI를 사용하여 로그인 폼 디자인",
+      column_id: createdColumns[0].id, // To Do
+      order: 0,
+      priority: "high",
+      tags: ["Feature", "Frontend"],
+    },
+    {
+      title: "DB 스키마 설계",
+      description: "Prisma Schema 작성 및 마이그레이션",
+      column_id: createdColumns[1].id, // In Progress
+      order: 0,
+      priority: "critical",
+      tags: ["Backend"],
+    },
+    {
+      title: "기획서 작성",
+      description: "요구사항 정의서 및 화면 설계서",
+      column_id: createdColumns[2].id, // Done
+      order: 0,
+      priority: "medium",
+      tags: ["Enhancement"],
+    },
+  ];
+
+  for (const task of tasksData) {
+    await prisma.kanban_tasks.create({
+      data: {
+        column_id: task.column_id,
+        title: task.title,
+        description: task.description,
+        order: task.order,
+        priority: task.priority,
+        tags: task.tags,
+      },
+    });
+  }
+  console.log("칸반 태스크 생성 완료");
+
   console.log("모든 한국어 데이터 시딩 완료!");
 }
 

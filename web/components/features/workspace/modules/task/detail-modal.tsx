@@ -1,330 +1,448 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, User, Tag, CheckSquare, MessageSquare, Paperclip, Clock, Trash2, MoreHorizontal, X } from "lucide-react";
+import {
+  CalendarIcon,
+  User,
+  Tag,
+  Clock,
+  MessageSquare,
+  X,
+  CheckSquare,
+  Trash2,
+} from "lucide-react";
 import { useState, useEffect } from "react";
-import { useWorkspaceStore, Task, Tag as TagType } from "../../store/mock-data";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { SmartTagPicker } from "../tag/picker";
 
 interface TaskDetailModalProps {
-  taskId: string | null;
+  taskId: string;
+  task: any; // Using any for flexibility with real/mock data mismatch
+  members: any[];
+  availableTags?: string[];
+  detailedTags?: any[]; // For color lookup
   onClose: () => void;
+  onUpdate: (taskId: string, updates: any) => void;
+  onDelete?: (taskId: string) => void;
 }
 
-export function TaskDetailModal({ taskId, onClose }: TaskDetailModalProps) {
-  const { tasks, updateTask, tags, priorities, projects, addComment } = useWorkspaceStore();
-  const task = tasks.find(t => t.id === taskId);
-  const taskPriority = priorities.find(p => p.id === task?.priorityId);
+export function TaskDetailModal({
+  taskId,
+  task,
+  members = [],
+  availableTags = [],
+  detailedTags = [],
+  onClose,
+  onUpdate,
+  onDelete,
+}: TaskDetailModalProps) {
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
-  const [newComment, setNewComment] = useState("");
+  const [newTag, setNewTag] = useState("");
 
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setDescription(task.description || "");
+    }
+  }, [task]);
 
   if (!task) return null;
 
-  const project = projects.find(p => p.id === task.projectId);
-  const boardView = project?.views.find(v => v.type === 'kanban');
-  const currentStatus = boardView?.columns.find(c => c.statusId === task.status);
+  // Filter available tags to exclude already added ones
+  const filteredAvailableTags = availableTags.filter(
+    (t) =>
+      !task.tags?.includes(t) && t.toLowerCase().includes(newTag.toLowerCase()),
+  );
 
-  const members = project?.members || [];
+  const handleSelectTag = (tag: string) => {
+    const currentTags = task.tags || [];
+    if (!currentTags.includes(tag)) {
+      onUpdate(task.id, { tags: [...currentTags, tag] });
+    }
+  };
 
   const handleTitleBlur = () => {
     if (title !== task.title) {
-       updateTask(task.id, { title });
+      onUpdate(task.id, { title });
     }
   };
 
   const handleDescriptionBlur = () => {
-     if (description !== task.description) {
-        updateTask(task.id, { description });
-     }
+    if (description !== task.description) {
+      onUpdate(task.id, { description });
+    }
   };
+
+  const handleAddTag = () => {
+    if (!newTag.trim()) return;
+    const currentTags = task.tags || [];
+    if (!currentTags.includes(newTag.trim())) {
+      onUpdate(task.id, { tags: [...currentTags, newTag.trim()] });
+    }
+    setNewTag("");
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = task.tags || [];
+    onUpdate(task.id, {
+      tags: currentTags.filter((t: string) => t !== tagToRemove),
+    });
+  };
+
+  const priorities = [
+    {
+      id: "urgent",
+      name: "긴급",
+      color: "text-red-600 bg-red-50 border-red-200",
+    },
+    {
+      id: "high",
+      name: "높음",
+      color: "text-orange-600 bg-orange-50 border-orange-200",
+    },
+    {
+      id: "medium",
+      name: "중간",
+      color: "text-yellow-600 bg-yellow-50 border-yellow-200",
+    },
+    {
+      id: "low",
+      name: "낮음",
+      color: "text-green-600 bg-green-50 border-green-200",
+    },
+  ];
+
+  const currentPriority =
+    priorities.find((p) => p.id === (task.priorityId || task.priority)) ||
+    priorities.find((p) => p.id === "medium") ||
+    priorities[2];
 
   return (
     <Dialog open={!!taskId} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="fixed left-[50%] top-[50%] z-50 w-full translate-x-[-50%] translate-y-[-50%] border duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg max-w-3xl h-[85vh] p-0 gap-0 overflow-hidden flex flex-col bg-background shadow-lg">
-         <DialogHeader className="sr-only">
-            <DialogTitle>Task Details</DialogTitle>
-         </DialogHeader>
-         {/* Header / Cover Image Area (Optional) */}
-         <div className="h-14 border-b flex items-center justify-between px-4 bg-background/50">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-               <Badge variant="outline" className="font-normal bg-muted/50">{project?.title}</Badge>
-               <span>/</span>
-               <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-sm hover:bg-muted/50 transition-colors cursor-pointer">
-                  <div className={cn("w-2 h-2 rounded-full", currentStatus?.color || "bg-slate-400")} />
-                  <span>{currentStatus?.title}</span>
-               </div>
-            </div>
-            {/* <div className="flex items-center gap-1"> // Removed More Options Button </div> */}
-         </div>
+      <DialogContent className="max-w-3xl h-[85vh] p-0 flex flex-col overflow-hidden bg-background">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Task Details</DialogTitle>
+        </DialogHeader>
 
-         <div className="flex flex-1 overflow-hidden">
-            {/* Main Content */}
-            <ScrollArea className="flex-1 p-8">
-               <div className="max-w-2xl mx-auto space-y-8 pb-10">
+        {/* Header */}
+        <div className="h-14 border-b flex items-center justify-between px-6 bg-muted/20">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">
+              {task.columnId ? "Task" : "Task"}
+            </span>
+            <span className="text-muted-foreground/50">/</span>
+            <span className="capitalize">{task.status}</span>
+          </div>
+        </div>
 
-                  {/* Title Area */}
-                  <div>
-                     <input
-                        className="w-full text-3xl font-bold bg-transparent border-none focus:outline-none focus:ring-0 p-0 placeholder:text-muted-foreground/40"
-                        placeholder="태스크 제목을 입력하세요"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        onBlur={handleTitleBlur}
-                     />
-                  </div>
+        <div className="flex-1 overflow-hidden flex">
+          {/* Main Content */}
+          <ScrollArea className="flex-1">
+            <div className="p-8 max-w-2xl mx-auto space-y-8 pb-20">
+              {/* Title */}
+              <Input
+                className="text-3xl font-bold border-none shadow-none focus-visible:ring-0 p-0 h-auto rounded-none bg-transparent placeholder:text-muted-foreground/40 px-0"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onBlur={handleTitleBlur}
+                placeholder="Task Title"
+              />
 
-                  {/* Properties Grid (Notion Style) */}
-                  <div className="grid grid-cols-[100px_1fr] gap-y-3 text-sm items-center">
-
-                     {/* Assignee */}
-                     <div className="text-muted-foreground flex items-center gap-2">
-                        <User className="h-4 w-4" /> 담당자
-                     </div>
-                     <div className="flex items-center">
-                        <Popover>
-                           <PopoverTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-7 px-1.5 -ml-1.5 font-normal hover:bg-muted text-muted-foreground hover:text-foreground">
-                                 {task.assignee ? (
-                                    <div className="flex items-center gap-2">
-                                       <Avatar className="h-4 w-4">
-                                          <AvatarFallback className="text-[9px]">{task.assignee.charAt(0)}</AvatarFallback>
-                                       </Avatar>
-                                       {task.assignee}
-                                    </div>
-                                 ) : (
-                                    <span className="text-muted-foreground/50">비어 있음</span>
-                                 )}
-                              </Button>
-                           </PopoverTrigger>
-                           <PopoverContent className="w-[200px] p-0" align="start">
-                              <ScrollArea className="h-60">
-                                 {members.map(member => (
-                                    <div
-                                       key={member.id}
-                                       className="flex items-center gap-2 px-3 py-2 hover:bg-muted/50 cursor-pointer text-sm"
-                                       onClick={() => updateTask(task.id, { assignee: member.name })}
-                                    >
-                                       <Avatar className="h-5 w-5">
-                                          <AvatarFallback className="text-[10px]">{member.name.charAt(0)}</AvatarFallback>
-                                       </Avatar>
-                                       {member.name}
-                                    </div>
-                                 ))}
-                              </ScrollArea>
-                           </PopoverContent>
-                        </Popover>
-                     </div>
-
-                     {/* Due Date */}
-                     <div className="text-muted-foreground flex items-center gap-2">
-                        <CalendarIcon className="h-4 w-4" /> 마감일
-                     </div>
-                     <div>
-                        <Popover>
-                           <PopoverTrigger asChild>
-                              <Button variant="ghost" size="sm" className={cn(
-                                 "h-7 px-1.5 -ml-1.5 font-normal hover:bg-muted text-muted-foreground hover:text-foreground justify-start text-left font-normal",
-                                 !task.dueDate && "text-muted-foreground/50"
-                              )}>
-                                 {task.dueDate ? format(new Date(task.dueDate), "PPP") : "비어 있음"}
-                              </Button>
-                           </PopoverTrigger>
-                           <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                 mode="single"
-                                 selected={task.dueDate ? new Date(task.dueDate) : undefined}
-                                 onSelect={(date) => updateTask(task.id, { dueDate: date ? date.toISOString() : undefined })}
-                                 initialFocus
-                              />
-                           </PopoverContent>
-                        </Popover>
-                     </div>
-
-                     {/* Priority */}
-                     <div className="text-muted-foreground flex items-center gap-2">
-                        <Clock className="h-4 w-4" /> 우선순위
-                     </div>
-                     <div className="flex items-center">
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost" size="sm" className={cn(
-                                    "h-7 px-1.5 -ml-1.5 font-normal hover:bg-muted text-muted-foreground hover:text-foreground justify-start text-left",
-                                    !task.priorityId && "text-muted-foreground/50",
-                                    taskPriority && taskPriority.color
-                                )}>
-                                    {taskPriority ? taskPriority.name : "설정 안 함"}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[120px] p-1" align="start">
-                                <div className="space-y-1">
-                                    {priorities.map((p) => (
-                                        <div
-                                            key={p.id}
-                                            className={cn(
-                                                "px-2 py-1.5 text-xs rounded cursor-pointer hover:bg-muted font-medium",
-                                                task.priorityId === p.id && "bg-muted"
-                                            )}
-                                            onClick={() => updateTask(task.id, { priorityId: p.id })}
-                                        >
-                                           <Badge variant="outline" className={cn("font-normal border-0 px-1 py-0 mr-1.5", p.color)}>
-                                               {p.name}
-                                           </Badge>
-                                        </div>
-                                    ))}
-                                    <div
-                                        className="px-2 py-1.5 text-xs rounded cursor-pointer hover:bg-muted font-medium text-muted-foreground"
-                                        onClick={() => updateTask(task.id, { priorityId: undefined })}
-                                    >
-                                       설정 안 함
-                                    </div>
-                                </div>
-                            </PopoverContent>
-                        </Popover>
-                     </div>
-
-                     {/* Tags */}
-                     <div className="text-muted-foreground flex items-center gap-2">
-                        <Tag className="h-4 w-4" /> 태그
-                     </div>
-                     <div className="flex flex-wrap gap-1.5">
-                        {task.tags?.map(tagId => {
-                           const tag = tags.find(t => t.id === tagId);
-                           if (!tag) return null;
-                           const isLegacy = tag.color.includes('bg-');
-                           const bgClass = isLegacy ? tag.color.replace('500', '100') : `bg-${tag.color}-100`;
-                           const textClass = isLegacy ? tag.color.replace('bg-', 'text-').replace('500', '700') : `text-${tag.color}-700`;
-
-                           return (
-                              <Badge key={tag.id} variant="secondary" className={cn("font-normal px-1.5 h-6", bgClass, textClass)}>
-                                 {tag.name}
-                                 <X
-                                    className="h-3 w-3 ml-1 cursor-pointer opacity-50 hover:opacity-100"
-                                    onClick={() => useWorkspaceStore.getState().removeTagFromTask(task.id, tag.id)}
-                                 />
-                              </Badge>
-                           );
-                        })}
-                        <SmartTagPicker
-                           selectedTagIds={task.tags || []}
-                           onToggleTag={(tagId) => {
-                              const isActive = task.tags?.includes(tagId);
-                              if (isActive) {
-                                  useWorkspaceStore.getState().removeTagFromTask(task.id, tagId);
-                              } else {
-                                  useWorkspaceStore.getState().addTagToTask(task.id, tagId);
-                              }
-                           }}
-                           trigger={
-                              <Badge variant="outline" className="font-normal px-1.5 h-6 cursor-pointer hover:bg-muted border-dashed text-muted-foreground">
-                                 + 추가
-                              </Badge>
-                           }
-                        />
-                     </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Description */}
-                  <div className="space-y-4">
-                     <div className="font-semibold flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-muted-foreground" /> 설명
-                     </div>
-                     <Textarea
-                        placeholder="여기에 태스크에 대한 상세 설명을 작성하세요... (Markdown 지원 예정)"
-                        className="min-h-[150px] resize-none border-none focus-visible:ring-0 bg-muted/20 p-4 text-base leading-relaxed"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        onBlur={handleDescriptionBlur}
-                     />
-                  </div>
-
-
-
-                   <Separator />
-
-                   {/* Comments */}
-                   <div className="space-y-4">
-                      <div className="font-semibold flex items-center gap-2">
-                         <MessageSquare className="h-4 w-4 text-muted-foreground" /> 댓글 ({task.comments.length})
-                      </div>
-                      <div className="space-y-4">
-                         {task.comments.map(comment => (
-                            <div key={comment.id} className="flex gap-3">
-                               <Avatar className="h-8 w-8 mt-0.5">
-                                  <AvatarFallback className="text-[10px]">U</AvatarFallback>
-                               </Avatar>
-                               <div className="flex-1 space-y-1">
-                                  <div className="flex items-center gap-2">
-                                     <span className="text-xs font-semibold">User</span>
-                                     <span className="text-[10px] text-muted-foreground">{format(new Date(comment.createdAt), "MM월 dd일 HH:mm")}</span>
-                                  </div>
-                                  <div className="text-sm bg-muted/30 p-3 rounded-lg border">
-                                     {comment.content}
-                                  </div>
-                               </div>
-                            </div>
-                         ))}
-                         <div className="flex gap-3 mt-4">
-                            <Avatar className="h-8 w-8 mt-0.5">
-                               <AvatarFallback className="text-[10px]">U</AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 space-y-2">
-                               <Textarea
-                                  placeholder="댓글을 입력하세요... (Command + Enter로 전송)"
-                                  value={newComment}
-                                  onChange={(e) => setNewComment(e.target.value)}
-                                  onKeyDown={(e) => {
-                                     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && newComment.trim()) {
-                                        addComment(task.id, newComment);
-                                        setNewComment("");
-                                     }
-                                  }}
-                                  className="min-h-[80px] text-sm resize-none bg-muted/10"
-                               />
-                               <Button
-                                  size="sm"
-                                  onClick={() => {
-                                     if (newComment.trim()) {
-                                        addComment(task.id, newComment);
-                                        setNewComment("");
-                                     }
-                                  }}
-                                  disabled={!newComment.trim()}
-                               >
-                                  댓글 작성
-                               </Button>
-                            </div>
-                         </div>
-                      </div>
-                   </div>
-
-
-
+              {/* Properties */}
+              <div className="grid grid-cols-[100px_1fr] gap-y-4 text-sm items-center">
+                {/* Assignee */}
+                <div className="text-muted-foreground flex items-center gap-2">
+                  <User className="h-4 w-4" /> 담당자
                 </div>
-             </ScrollArea>
+                <div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2 -ml-2 justify-start font-normal"
+                      >
+                        {task.assignee ? (
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-5 w-5">
+                              <AvatarFallback className="text-[9px]">
+                                {task.assignee.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            {task.assignee}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground/50">
+                            할당되지 않음
+                          </span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0" align="start">
+                      <ScrollArea className="h-60">
+                        {members.map((m: any) => (
+                          <div
+                            key={m.id}
+                            className="flex items-center gap-2 px-3 py-2 hover:bg-muted/50 cursor-pointer text-sm"
+                            onClick={() =>
+                              onUpdate(task.id, { assigneeId: m.id })
+                            }
+                          >
+                            <Avatar className="h-5 w-5">
+                              <AvatarFallback className="text-[10px]">
+                                {m.name?.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            {m.name || "Unknown"}
+                          </div>
+                        ))}
+                      </ScrollArea>
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-            {/* Sidebar (Optional - Activity Log, etc) - Hidden for now to simplify */}
+                {/* Priority */}
+                <div className="text-muted-foreground flex items-center gap-2">
+                  <Clock className="h-4 w-4" /> 우선순위
+                </div>
+                <div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "h-8 px-2 -ml-2 justify-start font-normal",
+                          currentPriority.color,
+                        )}
+                      >
+                        {currentPriority.name}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-32 p-1" align="start">
+                      {priorities.map((p) => (
+                        <div
+                          key={p.id}
+                          className={cn(
+                            "px-2 py-1.5 rounded cursor-pointer text-xs mb-0.5 last:mb-0 hover:opacity-80",
+                            p.color,
+                          )}
+                          onClick={() => onUpdate(task.id, { priority: p.id })}
+                        >
+                          {p.name}
+                        </div>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-         </div>
+                {/* Due Date */}
+                <div className="text-muted-foreground flex items-center gap-2">
+                  <CalendarIcon className="h-4 w-4" /> 마감일
+                </div>
+                <div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "h-8 px-2 -ml-2 justify-start font-normal",
+                          !task.dueDate && "text-muted-foreground/50",
+                        )}
+                      >
+                        {task.dueDate
+                          ? format(new Date(task.dueDate), "PPP")
+                          : "설정 안 함"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          task.dueDate ? new Date(task.dueDate) : undefined
+                        }
+                        onSelect={(date) =>
+                          onUpdate(task.id, { dueDate: date })
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-          <DialogFooter className="border-t p-2 px-4 bg-muted/20 flex justify-between items-center w-full sm:justify-between">
+                {/* Tags */}
+                <div className="text-muted-foreground flex items-center gap-2 self-start mt-1.5">
+                  <Tag className="h-4 w-4" /> 태그
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {task.tags?.map((tagName: string) => {
+                    // Lookup color
+                    const tagInfo = detailedTags.find(
+                      (t) => t.name === tagName,
+                    );
+                    let colorClass = "bg-slate-100 text-slate-700";
 
-             <Button size="sm" onClick={onClose}>저장</Button>
-          </DialogFooter>
+                    if (tagInfo) {
+                      // Use defined color helper or logic
+                      if (tagInfo.color?.includes("bg-")) {
+                        // legacy
+                        const parts = tagInfo.color.split("-");
+                        const base = parts[1] || "slate";
+                        colorClass = `bg-${base}-100 text-${base}-700`;
+                      } else {
+                        colorClass = `bg-${tagInfo.color}-100 text-${tagInfo.color}-700`;
+                      }
+                    } else {
+                      // Hash fallback
+                      const colors = [
+                        "bg-slate-100 text-slate-700",
+                        "bg-blue-100 text-blue-700",
+                        "bg-green-100 text-green-700",
+                        "bg-orange-100 text-orange-700",
+                        "bg-purple-100 text-purple-700",
+                        "bg-pink-100 text-pink-700",
+                      ];
+                      const colorIndex =
+                        (tagName.length + (tagName.charCodeAt(0) || 0)) %
+                        colors.length;
+                      colorClass = colors[colorIndex];
+                    }
+
+                    return (
+                      <Badge
+                        key={tagName}
+                        variant="secondary"
+                        className={cn("px-1.5 font-normal", colorClass)}
+                      >
+                        {tagName}
+                        <X
+                          className="h-3 w-3 ml-1 cursor-pointer opacity-50"
+                          onClick={() => handleRemoveTag(tagName)}
+                        />
+                      </Badge>
+                    );
+                  })}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="h-5 px-2 text-[10px] border-dashed text-muted-foreground font-normal hover:bg-muted"
+                      >
+                        + 추가
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-56 p-2" align="start">
+                      <div className="space-y-2">
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAddTag();
+                          }}
+                          className="flex gap-2"
+                        >
+                          <Input
+                            className="h-7 text-xs"
+                            placeholder="태그 검색/생성..."
+                            value={newTag}
+                            onChange={(e) => setNewTag(e.target.value)}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          />
+                          <Button
+                            type="submit"
+                            size="sm"
+                            className="h-7 w-7 p-0"
+                          >
+                            +
+                          </Button>
+                        </form>
+
+                        {/* Available Tags List */}
+                        <div className="max-h-40 overflow-y-auto space-y-1">
+                          {filteredAvailableTags.length > 0 && (
+                            <div className="text-[10px] text-muted-foreground px-1 mb-1">
+                              기존 태그 선택
+                            </div>
+                          )}
+                          {filteredAvailableTags.map((tag) => (
+                            <div
+                              key={tag}
+                              onClick={() => handleSelectTag(tag)}
+                              className="px-2 py-1.5 hover:bg-muted rounded cursor-pointer text-xs flex items-center"
+                            >
+                              <Tag className="w-3 h-3 mr-2 opacity-50" />
+                              {tag}
+                            </div>
+                          ))}
+                          {newTag &&
+                            !filteredAvailableTags.includes(newTag) &&
+                            !task.tags?.includes(newTag) && (
+                              <div className="text-[10px] text-muted-foreground px-1 mt-1">
+                                Enter를 눌러 "{newTag}" 생성
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Description */}
+              <div className="space-y-3">
+                <div className="text-sm font-medium flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" /> 설명
+                </div>
+                <Textarea
+                  className="min-h-[200px] resize-none border-none bg-muted/20 p-4 text-sm leading-relaxed focus-visible:ring-0"
+                  placeholder="태스크에 대한 상세 설명을 작성하세요."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  onBlur={handleDescriptionBlur}
+                />
+              </div>
+
+              {/* Delete Option */}
+              {onDelete && (
+                <div className="pt-10 flex justify-end">
+                  <Button
+                    variant="ghost"
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                    onClick={() => {
+                      if (confirm("정말로 이 태스크를 삭제하시겠습니까?")) {
+                        onDelete(task.id);
+                        onClose();
+                      }
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" /> 태스크 삭제
+                  </Button>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
