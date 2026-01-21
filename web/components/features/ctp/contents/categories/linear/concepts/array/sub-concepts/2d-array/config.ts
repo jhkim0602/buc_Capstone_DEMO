@@ -95,61 +95,62 @@ for i in range(4):
   ],
 
   initialCode: {
-    python: `# Python 2D Matrix 연습
-# 3x3 행렬 예시
+    python: `# 2D Array: 3x3 숫자 격자 (Simple Grid)
+# 1부터 9까지의 숫자가 담긴 2차원 배열입니다.
 grid = [
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 9]
 ]
 
-# 1. 2번째 행, 3번째 열 값 출력 (6)
-# 인덱스는 0부터 시작하므로 [1][2] 입니다.
-print(grid[1][2])
+# 1. 특정 위치 값 확인 (Access)
+# 2행 3열의 값은? (인덱스는 0부터 시작하니 1, 2)
+print(f"값: {grid[1][2]}")
 
-# 2. 값 변경
-grid[1][1] = 99
+# 2. 모든 값 10씩 증가시키기 (Update)
+rows = len(grid)
+cols = len(grid[0])
 
-# 3. 전체 출력 (행 단위로)
-for row in grid:
-    print(row)`,
+for r in range(rows):
+    for c in range(cols):
+        grid[r][c] += 10
+        
+# 3. '5'가 어디 있는지 찾기 (Search)
+target = 15 # 5 + 10이 되었으므로
+for r in range(rows):
+    for c in range(cols):
+        if grid[r][c] == target:
+            print(f"찾았다!: {r}행 {c}열")`,
   },
 
   guide: [
     {
-      title: "기본 조작",
+      title: "이미지 조작 (Matrix Ops)",
       items: [
         {
-          label: "초기화 (N x M)",
-          code: "grid = [[0]*M for _ in range(N)]",
-          description: "M개의 0이 들어있는 행을 N번 반복해서 만듭니다. (리스트 컴프리헨션)",
-          tags: ["Init", "Pattern"],
+          label: "픽셀 접근 (Access)",
+          code: "val = image[2][2]",
+          description: "행(Row)과 열(Column) 인덱스로 픽셀 데이터에 접근합니다. (0-based Indexing)",
+          tags: ["Coordinates"],
           isEditable: true
         },
         {
-          label: "값 접근",
-          code: "val = grid[r][c]",
-          description: "r행 c열의 값에 접근합니다. (y, x) 순서임에 주의하세요!",
-          tags: ["Access"],
+          label: "전체 순회 (Traversal)",
+          code: "for r in ... for c in ...",
+          description: "이중 반복문을 사용하여 이미지의 모든 픽셀을 처리합니다. 시간 복잡도는 O(N*M)입니다.",
+          tags: ["O(N^2)", "Filter"],
           isEditable: true
         }
       ]
     },
     {
-      title: "방향 탐색 (Delta Search)",
+      title: "알고리즘 패턴",
       items: [
         {
-          label: "방향 벡터 정의",
-          code: "dr = [-1, 1, 0, 0]\ndc = [0, 0, -1, 1]",
-          description: "상, 하, 좌, 우 순서로 이동량을 미리 정의해둡니다.",
-          tags: ["Delta", "BFS/DFS"],
-          isEditable: true
-        },
-        {
-          label: "범위 체크",
-          code: "if 0 <= nr < N and 0 <= nc < M:",
-          description: "이동하려는 좌표(nr, nc)가 지도를 벗어나는지 반드시 확인해야 합니다.",
-          tags: ["Check", "Safety"],
+          label: "행 우선 순회 (Row-Major)",
+          code: "image[r][c]",
+          description: "가로(행) 방향으로 순회하는 것이 CPU 캐시 효율성(Locality) 측면에서 유리합니다.",
+          tags: ["Optimization"],
           isEditable: true
         }
       ]

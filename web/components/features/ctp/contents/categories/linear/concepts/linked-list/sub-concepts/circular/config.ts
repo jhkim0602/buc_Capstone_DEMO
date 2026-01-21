@@ -80,27 +80,35 @@ for _ in range(10):
   ],
 
   initialCode: {
-    python: `# Python Circular Linked List
+    python: `# Circular Linked List: 라운드 로빈 스케줄러 (Scheduler)
+# 프로세스들에게 CPU 시간을 공평하게 분배하는 알고리즘 시뮬레이션입니다.
+# Process ID: 100 -> 101 -> 102 -> 100 (Loop)
+
 class Node:
-    def __init__(self, val):
+    def __init__(self, val=0, next=None):
         self.val = val
-        self.next = None
+        self.next = next
 
-head = Node(1)
-tail = Node(2)
+# 1. 프로세스 큐 준비
+p1 = Node(100)
+p2 = Node(101)
+p3 = Node(102)
 
-head.next = tail
-tail.next = head  # *핵심: 원형 연결*
+# 2. 원형 연결 (Circular Link)
+p1.next = p2
+p2.next = p3
+p3.next = p1 # Tail Connects to Head
 
-# 안전한 순회 (한 바퀴만 돌기)
-print(f"Start: {head.val}")
-curr = head.next
+# 3. 스케줄링 시뮬레이션 (Simulation)
+# Time Quantum마다 다음 프로세스로 Context Switching 합니다.
 
-while curr != head:
-    print(f"Visit: {curr.val}")
-    curr = curr.next
-
-print("Back to Head!")`,
+current_proc = p1
+for time_slice in range(1, 7):
+    # Execute Process
+    print(f"Time {time_slice}: Running PID {current_proc.val}")
+    
+    # Context Switch (Next Process)
+    current_proc = current_proc.next`,
   },
 
   guide: [

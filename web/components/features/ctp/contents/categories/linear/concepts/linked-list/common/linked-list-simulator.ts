@@ -278,27 +278,37 @@ export class LinkedListSimulator {
 
         // 6. Deep Link (head.next.next = ...) - A bit cheat for 'Simple' engine
         // Regex support for head.next = ... is done. head.next.next is rarer in basic tutorial but let's support it via specialized block if needed.
-        if (line.includes('.next.next')) {
-            // Simplified fallback
-            this.addStep(`다음의 다음 노드 연결을 변경합니다. (복잡한 구문은 단순히 시각화합니다)`, lineNum);
-            // In a real engine we'd traverse. For now, assuming the user follows the tutorial pattern
-            // if specific lines match the config tutorial...
-            if (line.includes('head.next.next = Node(30)')) {
-                // Hack for the specific 'singly' tutorial line
-                const hostId = this.scope['head'];
-                if (hostId) {
-                    const h = this.nodes.get(hostId);
-                    if (h && h.nextId) {
-                        const n2 = this.nodes.get(h.nextId);
-                        if (n2) {
-                            const newNodeId = `node-${++this.nodeCounter}`;
-                            this.nodes.set(newNodeId, { id: newNodeId, val: 30, nextId: null, prevId: null });
-                            n2.nextId = newNodeId;
-                            this.addStep("두 번째 노드 뒤에 새 노드(30)를 연결합니다.", lineNum);
+        // 6. Deep Link (head.next.next = Node(...))
+        // Regex: var.next.next = Node(val)
+        const deepNextCreateMatch = line.match(/^(\w+)\.next\.next\s*=\s*Node\((\w+)\)/);
+        if (deepNextCreateMatch) {
+            const hostVar = deepNextCreateMatch[1];
+            const val = deepNextCreateMatch[2];
+
+            const hostId = this.scope[hostVar];
+            if (hostId) {
+                const hNode = this.nodes.get(hostId);
+                // Traverse one step
+                if (hNode && hNode.nextId) {
+                    const nextNode = this.nodes.get(hNode.nextId);
+                    if (nextNode) {
+                        // Append to nextNode
+                        const newNodeId = `node-${++this.nodeCounter}`;
+                        this.nodes.set(newNodeId, { id: newNodeId, val, nextId: null, prevId: null });
+
+                        nextNode.nextId = newNodeId;
+                        if (this.type === 'doubly') {
+                            this.nodes.get(newNodeId)!.prevId = hNode.nextId;
                         }
+                        this.addStep(`${hostVar}.next.next에 새 노드(${val})를 연결합니다.`, lineNum);
+                    } else {
+                        this.addStep(`오류: ${hostVar}.next가 존재하지 않아 .next.next를 설정할 수 없습니다.`, lineNum);
                     }
+                } else {
+                    this.addStep(`오류: ${hostVar}.next가 존재하지 않아 .next.next를 설정할 수 없습니다.`, lineNum);
                 }
             }
+            return;
         }
 
         // 7. Generic Fallback

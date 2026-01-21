@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from 'react';
+import { CTPEmptyState } from '@/components/features/ctp/common/components/ctp-empty-state';
 import {
     ReactFlow,
     Background,
@@ -57,70 +58,65 @@ const ArrayNode = ({ data }: NodeProps<Node<ArrayNodeData>>) => {
 
 const nodeTypes = { arrayNode: ArrayNode };
 
+import { useCTPStore } from '@/components/features/ctp/store/use-ctp-store';
+
 export function ArrayGraphVisualizer({
     data,
     emptyMessage = "데이터가 없습니다."
 }: ArrayGraphVisualizerProps) {
+    const playState = useCTPStore(state => state.playState);
+    const isLoading = playState === 'playing';
 
     // Auto-Layout: Grid System
     // [Safety Check]
-    // When navigating between chapters, the store might still hold data from the previous module (e.g. object from Linked List) 
-    // before the useEffect reset triggers. We must ensure data is an array before processing.
     if (!data || !Array.isArray(data)) {
-        return <div className="flex h-full items-center justify-center text-muted-foreground">Initializing...</div>;
+        return <CTPEmptyState isLoading={true} message="초기화 중..." />;
     }
 
     const { nodes, edges } = useMemo(() => {
-        const flowNodes: Node[] = []; // Changed from 'nodes' to 'flowNodes'
-        const edges: Edge[] = []; // Although currently unused, kept for structural consistency
-
+        // ... (existing memo logic remains)
+        const flowNodes: Node[] = [];
+        const edges: Edge[] = [];
         // Ensure data is treated as array safely
         if (!Array.isArray(data)) return { nodes: [], edges: [] };
 
-        const spacingX = 80; // Defined spacingX
-        const spacingY = 80; // Defined spacingY
+        const spacingX = 80;
+        const spacingY = 80;
 
-        // Helper to add node
         const addNode = (item: VisualItem, r: number, c: number) => {
-            flowNodes.push({ // Pushing to flowNodes
+            flowNodes.push({
                 id: `cell-${r}-${c}`,
                 type: 'arrayNode',
                 position: { x: c * spacingX, y: r * spacingY },
                 data: {
                     value: item.value,
-                    label: item.label ?? (Array.isArray(data[0]) ? undefined : `${c}`), // Auto-index for 1D
+                    label: item.label ?? (Array.isArray(data[0]) ? undefined : `${c}`),
                     isHighlighted: item.isHighlighted,
                     isGhost: (item as any).isGhost,
                     row: r,
                     col: c
                 },
-                draggable: false, // Grid usually fixed
+                draggable: false,
             });
         };
 
         if (Array.isArray(data[0])) {
-            // 2D Array
             (data as VisualItem[][]).forEach((row, rIdx) => {
                 row.forEach((item, cIdx) => {
                     addNode(item, rIdx, cIdx);
                 });
             });
         } else {
-            // 1D Array
             (data as VisualItem[]).forEach((item, idx) => {
                 addNode(item, 0, idx);
             });
         }
 
-        return { nodes: flowNodes, edges }; // Returned flowNodes and edges
+        return { nodes: flowNodes, edges };
     }, [data]);
 
-    if (!data || (Array.isArray(data) && data.length === 0)) {
-        return (
-            <div className="flex items-center justify-center h-40 border-2 border-dashed rounded-lg bg-muted/20 text-muted-foreground">
-                {emptyMessage}
-            </div>
-        );
+    if (!data || data.length === 0) {
+        return <CTPEmptyState message={emptyMessage} isLoading={isLoading} />;
     }
 
     return (

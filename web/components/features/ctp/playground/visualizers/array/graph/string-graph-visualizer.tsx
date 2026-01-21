@@ -13,6 +13,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { cn } from "@/lib/utils";
+import { CTPEmptyState } from '@/components/features/ctp/common/components/ctp-empty-state';
 
 // Data Structure from Logic
 interface MemoryNode extends Record<string, unknown> {
@@ -70,6 +71,7 @@ export function StringGraphVisualizer({ data }: StringGraphVisualizerProps) {
 
     // Auto-Layout
     const { nodes, edges } = useMemo(() => {
+        // [Safety Guard]
         if (!data || !Array.isArray(data)) return { nodes: [], edges: [] };
 
         const flowNodes: Node[] = [];
@@ -127,11 +129,7 @@ export function StringGraphVisualizer({ data }: StringGraphVisualizerProps) {
     }, [data]);
 
     if (!data || data.length === 0) {
-        return (
-            <div className="flex items-center justify-center h-40 border-2 border-dashed rounded-lg bg-muted/20 text-muted-foreground">
-                Initializing...
-            </div>
-        );
+        return <CTPEmptyState message="코드를 실행하여 문자열 메모리 구조(Stack/Hea/Pool)를 확인하세요." />;
     }
 
     return (

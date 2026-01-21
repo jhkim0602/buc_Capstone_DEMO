@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Box, Grid, Type, Maximize, Cpu, BookOpen } from "lucide-react";
+import { ArrowRight, Box, Grid, Type, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
@@ -35,24 +35,6 @@ export function ArrayOverview() {
       pc_desc: "텍스트 데이터를 자르고(Slicing), 합치는 법을 익힙니다.",
       icon: Type,
       color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
-    },
-    {
-      level: 4,
-      id: "vector",
-      title: "동적 배열 (Vector)",
-      description: "크기가 고정된 배열의 한계를 넘어, 필요하면 자동으로 늘어나는 스마트한 배열입니다.",
-      pc_desc: "Python List가 내부적으로 어떻게 작동하는지 알아봅니다.",
-      icon: Maximize,
-      color: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
-    },
-    {
-      level: 5,
-      id: "memory-cache",
-      title: "메모리 구조와 캐시",
-      description: "하드웨어 수준의 최적화 원리인 Cache Locality를 배웁니다.",
-      pc_desc: "왜 배열이 연결 리스트보다 빠른지 '지역성' 원리로 증명합니다.",
-      icon: Cpu,
-      color: "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400"
     }
   ];
 
@@ -65,7 +47,7 @@ export function ArrayOverview() {
           Array Master Class
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          모든 자료구조의 어머니, 배열(Array)을 마스터하세요. <br/>
+          모든 자료구조의 어머니, 배열(Array)을 마스터하세요. <br />
           메모리 구조부터 캐시 최적화까지, 밑바닥 원리를 시각적으로 정복합니다.
         </p>
       </section>
@@ -94,17 +76,17 @@ export function ArrayOverview() {
           <Link key={item.id} href={`?view=${item.id}`} className="group block h-full">
             <Card className="h-full border-2 border-border/40 hover:border-primary/50 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
               <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity`}>
-                 <item.icon className="w-24 h-24" />
+                <item.icon className="w-24 h-24" />
               </div>
 
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start mb-2">
-                   <div className={`p-2.5 rounded-xl ${item.color}`}>
-                     <item.icon className="w-6 h-6" />
-                   </div>
-                   <Badge variant="outline" className="font-mono text-xs opacity-50">
-                     Lv.{item.level}
-                   </Badge>
+                  <div className={`p-2.5 rounded-xl ${item.color}`}>
+                    <item.icon className="w-6 h-6" />
+                  </div>
+                  <Badge variant="outline" className="font-mono text-xs opacity-50">
+                    Lv.{item.level}
+                  </Badge>
                 </div>
                 <CardTitle className="text-xl group-hover:text-primary transition-colors">
                   {item.title}
@@ -122,9 +104,9 @@ export function ArrayOverview() {
               </CardContent>
 
               <CardFooter className="pt-2">
-                 <div className="w-full text-right text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-all flex items-center justify-end gap-1 translate-x-2 group-hover:translate-x-0">
-                    Start Learning <ArrowRight className="w-4 h-4" />
-                 </div>
+                <div className="w-full text-right text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-all flex items-center justify-end gap-1 translate-x-2 group-hover:translate-x-0">
+                  Start Learning <ArrowRight className="w-4 h-4" />
+                </div>
               </CardFooter>
             </Card>
           </Link>

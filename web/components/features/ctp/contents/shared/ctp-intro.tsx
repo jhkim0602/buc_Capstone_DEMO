@@ -85,15 +85,7 @@ export function CTPIntro({ category, title, description, tags = [], story }: CTP
             </div>
           )}
 
-          {/* 4. Playground Connection */}
-          {story.playgroundLimit && (
-             <div className="flex items-start gap-3 pt-4 text-muted-foreground">
-                <ArrowDownCircle className="w-5 h-5 mt-1 animate-bounce text-primary" />
-                <p className="font-medium text-primary">
-                   {story.playgroundLimit}
-                </p>
-             </div>
-          )}
+
         </div>
       ) : (
         // Fallback for modules without story

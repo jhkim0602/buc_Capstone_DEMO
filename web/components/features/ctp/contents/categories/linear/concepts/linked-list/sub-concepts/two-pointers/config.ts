@@ -83,44 +83,43 @@ export const TWO_POINTERS_LL_CONFIG = {
   ],
 
   initialCode: {
-    python: `# Python Runner Technique (Middle Node)
+    python: `# Cycle Detection: Floyd's Algorithm
+# 리스트 내의 순환 반복(Cycle) 존재 여부를 탐지합니다.
+
+# 1. 선형 리스트 생성 (1~8)
 class Node:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
 
-# 1 -> 2 -> 3 -> 4 -> 5
 head = Node(1)
 curr = head
+for i in range(2, 9):
+    curr.next = Node(i)
+    curr = curr.next
 
-curr.next = Node(2)
-curr = curr.next
+# 2. 사이클 생성 (Force Cycle)
+# Tail(8)이 Node(4)를 가리키게 하여 루프를 만듭니다.
+# 1->2->3->[4->5->6->7->8]->4...
+tail = curr
+cycle_entry_node = head.next.next.next # Node(4)
+tail.next = cycle_entry_node
 
-curr.next = Node(3)
-curr = curr.next
-
-curr.next = Node(4)
-curr = curr.next
-
-curr.next = Node(5)
-curr = curr.next
-
-# Initialize Pointers
+# 3. 알고리즘 실행
 slow = head
 fast = head
+step = 0
 
-# Loop (Simulating Floyd's Runner)
-# Round 1
-slow = slow.next
-fast = fast.next.next
-
-# Round 2
-slow = slow.next
-fast = fast.next.next
-
-# Result: Slow is at Middle (3)!
-middle = slow
-print(f"Middle: {middle.val}")`,
+# Fast는 2칸, Slow는 1칸씩 이동
+while fast and fast.next:
+    slow = slow.next
+    fast = fast.next.next
+    step += 1
+    
+    # 포인터 일치 = 사이클 발견
+    if slow == fast:
+        print(f"Cycle Detected at Step {step} (Meet at Node {slow.val})")
+        break`,
   },
 
   guide: [

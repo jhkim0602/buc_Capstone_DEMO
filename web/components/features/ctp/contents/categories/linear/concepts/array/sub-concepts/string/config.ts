@@ -85,68 +85,67 @@ for i in range(100):
   ],
 
   initialCode: {
-    python: `# Python String Pool & Identity
-# Python은 짧은 영문자열 등을 자동으로 Pool에 캐싱합니다.
+    python: `# Python String Interning (Internal Mechanism)
+# Python의 불변 문자열(Immutable String) 처리 메커니즘을 시각화합니다.
 
-a = "Hello"
-b = "Hello"
+# 1. Compile-time Interning (String Pool)
+# 리터럴로 선언된 동일한 문자열은 하나의 메모리 주소를 공유합니다.
+str_a = "Computer"
+str_b = "Computer" # Points to existing "Computer"
 
-# is 연산자는 메모리 주소를 비교합니다.
-print(f"a is b: {a is b}") # True (같은 도장!)
+# 주소 비교 (Identity Check)
+# 결과: True (동일 레퍼런스)
+print(f"Pool Match: {str_a is str_b}") 
 
-# 런타임에 만들어진 문자열은 어떨까요?
-c = "".join(["He", "llo"])
-print(f"a is c: {a is c}") # False (모양은 같지만 새로 판 도장)
-print(f"a == c: {a == c}") # True (찍힌 글자는 같음)
+# 2. Runtime Allocation (Heap)
+# 연산으로 생성된 문자열은 내용이 같아도 새로운 주소를 할당받습니다.
+str_c = "".join(["Com", "puter"]) # New Object on Heap
 
-# 강제로 Pool에 등록하기 (Interning)
+# 결과: False (다른 레퍼런스)
+print(f"Heap Match: {str_a is str_c}")
+
+# 3. Explicit Interning (강제 등록)
 import sys
-c = sys.intern(c)
-print(f"After intern, a is c: {a is c}") # True`,
+str_c = sys.intern(str_c)
+# 결과: True (Pool Address로 오버라이드 됨)
+print(f"Intern Match: {str_a is str_c}")`,
   },
 
   guide: [
     {
-      title: "문자열 불변성 (Immutability)",
+      title: "메모리 참조 (Reference)",
       items: [
         {
-          label: "리터럴 할당",
-          code: "a = 'Hello'",
-          description: "Pool에 'Hello'가 있으면 재사용하고, 없으면 새로 만듭니다.",
-          tags: ["Pool"],
+          label: "리터럴 공유",
+          code: "str_a = 'Text'",
+          description: "Python 인터프리터는 최적화를 위해 문자열 리터럴을 내부 테이블(Interned Strings)에 캐싱합니다.",
+          tags: ["Optimization"],
           isEditable: true
         },
         {
-          label: "변수 복사",
-          code: "b = a",
-          description: "문자열 복사는 단순히 '참조(Reference)'만 복사하므로 매우 빠릅니다.",
-          tags: ["Reference"],
-          isEditable: true
-        },
-        {
-          label: "값 비교 (is)",
-          code: "print(a is b)",
-          description: "True면 두 변수가 완전히 같은 메모리 주소를 가리키는 것입니다.",
-          tags: ["Address"],
+          label: "주소 비교 (IS)",
+          code: "a is b",
+          description: "`==`는 값(Value)의 동등성을, `is`는 메모리 주소(Reference)의 동일성을 검사합니다.",
+          tags: ["Identity"],
           isEditable: true
         }
       ]
     },
     {
-      title: "새로운 객체 생성",
+      title: "동적 할당과 최적화",
       items: [
         {
-          label: "강제 생성 (Join)",
-          code: "c = ''.join(['He', 'llo'])",
-          description: "런타임 연산 결과는 Pool이 아닌 일반 Heap에 새로 생성됩니다.",
-          tags: ["Heap"],
+          label: "Heap 할당",
+          code: "''.join([...])",
+          description: "런타임에 계산된 문자열은 불변성을 보장하기 위해 매번 새로운 메모리 공간에 할당됩니다.",
+          tags: ["Allocation"],
           isEditable: true
         },
         {
-          label: "Interning (강제 등록)",
-          code: "import sys\nc = sys.intern(c)",
-          description: "Heap에 있는 문자열을 Pool로 옮겨서 중복을 제거합니다.",
-          tags: ["Optimization"],
+          label: "sys.intern()",
+          code: "sys.intern(s)",
+          description: "중복된 문자열 객체를 하나로 통합하여 메모리를 절약하고 검색 속도를 높이는 기법입니다.",
+          tags: ["Interning"],
           isEditable: true
         }
       ]

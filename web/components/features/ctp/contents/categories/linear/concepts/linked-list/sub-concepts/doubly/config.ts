@@ -71,36 +71,42 @@ n2.prev = n1  # 서로 연결`
   ],
 
   initialCode: {
-    python: `# Python Doubly Linked List
+    python: `# Doubly Linked List: 양방향 이동 (Bidirectional)
+# 앞뒤로 이동할 수 있는 리스트를 만듭니다.
+
 class Node:
-    def __init__(self, val=0):
+    def __init__(self, val=0, next=None, prev=None):
         self.val = val
-        self.next = None
-        self.prev = None
+        self.next = next
+        self.prev = prev
 
-head = Node(1)
-tail = Node(2)
+# 노드 3개 생성 (1 <-> 2 <-> 3)
+n1 = Node(1)
+n2 = Node(2)
+n3 = Node(3)
 
-# 연결하기
-head.next = tail
-tail.prev = head
+# 서로 연결해줍니다.
+n1.next = n2
+n2.prev = n1
 
-# 뒤로 가기 확인
-print(tail.prev.val) # 1
+n2.next = n3
+n3.prev = n2
 
-# 중간에 삽입 (1 <-> 1.5 <-> 2)
-new_node = Node(1.5)
-# 1. 새 노드 연결
-new_node.next = tail
-new_node.prev = head
-# 2. 기존 노드 연결 수정
-head.next = new_node
-tail.prev = new_node
+head = n1
 
+# 1. 앞으로 가기 (Next)
 curr = head
+print("--- 정방향 ---")
 while curr:
-    print(curr.val, end=" -> ")
-    curr = curr.next`,
+    print(curr.val)
+    if not curr.next: break # 마지막 노드에서 멈춤
+    curr = curr.next
+
+# 2. 뒤로 돌아오기 (Prev)
+print("--- 역방향 ---")
+while curr:
+    print(curr.val)
+    curr = curr.prev`,
   },
 
   guide: [
@@ -108,29 +114,36 @@ while curr:
       title: "기본 조작 (Birectional)",
       items: [
         {
-          label: "이전 노드 (Prev)",
-          code: "curr.prev",
-          description: "현재 노드의 바로 앞 노드를 가리킵니다. (Head는 prev가 None입니다)",
-          tags: ["Back", "O(1)"],
+          label: "이전 노드 접근",
+          code: "node.prev",
+          description: "현재 노드의 바로 앞 노드로 이동합니다. 단일 연결 리스트에는 없는 강력한 기능입니다.",
+          tags: ["Access", "O(1)"],
           isEditable: false
         },
         {
-          label: "양방향 연결",
-          code: "n1.next = n2\nn2.prev = n1",
-          description: "두 노드를 서로 연결해야 합니다. 하나라도 빠뜨리면 끊어진 다리가 됩니다.",
-          tags: ["Linking", "Pattern"],
+          label: "이중 연결 (Linking)",
+          code: "A.next = B\nB.prev = A",
+          description: "A와 B를 연결할 땐 반드시 '서로'를 가리켜야 합니다. 한쪽만 연결하면 외짝사랑(Broken Link)이 되어버립니다.",
+          tags: ["Pattern", "Must-Do"],
           isEditable: false
         }
       ]
     },
     {
-      title: "삽입/삭제 패턴",
+      title: "노드 삽입/삭제 패턴",
       items: [
         {
-          label: "중간 삽입",
-          code: "new_node.prev = prev\nnew_node.next = next\nprev.next = new_node\nnext.prev = new_node",
-          description: "총 4개의 포인터를 수정해야 합니다. 순서에 주의하세요!",
-          tags: ["Complexity"],
+          label: "중간 삽입 (Insertion)",
+          code: "new_node.next = cur\nnew_node.prev = cur.prev\ncur.prev.next = new_node\ncur.prev = new_node",
+          description: "순서가 매우 중요합니다! 기존 연결(cur.prev)을 끊기 전에, 새 노드를 먼저 안전하게 연결해야 합니다.",
+          tags: ["Critical", "Sequence"],
+          isEditable: true
+        },
+        {
+          label: "노드 삭제 (Deletion)",
+          code: "cur.prev.next = cur.next\ncur.next.prev = cur.prev",
+          description: "나(cur)를 건너뛰고, 내 앞 친구와 뒤 친구를 서로 손잡게 해주면 나는 리스트에서 빠지게 됩니다.",
+          tags: ["O(1)", "Bypass"],
           isEditable: true
         }
       ]

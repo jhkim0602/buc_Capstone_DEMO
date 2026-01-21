@@ -15,7 +15,8 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { cn } from "@/lib/utils";
-import { LinkedListNode } from '../legacy/linked-list-visualizer';
+import { LinkedListNode } from '@/components/features/ctp/common/types';
+import { CTPEmptyState } from '@/components/features/ctp/common/components/ctp-empty-state';
 
 interface LinkedListGraphVisualizerProps {
     data: LinkedListNode[];
@@ -72,15 +73,21 @@ const CustomNode = ({ data }: NodeProps<Node<LLNodeData>>) => {
 
 const nodeTypes = { custom: CustomNode };
 
+import { useCTPStore } from '@/components/features/ctp/store/use-ctp-store';
+
 export function LinkedListGraphVisualizer({
     data,
     type = "singly",
     emptyMessage = "리스트가 비어있습니다."
 }: LinkedListGraphVisualizerProps) {
+    const playState = useCTPStore(state => state.playState);
+    const isLoading = playState === 'playing';
 
     // Auto-Layout Logic: Convert LinkedListNode[] -> React Flow Nodes/Edges
     const { nodes, edges } = useMemo(() => {
-        if (!data || data.length === 0) return { nodes: [], edges: [] };
+        // [Safety Guard] Ensure data is strictly an array before proceeding
+        if (!data || !Array.isArray(data)) return { nodes: [], edges: [] };
+        if (data.length === 0) return { nodes: [], edges: [] };
 
         const flowNodes: Node[] = [];
         const flowEdges: Edge[] = [];
@@ -148,11 +155,7 @@ export function LinkedListGraphVisualizer({
     }, [data, type]);
 
     if (!data || data.length === 0) {
-        return (
-            <div className="flex items-center justify-center h-40 border-2 border-dashed rounded-lg bg-muted/20 text-muted-foreground">
-                {emptyMessage}
-            </div>
-        );
+        return <CTPEmptyState message={emptyMessage} isLoading={isLoading} />;
     }
 
     return (

@@ -91,31 +91,29 @@ class LinkedList:
   ],
 
   initialCode: {
-    python: `# Python Singly Linked List
+    python: `# Singly Linked List: 기차 놀이 (Basic)
+# 노드를 하나씩 연결하여 리스트를 만듭니다.
+
 class Node:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
 
-# 1. 노드 생성
+# 1. 기차 머리(Head) 만들기
 head = Node(10)
+print(f"머리 노드: {head.val}")
+
+# 2. 칸 추가하기 (Append)
+# 10 -> 20 -> 30
 head.next = Node(20)
 head.next.next = Node(30)
 
-# 2. 순회 (Traversal)
+# 3. 전체 순회 (Traversal)
+# 모든 칸을 방문하며 값을 확인합니다.
 curr = head
 while curr:
-    print(f"Node: {curr.val}")
-    curr = curr.next
-
-# 3. 중간 삽입 (20 뒤에 25 넣기)
-node20 = head.next
-new_node = Node(25)
-
-new_node.next = node20.next # 25 -> 30
-node20.next = new_node      # 20 -> 25
-
-# 결과: 10 -> 20 -> 25 -> 30`,
+    print(f"현재 칸: {curr.val}")
+    curr = curr.next`,
   },
 
   guide: [

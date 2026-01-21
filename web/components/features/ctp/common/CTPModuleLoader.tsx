@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Lightbulb } from "lucide-react";
+import { ChevronDown, ChevronUp, Lightbulb, ArrowDownCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { CTPModule } from "./types";
@@ -31,9 +31,7 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
     if (config.initialCode) {
       const code = config.initialCode.python || "";
       setCode(code);
-      // Run simulation with a small delay to ensure state reset is processed if async (rare but safe)
-      // or just call it directly.
-      runSimulation(code);
+      // Auto-run disabled as per user request
     }
 
     // Cleanup: Reset store when module unmounts/switches to prevent stale data in next module
@@ -61,9 +59,27 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
       {/* 3. Visualizer */}
       <section id="visualization" className="space-y-6">
         <h2 className="text-2xl font-bold tracking-tight">시각화 학습하기</h2>
-        <p className="text-muted-foreground mb-4">
-          아래 에디터에서 코드를 작성하고 실행하여 자료구조의 동작 원리를 확인해보세요!
-        </p>
+
+        {/* [NEW] Playground Limit (Story Connection) */}
+        {config.story?.playgroundLimit && (
+          <div className="flex items-start gap-3 py-2 text-muted-foreground">
+            <ArrowDownCircle className="w-5 h-5 mt-1 animate-bounce text-primary" />
+            <p className="font-medium text-primary">
+              {config.story.playgroundLimit}
+            </p>
+          </div>
+        )}
+        {config.story?.playgroundDescription ? (
+          <div className="bg-muted/30 border-l-4 border-primary/50 p-4 mb-6 rounded-r-lg">
+            <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+              {config.story.playgroundDescription}
+            </p>
+          </div>
+        ) : (
+          <p className="text-muted-foreground mb-4">
+            아래 에디터에서 코드를 작성하고 실행하여 자료구조의 동작 원리를 확인해보세요!
+          </p>
+        )}
 
         {/* [NEW] Interactive Guide Layout */}
         <div className="flex flex-col gap-6">

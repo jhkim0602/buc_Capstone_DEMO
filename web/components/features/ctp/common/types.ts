@@ -40,6 +40,7 @@ export interface CTPModuleConfig {
     definition: string;
     analogy: string;
     playgroundLimit?: string;
+    playgroundDescription?: string;
   };
 }
 
@@ -53,7 +54,22 @@ export type CTPModuleRegistry = Record<string, CTPModule>;
 
 export interface VisualItem {
   id: string | number;
-  value: string | number;
+  value: string | number | null;
   isHighlighted?: boolean;
   label?: string; // Optional label (e.g., index or variable name)
+  isGhost?: boolean; // For capacity visualization etc.
+}
+
+
+export type LinearItem = VisualItem;
+export type GridItem = VisualItem;
+
+export interface LinkedListNode {
+  id: string | number;
+  value: any;
+  nextId?: string | number | null;
+  prevId?: string | number | null;
+  label?: string; // e.g. "Head", "Curr"
+  isHighlighted?: boolean;
+  isNull?: boolean;
 }

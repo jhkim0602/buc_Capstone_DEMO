@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Link as LinkIcon, ArrowLeftRight, Repeat, MousePointer2, Cpu, BookOpen } from "lucide-react";
+import { ArrowRight, Link as LinkIcon, ArrowLeftRight, Repeat, MousePointer2, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 export function LinkedListOverview() {
@@ -42,15 +42,6 @@ export function LinkedListOverview() {
       pc_desc: "토끼와 거북이 알고리즘으로 사이클과 중간값을 한 번에 찾습니다.",
       icon: MousePointer2,
       color: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400"
-    },
-    {
-      level: 5,
-      id: "memory",
-      title: "Memory & Sentinel",
-      description: "구현을 10배 쉽게 만드는 더미(Dummy) 노드 패턴과 메모리 구조를 파헤칩니다.",
-      pc_desc: "왜 연결 리스트가 배열보다 캐시 효율이 떨어지는지 하드웨어 관점에서 봅니다.",
-      icon: Cpu,
-      color: "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400"
     }
   ];
 
@@ -63,8 +54,8 @@ export function LinkedListOverview() {
           Linked List Master Class
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            흩어진 데이터들을 하나로 잇습니다. <br/>
-            포인터(Pointer)의 흐름을 자유자재로 다루는 메모리 마술사가 되어보세요.
+          흩어진 데이터들을 하나로 잇습니다. <br />
+          포인터(Pointer)의 흐름을 자유자재로 다루는 메모리 마술사가 되어보세요.
         </p>
       </section>
 
@@ -92,17 +83,17 @@ export function LinkedListOverview() {
           <Link key={item.id} href={`?view=${item.id}`} className="group block h-full">
             <Card className="h-full border-2 border-border/40 hover:border-primary/50 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
               <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity`}>
-                 <item.icon className="w-24 h-24" />
+                <item.icon className="w-24 h-24" />
               </div>
 
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start mb-2">
-                   <div className={`p-2.5 rounded-xl ${item.color}`}>
-                     <item.icon className="w-6 h-6" />
-                   </div>
-                   <Badge variant="outline" className="font-mono text-xs opacity-50">
-                     Lv.{item.level}
-                   </Badge>
+                  <div className={`p-2.5 rounded-xl ${item.color}`}>
+                    <item.icon className="w-6 h-6" />
+                  </div>
+                  <Badge variant="outline" className="font-mono text-xs opacity-50">
+                    Lv.{item.level}
+                  </Badge>
                 </div>
                 <CardTitle className="text-xl group-hover:text-primary transition-colors">
                   {item.title}
@@ -120,9 +111,9 @@ export function LinkedListOverview() {
               </CardContent>
 
               <CardFooter className="pt-2">
-                 <div className="w-full text-right text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-all flex items-center justify-end gap-1 translate-x-2 group-hover:translate-x-0">
-                    Start Learning <ArrowRight className="w-4 h-4" />
-                 </div>
+                <div className="w-full text-right text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-all flex items-center justify-end gap-1 translate-x-2 group-hover:translate-x-0">
+                  Start Learning <ArrowRight className="w-4 h-4" />
+                </div>
               </CardFooter>
             </Card>
           </Link>

@@ -37,9 +37,7 @@ export const CTP_DATA: CTPCategory[] = [
         subConcepts: [
           { id: "1d-array", title: "1차원 배열 기초" },
           { id: "2d-array", title: "2차원 배열 & 행렬" },
-          { id: "string", title: "문자열 (Char Array)" },
-          { id: "vector", title: "동적 배열 (Vector/ArrayList)" },
-          { id: "memory-cache", title: "메모리 구조와 캐시" }
+          { id: "string", title: "문자열 (Char Array)" }
         ]
       },
       {

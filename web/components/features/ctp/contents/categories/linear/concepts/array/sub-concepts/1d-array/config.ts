@@ -11,7 +11,8 @@ export const ARRAY_1D_CONFIG = {
     problem: `만약 100명의 학생 점수를 저장해야 한다면 변수 100개를 만들어야 할까요?\nscore1, score2, ..., score100 처럼요?\n\n이러면 관리하기도 힘들고, 반복문으로 처리할 수도 없습니다.\n"점수들"을 하나의 이름으로 묶어서 관리할 수 있는 방법이 필요합니다.`,
     definition: "같은 타입의 데이터들을 메모리 상에 '연속적으로' 나열하고, 번호(Index)를 붙여 관리하는 자료구조",
     analogy: "마치 '계란판'과 같습니다. 칸마다 번호가 매겨져 있고, 한 줄로 나란히 이어져 있죠. 3번째 계란을 꺼내려면 '3번 칸'으로 바로 손을 뻗으면 됩니다.",
-    playgroundLimit: "아래 에디터에서 arr[2] = 99 처럼 특정 칸의 값을 직접 바꿔보세요!"
+    playgroundLimit: "아래 에디터에서 arr[2] = 99 처럼 특정 칸의 값을 직접 바꿔보세요!",
+    playgroundDescription: "100명의 학생 점수를 관리해야 한다고 상상해보세요. 변수 100개를 만드는 대신, 배열 하나로 관리하는 것이 훨씬 효율적입니다. 이 코드는 인덱스를 통해 즉시 학생의 점수를 찾고 수정하는 배열의 강력함을 보여줍니다."
   },
 
   features: [
@@ -79,64 +80,48 @@ arr.append(60)
   ],
 
   initialCode: {
-    python: `# Python 배열 기초 실습
-arr = [10, 20, 30]
+    python: `# 1D Array: 시험 점수 관리 (Basic)
+# 5명의 학생 점수를 담고 있는 배열입니다.
+scores = [90, 85, 78, 92, 88]
 
-# 1. 1번 칸의 값을 읽어보세요
-val = arr[1]
+# 1. 특정 학생 점수 확인 (Access)
+print(f"3번째 학생 점수: {scores[2]}")  # 0부터 시작하므로 2번 인덱스
 
-# 2. 1번 칸의 값을 99로 바꿔보세요
-arr[1] = 99
+# 2. 점수 수정 (Update)
+# 4번째 학생이 재시험을 봐서 점수가 올랐습니다.
+scores[3] = 100
 
-# 3. 새로운 값을 맨 뒤에 추가해보세요
-arr.append(40)
-
-# 4. 맨 뒤의 값을 삭제해보세요
-arr.pop()`,
+# 3. 전체 평균 구하기 (Iteration)
+total = 0
+for s in scores:
+    total += s
+    
+print(f"총점: {total}")`,
   },
 
   guide: [
     {
-      title: "기본 연산",
+      title: "버퍼 연산 (Buffer Ops)",
       items: [
         {
-          label: "읽기 (Access)",
-          code: "val = arr[0]",
-          description: "인덱스를 사용하여 값에 즉시 접근합니다. 가장 빠릅니다. O(1)",
-          tags: ["Access", "Fast"],
+          label: "패킷 접근 (Access)",
+          code: "pkt = buffer[0]",
+          description: "인덱스를 통해 대기열의 패킷에 즉시 접근합니다. 시간 복잡도: O(1)",
+          tags: ["O(1)", "Fetch"],
           isEditable: true
         },
         {
-          label: "쓰기 (Update)",
-          code: "arr[0] = 99",
-          description: "해당 인덱스의 값을 덮어씁니다. O(1)",
-          tags: ["Update"],
+          label: "처리 완료 (Clear)",
+          code: "buffer[0] = -1",
+          description: "데이터를 물리적으로 삭제하지 않고, 논리적 값(-1)으로 덮어써서 빈 공간임을 표시합니다.",
+          tags: ["Logical Delete"],
           isEditable: true
         },
         {
-          label: "초기화",
-          code: "arr = [1, 2, 3, 4, 5]",
-          description: "새로운 배열을 생성합니다.",
-          tags: ["Init"],
-          isEditable: true
-        }
-      ]
-    },
-    {
-      title: "Python List 특징",
-      items: [
-        {
-          label: "Append (맨 뒤 추가)",
-          code: "arr.append(10)",
-          description: "사실 파이썬 리스트는 동적 배열입니다. 맨 뒤 추가는 O(1)입니다.",
-          tags: ["Append"],
-          isEditable: true
-        },
-        {
-          label: "Pop (맨 뒤 삭제)",
-          code: "arr.pop()",
-          description: "맨 뒤의 요소를 제거하고 반환합니다. O(1)",
-          tags: ["Pop"],
+          label: "빈 공간 탐색",
+          code: "if buffer[i] == -1:",
+          description: "삽입할 공간을 찾기 위해 배열을 순회합니다. 최악의 경우 O(N)입니다.",
+          tags: ["Linear Search", "O(N)"],
           isEditable: true
         }
       ]
