@@ -226,7 +226,8 @@ export function useKanbanDrag({
         }
       }
     }
-    return;
+    // Remove the premature return here to allow task reordering logic to run
+    // return;
 
     // Handling Task Dragging (Final Sort)
     // Cross-column moves usually handled in DragOver now.

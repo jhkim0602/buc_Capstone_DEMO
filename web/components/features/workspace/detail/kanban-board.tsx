@@ -534,21 +534,6 @@ export function KanbanBoard({ projectId, onNavigateToDoc }: KanbanBoardProps) {
               <Layout className="h-3.5 w-3.5" />
               섹션 관리
             </Button>
-
-            <Button
-              size="sm"
-              className="h-8 text-xs"
-              onClick={() => {
-                // Create task in first column
-                const firstCol = displayColumns[0];
-                handleCreateTask({
-                  title: "New Task",
-                  columnId: firstCol?.id,
-                });
-              }}
-            >
-              <Plus className="h-3.5 w-3.5 mr-1.5" /> 새로 만들기
-            </Button>
           </div>
         </div>
 
@@ -573,6 +558,7 @@ export function KanbanBoard({ projectId, onNavigateToDoc }: KanbanBoardProps) {
             onTaskClick={setActiveTaskId}
             onCreateTask={handleCreateTask}
             onDeleteTask={handleDeleteTask}
+            onUpdateColumn={handleUpdateColumn}
             viewSettings={{
               showTags,
               showAssignee,
@@ -667,13 +653,11 @@ export function KanbanBoard({ projectId, onNavigateToDoc }: KanbanBoardProps) {
       <StatusManagerModal
         isOpen={isStatusManagerOpen}
         onClose={() => setIsStatusManagerOpen(false)}
-        columns={displayColumns}
-        onAddColumn={addColumnToView}
-        onDeleteColumn={deleteColumnFromView}
-        onUpdateColumn={updateColumnInView}
-        onMoveColumn={moveColumnInView}
+        activeView={activeView}
         projectId={projectId}
-        activeViewId={activeView?.id || ""}
+        onCreateColumn={handleCreateColumn}
+        onUpdateColumn={handleUpdateColumn}
+        onDeleteColumn={handleDeleteColumn}
       />
     </div>
   );

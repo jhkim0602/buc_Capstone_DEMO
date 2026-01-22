@@ -58,6 +58,7 @@ interface KanbanViewProps {
   onTaskClick: (taskId: string) => void;
   onCreateTask: (taskProps: any) => Promise<void>;
   onDeleteTask: (taskId: string) => Promise<void>;
+  onUpdateColumn: (columnId: string, updates: any) => Promise<void>;
   viewSettings: {
     showTags: boolean;
     showAssignee: boolean;
@@ -86,6 +87,7 @@ export function KanbanView({
   onTaskClick,
   onCreateTask,
   onDeleteTask,
+  onUpdateColumn,
   viewSettings = {
     showTags: true,
     showAssignee: true,
@@ -184,6 +186,10 @@ export function KanbanView({
                 viewSettings={viewSettings}
                 onTaskClick={onTaskClick}
                 onDeleteTask={onDeleteTask}
+                onRename={(newTitle) =>
+                  onUpdateColumn(col.id, { title: newTitle })
+                }
+                onDelete={() => onDeleteColumn(col.id)}
               />
             ))}
           </SortableContext>

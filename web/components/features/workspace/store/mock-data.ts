@@ -1193,8 +1193,10 @@ export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
                         ...v.columns,
                         {
                           id: `col-${Date.now()}`,
-                          title,
-                          statusId: title.toLowerCase().replace(/\s+/g, "-"),
+                          title: title || "New Column",
+                          statusId: (title || "new-column")
+                            .toLowerCase()
+                            .replace(/\s+/g, "-"),
                           color:
                             category === "todo"
                               ? "bg-gray-500"

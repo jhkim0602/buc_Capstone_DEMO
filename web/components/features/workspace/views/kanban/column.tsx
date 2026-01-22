@@ -151,8 +151,9 @@ export function KanbanColumn({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "w-80 h-full flex-shrink-0 flex flex-col group/column rounded-xl",
+        "w-80 h-full flex-shrink-0 flex flex-col group/column rounded-xl border shadow-sm transition-all",
         colorConfig.value,
+        colorConfig.border,
       )}
       {...attributes}
     >
@@ -164,10 +165,14 @@ export function KanbanColumn({
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <div
             className={cn(
-              "px-2 py-0.5 rounded text-xs font-semibold capitalize flex items-center gap-1.5",
-              category
-                ? categoryColors[category]
-                : "bg-slate-100 text-slate-700",
+              "px-2 py-0.5 rounded text-xs font-semibold capitalize flex items-center gap-1.5 border",
+              // Use the column's color config for the header badge background
+              // We make it slightly more opaque/bold than the column background if needed,
+              // or just match the column's theme.
+              // Here uses the same background logic but adds a border for definition.
+              colorConfig?.value
+                ? `${colorConfig.value} ${colorConfig.border} text-slate-700`
+                : "bg-slate-100 border-slate-200 text-slate-700",
             )}
           >
             {/* If column has explicit category or color config */}

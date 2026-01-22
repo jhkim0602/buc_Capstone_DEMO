@@ -17,16 +17,19 @@ interface StatusManagerModalProps {
   isOpen: boolean;
   onClose: () => void;
   activeView: any;
+  onCreateColumn: (title: string, category: string) => Promise<void>;
+  onUpdateColumn: (columnId: string, updates: any) => Promise<void>;
+  onDeleteColumn: (columnId: string) => Promise<void>;
 }
 
 export function StatusManagerModal({
-  projectId,
   isOpen,
   onClose,
   activeView,
+  onCreateColumn,
+  onUpdateColumn,
+  onDeleteColumn,
 }: StatusManagerModalProps) {
-  const { addColumnToView, deleteColumnFromView, updateColumnInView } =
-    useWorkspaceStore();
   const [newColumnTitle, setNewColumnTitle] = useState("");
 
   if (!activeView) return null;
@@ -38,10 +41,7 @@ export function StatusManagerModal({
       done: "완료",
     };
     // Add logic to generate a unique title if needed, or just standard
-    addColumnToView(projectId, activeView.id, {
-      title: titleMap[category],
-      category: category,
-    });
+    onCreateColumn(titleMap[category], category);
   };
 
   return (
@@ -120,8 +120,9 @@ export function StatusManagerModal({
                     <Input
                       className="h-7 w-40 text-sm font-medium border-transparent hover:border-input focus:border-input bg-transparent px-2"
                       value={col.title}
+                      value={col.title}
                       onChange={(e) =>
-                        updateColumnInView(projectId, activeView.id, col.id, {
+                        onUpdateColumn(col.id, {
                           title: e.target.value,
                         })
                       }
@@ -137,7 +138,7 @@ export function StatusManagerModal({
                           `'${col.title}' 섹션을 삭제하시겠습니까? 포함된 태스크는 삭제되지 않습니다.`,
                         )
                       ) {
-                        deleteColumnFromView(projectId, activeView.id, col.id);
+                        onDeleteColumn(col.id);
                       }
                     }}
                   >
