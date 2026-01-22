@@ -21,6 +21,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { InviteMemberModal } from "@/components/features/workspace/dialogs/invite-member-modal";
+import { DocumentList } from "@/components/features/workspace/docs/document-list";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -64,7 +65,6 @@ export function WorkspaceSidebar({
   const router = useRouter();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false); // State for Alert
-
   const {
     data: project,
     error,
@@ -89,7 +89,6 @@ export function WorkspaceSidebar({
       toast.error((error as Error).message);
     }
   };
-
   const navItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "board", label: "Board", icon: Kanban },
@@ -147,19 +146,9 @@ export function WorkspaceSidebar({
         </DropdownMenu>
       </div>
 
-      {/* ... (Rest of sidebar content: Personal Zone, Nav Items, Channels) ... */}
-      {/* NOTE: I need to be careful not to replace the entire file content here if I use replace_file_content with range. 
-           But for `WorkspaceSidebar` structure, I should probably replace the Header Part primarily. 
-           However, I need to inject the AlertDialog at the end.
-           Let's use `multi_replace` to be safer or strictly targeted `replace`.
-       */}
       <div className="py-2 px-2 space-y-0.5 border-b mb-2 pb-2">
-        {/* ... (Existing code for Personal Zone) ... */}
-        {/* Since I am just showing example logic in thought, I will execute actual replace for Header + End of file */}
-        {/* Wait, the code below "Personal Zone" is truncated in my thought but I have the full file content from previous view. */}
         <Button
           variant={activeTab === "inbox" ? "secondary" : "ghost"}
-          // ... (Rest of existing code) ...
           className={cn(
             "w-full justify-start h-8 px-2 text-muted-foreground font-normal",
             activeTab === "inbox" && "bg-secondary text-foreground",

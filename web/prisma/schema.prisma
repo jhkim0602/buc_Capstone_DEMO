@@ -640,13 +640,19 @@ model workspace_docs {
   id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   workspace_id String   @db.Uuid
   title        String
-  content      String?
+  content      Json?    @db.Json
+  emoji        String?
+  cover_url    String?
+  parent_id    String?  @db.Uuid
+  is_archived  Boolean  @default(false)
   author_id    String   @db.Uuid
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-  author       profiles   @relation(fields: [author_id], references: [id])
+  workspace    workspaces       @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  author       profiles         @relation(fields: [author_id], references: [id])
+  parent       workspace_docs?  @relation("DocHierarchy", fields: [parent_id], references: [id])
+  children     workspace_docs[] @relation("DocHierarchy")
 
   @@schema("public")
 }

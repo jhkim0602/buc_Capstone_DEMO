@@ -1,175 +1,351 @@
 "use client";
 
-import { useWorkspaceStore } from "../store/mock-data";
-import { useState, useMemo } from "react";
-import { BlockNoteEditor, PartialBlock } from "@blocknote/core";
-import { useCreateBlockNote } from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/mantine/style.css";
-import { FileText, Plus, ChevronRight, ChevronDown } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import useSWR from "swr";
+import { DocumentList } from "@/components/features/workspace/docs/document-list";
+import { DocumentEditor } from "@/components/features/workspace/docs/editor";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Plus,
+  FileText,
+  Smile,
+  Slash,
+  Clock,
+  CheckCircle2,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import { useDebouncedCallback } from "use-debounce";
+import { useAuth } from "@/hooks/use-auth";
+import { formatDistanceToNow } from "date-fns";
+import { ko } from "date-fns/locale";
+
+// Stable color generator
+const stringToColor = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const h = Math.abs(hash) % 360;
+  return `hsl(${h}, 70%, 50%)`;
+};
 
 interface DocsViewProps {
   projectId: string;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export function DocsView({ projectId }: DocsViewProps) {
-  const { docs, createDoc, updateDoc, projects } = useWorkspaceStore();
-  const project = projects.find(p => p.id === projectId);
-  const projectDocs = docs.filter(d => d.projectId === projectId);
+  const { user, profile } = useAuth();
+  // Fetch Docs
+  const {
+    data: docs,
+    mutate: mutateDocs,
+    isLoading,
+  } = useSWR<any[]>(`/api/workspaces/${projectId}/docs`, fetcher);
 
-  const [activeDocId, setActiveDocId] = useState<string | null>(projectDocs[0]?.id || null);
-  const [isCollaborative, setIsCollaborative] = useState(true);
+  const [activeDocId, setActiveDocId] = useState<string | null>(null);
+  const [expandedDocs, setExpandedDocs] = useState<Record<string, boolean>>({});
 
-  const activeDoc = projectDocs.find(d => d.id === activeDocId);
+  // Active Doc Data (If Selected)
+  const {
+    data: activeDoc,
+    mutate: mutateActiveDoc,
+    isLoading: isLoadingActiveDoc,
+  } = useSWR(
+    activeDocId ? `/api/workspaces/${projectId}/docs/${activeDocId}` : null,
+    fetcher,
+  );
 
-  // Editor instance
-  const editor = useCreateBlockNote({
-     initialContent: activeDoc?.content as PartialBlock[] || undefined
-  });
+  // Local state for header inputs (to be synced)
+  const [title, setTitle] = useState("");
+  const [emoji, setEmoji] = useState<string | null>(null);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  // Handle content change
-  const handleChange = () => {
-     if (activeDocId) {
-        // Debounce would be good here in real app
-        updateDoc(activeDocId, editor.document);
-     }
+  // Sync state with fetching data
+  useEffect(() => {
+    if (activeDoc) {
+      setTitle(activeDoc.title);
+      setEmoji(activeDoc.emoji);
+      setLastSaved(new Date(activeDoc.updatedAt || Date.now()));
+    } else {
+      // Reset when no doc active
+      setTitle("");
+      setEmoji(null);
+      setLastSaved(null);
+    }
+  }, [activeDoc]);
+
+  const toggleDoc = (docId: string) => {
+    setExpandedDocs((prev) => ({ ...prev, [docId]: !prev[docId] }));
   };
 
-  const handleCreateDoc = () => {
-     createDoc({
-       projectId,
-       title: 'Untitled',
-       content: [{ type: "heading", content: "Untitled" }]
-     });
+  const handleCreateRootDoc = async () => {
+    try {
+      const res = await fetch(`/api/workspaces/${projectId}/docs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "제목 없음", parentId: null }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      const newDoc = await res.json();
+      mutateDocs();
+      setActiveDocId(newDoc.id);
+      toast.success("새 문서가 생성되었습니다.");
+    } catch (e) {
+      toast.error("문서 생성 실패");
+    }
+  };
+
+  // --- Header Update Logic (Shared with Page) ---
+  const debouncedUpdate = useDebouncedCallback(async (updates: any) => {
+    if (!activeDocId) return;
+    try {
+      await fetch(`/api/workspaces/${projectId}/docs/${activeDocId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      mutateDocs(); // Refresh sidebar title
+      setLastSaved(new Date());
+    } catch (e) {
+      console.error("Auto-save failed", e);
+      toast.error("저장에 실패했습니다.");
+    }
+  }, 1000); // 1s debounce
+
+  const handleContentSave = useCallback(
+    (content: any) => {
+      debouncedUpdate({ content });
+    },
+    [debouncedUpdate],
+  );
+
+  console.log("[DocsView] Render", {
+    activeDocId,
+    isLoadingActiveDoc,
+    hasActiveDoc: !!activeDoc,
+  });
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    debouncedUpdate({ title: newTitle });
+  };
+
+  const handleEmojiSelect = (emojiData: any) => {
+    setEmoji(emojiData.native);
+    debouncedUpdate({ emoji: emojiData.native });
+  };
+
+  const handleRemoveEmoji = () => {
+    setEmoji(null);
+    debouncedUpdate({ emoji: null });
   };
 
   return (
     <div className="flex h-full">
-      {/* Docs Sidebar */}
-      <div className="w-60 border-r bg-muted/5 flex flex-col">
-        <div className="p-3 border-b flex items-center justify-between">
-          <span className="font-medium text-sm text-muted-foreground">Pages</span>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCreateDoc}>
+      {/* Docs Sidebar (Inner) */}
+      <div className="w-64 border-r bg-muted/10 flex flex-col h-full">
+        {/* ... Sidebar Content ... */}
+        <div className="p-4 border-b flex items-center justify-between h-14">
+          <span className="font-semibold text-sm">Documents</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={handleCreateRootDoc}
+          >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
-        <ScrollArea className="flex-1">
-           <div className="p-2 space-y-0.5">
-              {projectDocs.map(doc => (
-                 <button
-                   key={doc.id}
-                   onClick={() => {
-                      setActiveDocId(doc.id);
-                      // Reset editor content
-                      if (editor) {
-                          editor.replaceBlocks(editor.document, doc.content as PartialBlock[]);
-                      }
-                   }}
-                   className={cn(
-                     "flex items-center w-full px-2 py-1.5 text-sm rounded-md hover:bg-muted/50 transition-colors",
-                     activeDocId === doc.id && "bg-muted font-medium"
-                   )}
-                 >
-                   <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
-                   <span className="truncate">{doc.title}</span>
-                 </button>
-              ))}
-           </div>
+        <ScrollArea className="flex-1 py-2">
+          <div className="px-2 mb-1 text-xs font-semibold text-muted-foreground uppercase flex items-center justify-between group">
+            All Pages
+          </div>
+          <div className="px-2 space-y-0.5">
+            {isLoading ? (
+              <div className="text-xs text-muted-foreground p-2">
+                Loading docs...
+              </div>
+            ) : docs && docs.length > 0 ? (
+              <DocumentList
+                workspaceId={projectId}
+                docs={docs}
+                onExpand={toggleDoc}
+                expanded={expandedDocs}
+                onSelect={setActiveDocId}
+                activeDocId={activeDocId}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center p-8 text-muted-foreground gap-2">
+                <FileText className="h-8 w-8 opacity-20" />
+                <span className="text-xs">No documents yet.</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCreateRootDoc}
+                >
+                  Create First
+                </Button>
+              </div>
+            )}
+          </div>
         </ScrollArea>
       </div>
 
       {/* Editor Area */}
       <div className="flex-1 bg-background flex flex-col h-full overflow-hidden relative">
-         {/* Top Bar for Collaboration Tools */}
-         <div className="h-14 border-b flex items-center justify-between px-6 bg-background/50 backdrop-blur-sm sticky top-0 z-20">
-            <div className="flex items-center gap-4">
-               <div className="flex items-center gap-2 text-sm font-medium">
-                  <div className={cn("w-2 h-2 rounded-full animate-pulse", isCollaborative ? "bg-green-500" : "bg-gray-400")} />
-                  {isCollaborative ? "공동 작업 중" : "단독 편집 모드"}
-               </div>
-               <div className="flex items-center gap-2 border-l pl-4">
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">협업 모드</span>
-                  <Switch
-                     checked={isCollaborative}
-                     onCheckedChange={setIsCollaborative}
-                     className="scale-75"
-                  />
-               </div>
-            </div>
+        {activeDocId ? (
+          <div className="flex flex-col h-full w-full">
+            {/* Top Navigation Bar */}
+            <header className="h-12 border-b flex items-center justify-between px-4 bg-background/95 backdrop-blur shrink-0 z-10">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground overflow-hidden">
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="truncate hover:text-foreground cursor-pointer transition-colors">
+                    Documents
+                  </span>
+                  <Slash className="w-4 h-4 opacity-30 flex-shrink-0" />
+                  <span className="truncate font-medium text-foreground flex items-center gap-2">
+                    {emoji && <span>{emoji}</span>}
+                    {title || "Untitled"}
+                  </span>
+                </div>
+              </div>
 
-            {/* Presence Avatars */}
-            <div className="flex items-center gap-3">
-               <div className="flex -space-x-2">
-                  {project?.members.map((member, i) => (
-                     <TooltipProvider key={member.id}>
-                        <Tooltip>
-                           <TooltipTrigger asChild>
-                              <Avatar className="h-8 w-8 border-2 border-background ring-2 ring-transparent transition-all hover:-translate-y-1 hover:ring-primary/20 cursor-pointer">
-                                 <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`} />
-                                 <AvatarFallback>{member.name[0]}</AvatarFallback>
-                              </Avatar>
-                           </TooltipTrigger>
-                           <TooltipContent>
-                              <p className="text-xs font-medium">{member.name} {member.online ? "(온라인)" : "(오프라인)"}</p>
-                           </TooltipContent>
-                        </Tooltip>
-                     </TooltipProvider>
-                  ))}
-               </div>
-               <div className="text-xs text-muted-foreground font-medium pl-2">
-                  {project?.members.filter(m => m.online).length}명 접속 중
-               </div>
-            </div>
-         </div>
+              <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground mr-2">
+                  {lastSaved ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                      <span className="hidden sm:inline">Saved</span>
+                    </>
+                  ) : (
+                    <span>Saving...</span>
+                  )}
+                </div>
+              </div>
+            </header>
 
-         {activeDoc ? (
-            <div className="flex-1 overflow-y-auto p-12 max-w-4xl mx-auto w-full relative">
-               {/* Visual Typing Indicator (Mock) */}
-               {isCollaborative && (
-                  <div className="absolute right-8 top-10 pointer-events-none transition-opacity animate-in fade-in duration-500 z-10">
-                     <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
-                        <div className="flex gap-1">
-                           <span className="w-1 h-1 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-                           <span className="w-1 h-1 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-                           <span className="w-1 h-1 bg-primary rounded-full animate-bounce" />
-                        </div>
-                        <span className="text-[10px] font-bold text-primary">Frontend님이 입력 중...</span>
-                     </div>
+            {/* Scrollable Document Content */}
+            <div className="flex-1 overflow-y-auto relative w-full">
+              {/* Loading Overlay - only if initial load and no data yet */}
+              {isLoadingActiveDoc && !activeDoc && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-50 pointer-events-none">
+                  <div className="text-muted-foreground text-sm">
+                    Loading document...
                   </div>
-               )}
+                </div>
+              )}
 
-               <div className="mb-10 group">
-                 <input
-                   className="text-5xl font-black border-none outline-none w-full bg-transparent placeholder:text-muted-foreground/30 tracking-tight"
-                   value={activeDoc.title}
-                   onChange={(e) => {
-                      // Update logic
-                   }}
-                   placeholder="문서 제목을 입력하세요"
-                 />
-                 <div className="h-1 w-20 bg-primary/20 rounded-full mt-4 group-focus-within:w-40 transition-all duration-500" />
-               </div>
+              <div className="max-w-4xl mx-auto w-full pt-12 px-12 pb-4">
+                {/* Helper Group: Icon */}
+                <div className="group flex items-center gap-2 mb-4 opacity-0 hover:opacity-100 transition-opacity -ml-12 pl-12 h-6">
+                  {!emoji && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-muted-foreground h-6 px-1.5 text-xs"
+                        >
+                          <Smile className="w-3.5 h-3.5 mr-1" /> Add Icon
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0 border-none"
+                        align="start"
+                      >
+                        <Picker
+                          data={data}
+                          onEmojiSelect={handleEmojiSelect}
+                          theme="light"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </div>
 
-               <div className="editor-wrapper min-h-[600px] prose prose-slate max-w-none">
-                 <BlockNoteView
-                    editor={editor}
-                    onChange={handleChange}
-                    theme="light"
-                 />
-               </div>
+                {/* Emoji - Large */}
+                {emoji && (
+                  <div className="group relative w-fit mb-4">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div className="text-[72px] leading-none cursor-pointer hover:bg-muted rounded-md px-1 transition-colors">
+                          {emoji}
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0 border-none"
+                        align="start"
+                      >
+                        <Picker
+                          data={data}
+                          onEmojiSelect={handleEmojiSelect}
+                          theme="light"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute -top-2 -right-6 opacity-0 group-hover:opacity-100 h-6 w-6 rounded-full"
+                      onClick={handleRemoveEmoji}
+                    >
+                      <span className="sr-only">Remove</span>×
+                    </Button>
+                  </div>
+                )}
+
+                {/* Title Input */}
+                <Input
+                  value={title}
+                  onChange={handleTitleChange}
+                  placeholder="Untitled"
+                  className="text-4xl font-bold border-none shadow-none focus-visible:ring-0 p-0 h-auto placeholder:text-muted-foreground/50"
+                  autoFocus
+                />
+
+                <div className="h-px bg-border my-6" />
+              </div>
+
+              {/* Real-time Editor with Auto-Save */}
+              <DocumentEditor
+                key={activeDocId}
+                docId={activeDocId}
+                initialContent={activeDoc?.content}
+                onSave={handleContentSave}
+                user={
+                  user
+                    ? {
+                        name:
+                          profile?.nickname ||
+                          user.email?.split("@")[0] ||
+                          "User",
+                        color: stringToColor(user.id),
+                      }
+                    : undefined
+                }
+              />
             </div>
-         ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground gap-4">
-               <FileText className="h-12 w-12 opacity-20" />
-               <p className="font-medium">문서를 선택하거나 새로운 문서를 생성하세요</p>
-            </div>
-         )}
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground gap-4">
+            <FileText className="h-12 w-12 opacity-20" />
+            <p className="font-medium">
+              왼쪽 사이드바에서 문서를 선택하거나 생성하세요.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

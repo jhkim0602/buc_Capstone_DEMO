@@ -5,7 +5,7 @@ import { setupWSConnection } from "./yjs-utils";
 export function setupYjsGateway(server: Server) {
   const wss = new WebSocketServer({ noServer: true });
 
-  wss.on('connection', (ws, req) => {
+  wss.on("connection", (ws, req) => {
     // Determine docName from url (e.g. /yjs/project-123)
     // Or query param
     // Standard y-websocket client connects to ws://url/roomname
@@ -19,7 +19,7 @@ export function setupYjsGateway(server: Server) {
     setupWSConnection(ws, req);
   });
 
-  server.on('upgrade', (request, socket, head) => {
+  server.on("upgrade", (request, socket, head) => {
     // Only handle upgrades for /yjs path prefix or let direct connection handle it?
     // y-websocket client usually connects to root or specific path.
     // Let's assume we use a specific path prefix for safety if sharing with socket.io
@@ -31,13 +31,15 @@ export function setupYjsGateway(server: Server) {
     // Let's go with permissive for now as y-websocket client default might be root.
 
     const url = request.url || "";
-    if (url.startsWith('/socket.io')) {
-        // Let Socket.IO handle it (it attaches its own upgrade listener usually)
-        return;
+    if (url.startsWith("/socket.io")) {
+      return;
     }
 
+    console.log(`[YJS] Upgrade request for ${url}`);
+
     wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit('connection', ws, request);
+      console.log(`[YJS] Connection upgraded for ${url}`);
+      wss.emit("connection", ws, request);
     });
   });
 

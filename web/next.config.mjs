@@ -9,6 +9,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  reactStrictMode: false,
   experimental: {
     optimizePackageImports: [
       "lucide-react",
@@ -22,6 +23,6 @@ const nextConfig = {
       "@radix-ui/react-tooltip",
     ],
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
