@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   Users,
   Layout,
+  Table as TableIcon,
   Tag as TagIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ import { StatusManagerModal } from "../modules/status-manager-modal";
 import { NotebookTab } from "../modules/notebook-tab";
 
 import { KanbanView } from "../views/kanban/kanban-view";
+import { TableView } from "../views/table/table-view";
 import {
   Popover,
   PopoverContent,
@@ -454,6 +456,26 @@ export function KanbanBoard({ projectId, onNavigateToDoc }: KanbanBoardProps) {
             )}
           </div>
 
+          <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg mr-4 ml-auto">
+            <Button
+              variant={viewType === "kanban" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 text-xs px-2.5 gap-1.5"
+              onClick={() => setViewType("kanban")}
+            >
+              <KanbanSquare className="h-3.5 w-3.5" />
+              보드
+            </Button>
+            <Button
+              variant={viewType === "table" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 text-xs px-2.5 gap-1.5"
+              onClick={() => setViewType("table")}
+            >
+              <TableIcon className="h-3.5 w-3.5" />표
+            </Button>
+          </div>
+
           <div className="flex items-center gap-2">
             {/* View Settings Popover */}
             <Popover>
@@ -539,34 +561,45 @@ export function KanbanBoard({ projectId, onNavigateToDoc }: KanbanBoardProps) {
 
         {/* View Content */}
         <div className="flex-1 overflow-hidden relative">
-          <KanbanView
-            projectId={projectId}
-            tasks={tasks}
-            activeView={activeView}
-            groupBy={groupBy}
-            displayColumns={displayColumns}
-            priorities={priorities}
-            tags={tags}
-            onUpdateTask={handleUpdateTask}
-            onMoveColumn={handleMoveColumn}
-            onReorderTask={handleReorderTask}
-            onUpdateView={updateView}
-            reorderPriorities={reorderPriorities}
-            reorderTags={reorderTags}
-            onCreateColumn={handleCreateColumn}
-            onDeleteColumn={handleDeleteColumn}
-            onTaskClick={setActiveTaskId}
-            onCreateTask={handleCreateTask}
-            onDeleteTask={handleDeleteTask}
-            onUpdateColumn={handleUpdateColumn}
-            viewSettings={{
-              showTags,
-              showAssignee,
-              showDueDate,
-              showPriority,
-              cardProperties: activeView?.cardProperties,
-            }}
-          />
+          {viewType === "table" ? (
+            <TableView
+              tasks={tasks}
+              columns={displayColumns}
+              priorities={priorities}
+              tags={tags}
+              onTaskClick={setActiveTaskId}
+              onUpdateTask={handleUpdateTask}
+            />
+          ) : (
+            <KanbanView
+              projectId={projectId}
+              tasks={tasks}
+              activeView={activeView}
+              groupBy={groupBy}
+              displayColumns={displayColumns}
+              priorities={priorities}
+              tags={tags}
+              onUpdateTask={handleUpdateTask}
+              onMoveColumn={handleMoveColumn}
+              onReorderTask={handleReorderTask}
+              onUpdateView={updateView}
+              reorderPriorities={reorderPriorities}
+              reorderTags={reorderTags}
+              onCreateColumn={handleCreateColumn}
+              onDeleteColumn={handleDeleteColumn}
+              onTaskClick={setActiveTaskId}
+              onCreateTask={handleCreateTask}
+              onDeleteTask={handleDeleteTask}
+              onUpdateColumn={handleUpdateColumn}
+              viewSettings={{
+                showTags,
+                showAssignee,
+                showDueDate,
+                showPriority,
+                cardProperties: activeView?.cardProperties,
+              }}
+            />
+          )}
         </div>
       </div>
 
@@ -616,7 +649,7 @@ export function KanbanBoard({ projectId, onNavigateToDoc }: KanbanBoardProps) {
           task={tasks.find((t) => t.id === activeTaskId)}
           members={project.members}
           detailedTags={tags} // Use system tags
-          availableTags={tags.map((t) => t.name)}
+          availableTags={tags}
           onClose={() => setActiveTaskId(null)}
           onUpdate={handleUpdateTask}
           onDelete={handleDeleteTask}

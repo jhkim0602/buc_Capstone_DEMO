@@ -97,14 +97,66 @@ export function NotificationCenter() {
   };
 
   const handleInviteAction = async (
-    notificationId: string,
+    notification: Notification,
     action: "accept" | "decline",
   ) => {
-    // TODO: Implement Invite API call
-    alert(
-      `초대를 ${action === "accept" ? "수락" : "거절"}했습니다. (기능 구현 중)`,
-    );
-    handleMarkAsRead(notificationId);
+    // Parse inviteId from link (e.g. "invite:d3b...")
+    const inviteId = notification.link?.startsWith("invite:")
+      ? notification.link.split(":")[1]
+      : null;
+
+    if (!inviteId) {
+      toast.error("유효하지 않은 초대 링크입니다.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/workspaces/invite/respond", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inviteId, action }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to respond");
+      }
+
+      toast.success(`초대를 ${action === "accept" ? "수락" : "거절"}했습니다.`);
+      handleMarkAsRead(notification.id);
+
+      // If accepted, we might want to refresh workspace list or redirect
+      if (action === "accept") {
+        window.location.reload(); // Simple way to refresh sidebar/state
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
+  const handleDeleteNotification = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // Optimistic Update
+    if (!notifications) return;
+    const updated = notifications.filter((n) => n.id !== id);
+    mutate(updated, false);
+
+    try {
+      const res = await fetch(`/api/notifications?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete");
+      }
+
+      mutate(); // Revalidate
+    } catch (error) {
+      console.error(error);
+      toast.error("알림 삭제 실패");
+      mutate(); // Rollback on error
+    }
   };
 
   return (
@@ -147,12 +199,24 @@ export function NotificationCenter() {
                 <div
                   key={notification.id}
                   className={cn(
-                    "p-4 hover:bg-muted/50 transition-colors flex flex-col gap-1",
+                    "p-4 hover:bg-muted/50 transition-colors flex flex-col gap-1 group relative",
                     !notification.is_read &&
                       "bg-blue-50/50 dark:bg-blue-900/10",
                   )}
                 >
-                  <div className="flex justify-between items-start">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500"
+                    onClick={(e) =>
+                      handleDeleteNotification(notification.id, e)
+                    }
+                    title="알림 삭제"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+
+                  <div className="flex justify-between items-start pr-6">
                     <span className="text-sm font-medium">
                       {notification.title}
                     </span>
@@ -168,13 +232,13 @@ export function NotificationCenter() {
                   </p>
 
                   {/* Invite Actions */}
-                  {notification.type === "INVITE" && (
+                  {notification.type === "INVITE" && !notification.is_read && (
                     <div className="flex gap-2 mt-2">
                       <Button
                         size="sm"
                         className="h-7 text-xs w-full bg-primary hover:bg-primary/90"
                         onClick={() =>
-                          handleInviteAction(notification.id, "accept")
+                          handleInviteAction(notification, "accept")
                         }
                       >
                         <Check className="w-3 h-3 mr-1" /> 수락
@@ -184,11 +248,18 @@ export function NotificationCenter() {
                         variant="outline"
                         className="h-7 text-xs w-full"
                         onClick={() =>
-                          handleInviteAction(notification.id, "decline")
+                          handleInviteAction(notification, "decline")
                         }
                       >
                         <X className="w-3 h-3 mr-1" /> 거절
                       </Button>
+                    </div>
+                  )}
+
+                  {notification.type === "INVITE" && notification.is_read && (
+                    <div className="text-xs text-muted-foreground mt-2 flex items-center">
+                      <Check className="w-3 h-3 mr-1 text-green-500" />
+                      이미 응답 완료된 초대입니다.
                     </div>
                   )}
 

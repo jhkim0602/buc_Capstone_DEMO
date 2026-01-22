@@ -70,3 +70,36 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+// DELETE: Delete Notification
+export async function DELETE(request: Request) {
+  try {
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+    }
+
+    await prisma.notifications.delete({
+      where: {
+        id: id,
+        user_id: session.user.id, // Ensure ownership
+      },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("API: Delete Notification Error", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

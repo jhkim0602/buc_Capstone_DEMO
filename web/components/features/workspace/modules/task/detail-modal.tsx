@@ -36,7 +36,7 @@ interface TaskDetailModalProps {
   taskId: string;
   task: any; // Using any for flexibility with real/mock data mismatch
   members: any[];
-  availableTags?: string[];
+  availableTags?: any[];
   detailedTags?: any[]; // For color lookup
   onClose: () => void;
   onUpdate: (taskId: string, updates: any) => void;
@@ -69,13 +69,14 @@ export function TaskDetailModal({
   // Filter available tags to exclude already added ones
   const filteredAvailableTags = availableTags.filter(
     (t) =>
-      !task.tags?.includes(t) && t.toLowerCase().includes(newTag.toLowerCase()),
+      !task.tags?.includes(t.id) &&
+      t.name.toLowerCase().includes(newTag.toLowerCase()),
   );
 
-  const handleSelectTag = (tag: string) => {
+  const handleSelectTag = (tagId: string) => {
     const currentTags = task.tags || [];
-    if (!currentTags.includes(tag)) {
-      onUpdate(task.id, { tags: [...currentTags, tag] });
+    if (!currentTags.includes(tagId)) {
+      onUpdate(task.id, { tags: [...currentTags, tagId] });
     }
   };
 
@@ -100,10 +101,10 @@ export function TaskDetailModal({
     setNewTag("");
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
+  const handleRemoveTag = (tagIdToRemove: string) => {
     const currentTags = task.tags || [];
     onUpdate(task.id, {
-      tags: currentTags.filter((t: string) => t !== tagToRemove),
+      tags: currentTags.filter((t: string) => t !== tagIdToRemove),
     });
   };
 
@@ -137,7 +138,10 @@ export function TaskDetailModal({
 
   return (
     <Dialog open={!!taskId} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl h-[85vh] p-0 flex flex-col overflow-hidden bg-background">
+      <DialogContent
+        className="max-w-3xl h-[85vh] p-0 flex flex-col overflow-hidden bg-background"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>Task Details</DialogTitle>
         </DialogHeader>
@@ -294,11 +298,13 @@ export function TaskDetailModal({
                   <Tag className="h-4 w-4" /> 태그
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {task.tags?.map((tagName: string) => {
+                  {task.tags?.map((tagId: string) => {
                     // Lookup color
                     const tagInfo = detailedTags.find(
-                      (t) => t.name === tagName,
+                      (t) => t.id === tagId || t.name === tagId,
                     );
+                    const tagName = tagInfo ? tagInfo.name : tagId;
+
                     let colorClass = "bg-slate-100 text-slate-700";
 
                     if (tagInfo) {
@@ -329,14 +335,14 @@ export function TaskDetailModal({
 
                     return (
                       <Badge
-                        key={tagName}
+                        key={tagId}
                         variant="secondary"
                         className={cn("px-1.5 font-normal", colorClass)}
                       >
                         {tagName}
                         <X
                           className="h-3 w-3 ml-1 cursor-pointer opacity-50"
-                          onClick={() => handleRemoveTag(tagName)}
+                          onClick={() => handleRemoveTag(tagId)}
                         />
                       </Badge>
                     );
@@ -385,17 +391,18 @@ export function TaskDetailModal({
                           )}
                           {filteredAvailableTags.map((tag) => (
                             <div
-                              key={tag}
-                              onClick={() => handleSelectTag(tag)}
+                              key={tag.id}
+                              onClick={() => handleSelectTag(tag.id)}
                               className="px-2 py-1.5 hover:bg-muted rounded cursor-pointer text-xs flex items-center"
                             >
                               <Tag className="w-3 h-3 mr-2 opacity-50" />
-                              {tag}
+                              {tag.name}
                             </div>
                           ))}
                           {newTag &&
-                            !filteredAvailableTags.includes(newTag) &&
-                            !task.tags?.includes(newTag) && (
+                            !filteredAvailableTags.find(
+                              (t) => t.name === newTag,
+                            ) && (
                               <div className="text-[10px] text-muted-foreground px-1 mt-1">
                                 Enter를 눌러 "{newTag}" 생성
                               </div>

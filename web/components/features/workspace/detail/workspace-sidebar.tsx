@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Kanban,
-  FileText, // Changed from Calendar to Document icon as per previous context logic
+  FileText,
   Lightbulb,
   ChevronLeft,
   Hash,
@@ -12,9 +12,34 @@ import {
   Volume2,
   Bell,
   Briefcase,
+  ChevronDown,
+  LogOut,
+  Settings,
+  UserPlus,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { InviteMemberModal } from "@/components/features/workspace/dialogs/invite-member-modal";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface WorkspaceSidebarProps {
   projectId: string;
@@ -36,13 +61,34 @@ export function WorkspaceSidebar({
   activeTab,
   onTabChange,
 }: WorkspaceSidebarProps) {
+  const router = useRouter();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false); // State for Alert
+
   const {
     data: project,
     error,
     isLoading,
   } = useSWR(`/api/workspaces/${projectId}`, fetcher);
 
-  console.log("Sidebar Debug:", { project, error, isLoading, projectId });
+  // Leave Workspace Handler
+  const handleLeaveWorkspace = async () => {
+    try {
+      const res = await fetch(`/api/workspaces/${projectId}/leave`, {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to leave workspace");
+      }
+
+      toast.success("워크스페이스에서 나갔습니다.");
+      router.push("/workspace"); // Redirect to workspace hub
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
 
   const navItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -61,20 +107,59 @@ export function WorkspaceSidebar({
           <ChevronLeft className="h-4 w-4 mr-1" />
           Back to Hub
         </Link>
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center text-primary font-bold">
-            {project?.name?.charAt(0) || "?"}
-          </div>
-          <div className="font-semibold text-sm truncate">
-            {error ? "Error loading" : project?.name || "Loading..."}
-          </div>
-        </div>
+
+        {/* Workspace Dropdown Header */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 p-1 rounded-md transition-colors group">
+              <div className="h-8 w-8 min-w-[32px] rounded bg-primary/10 flex items-center justify-center text-primary font-bold">
+                {project?.name?.charAt(0) || "?"}
+              </div>
+              <div className="flex items-center justify-between flex-1 overflow-hidden">
+                <div className="font-semibold text-sm truncate">
+                  {error ? "Error loading" : project?.name || "Loading..."}
+                </div>
+                <ChevronDown className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
+              {project?.name} Options
+            </DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => setIsInviteModalOpen(true)}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Invite People
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              Workspace Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-red-600 focus:text-red-600"
+              onClick={() => setIsLeaveAlertOpen(true)}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Leave Workspace
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      {/* Personal Zone (Moved Up) */}
+      {/* ... (Rest of sidebar content: Personal Zone, Nav Items, Channels) ... */}
+      {/* NOTE: I need to be careful not to replace the entire file content here if I use replace_file_content with range. 
+           But for `WorkspaceSidebar` structure, I should probably replace the Header Part primarily. 
+           However, I need to inject the AlertDialog at the end.
+           Let's use `multi_replace` to be safer or strictly targeted `replace`.
+       */}
       <div className="py-2 px-2 space-y-0.5 border-b mb-2 pb-2">
+        {/* ... (Existing code for Personal Zone) ... */}
+        {/* Since I am just showing example logic in thought, I will execute actual replace for Header + End of file */}
+        {/* Wait, the code below "Personal Zone" is truncated in my thought but I have the full file content from previous view. */}
         <Button
           variant={activeTab === "inbox" ? "secondary" : "ghost"}
+          // ... (Rest of existing code) ...
           className={cn(
             "w-full justify-start h-8 px-2 text-muted-foreground font-normal",
             activeTab === "inbox" && "bg-secondary text-foreground",
@@ -174,8 +259,12 @@ export function WorkspaceSidebar({
       </div>
 
       <div className="p-4 border-t">
-        <div className="mb-2 px-2 text-xs font-semibold text-muted-foreground">
+        <div className="mb-2 px-2 text-xs font-semibold text-muted-foreground flex items-center justify-between group">
           Team
+          <Plus
+            className="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-pointer hover:text-primary transition-opacity"
+            onClick={() => setIsInviteModalOpen(true)}
+          />
         </div>
         <div className="space-y-1">
           {project?.members?.map((member: any, i: number) => (
@@ -196,6 +285,33 @@ export function WorkspaceSidebar({
           ))}
         </div>
       </div>
+
+      <InviteMemberModal
+        workspaceId={projectId}
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+      />
+
+      {/* Alert Dialog */}
+      <AlertDialog open={isLeaveAlertOpen} onOpenChange={setIsLeaveAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>정말 떠나시겠습니까?</AlertDialogTitle>
+            <AlertDialogDescription>
+              워크스페이스를 떠나면 다시 초대받을 때까지 접근할 수 없습니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLeaveWorkspace}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              떠나기
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
