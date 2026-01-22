@@ -73,6 +73,7 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
   }, [currentStepIndex, steps.length, playState, setPlayState]);
 
   const handleRun = () => {
+    console.log("[Playground] Run Triggered");
     if (onRun) {
       // If code is empty (initial state), use initialCode
       // CodeEditor updates store synchronously on change, so 'code' should be current.
@@ -238,35 +239,38 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
         {/* Left: Visualizer */}
         {/* Left: Visualizer & Terminal */}
         <ResizablePanel defaultSize={50} minSize={30}>
-          <ResizablePanelGroup direction="vertical">
-            {/* Top: Graph Visualizer */}
-            <ResizablePanel defaultSize={70} minSize={30}>
-              <div className="h-full w-full bg-muted/5 p-6 relative overflow-hidden flex flex-col">
-                <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
-                  style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }}
-                />
+          <div className="flex flex-col h-full w-full relative">
+            <div className="flex-1 min-h-0 relative">
+              <ResizablePanelGroup direction="vertical">
+                {/* Top: Graph Visualizer */}
+                <ResizablePanel defaultSize={70} minSize={30}>
+                  <div className="flex flex-col h-full w-full">
+                    <div className="flex-1 bg-muted/5 p-6 relative overflow-hidden flex flex-col min-h-0">
+                      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
+                        style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }}
+                      />
 
-                <div className="flex-1 flex items-center justify-center relative z-10">
-                  {visualizer}
-                </div>
+                      <div className="flex-1 flex items-center justify-center relative z-10">
+                        {visualizer}
+                      </div>
+                    </div>
 
-                {/* Step Description Toast/Overlay */}
-                {steps[currentStepIndex] && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 max-w-[90%] w-fit p-3 bg-background/90 backdrop-blur border border-border rounded-lg text-sm shadow-md animate-in fade-in slide-in-from-bottom-2 z-20">
-                    <span className="font-bold text-primary mr-2">Step {currentStepIndex + 1}:</span>
-                    {steps[currentStepIndex].description}
+                    {/* Footer Slot for Portal (e.g. Input Array for Monotonic Stack) - "Above Terminal" */}
+                    <div id="ctp-playground-footer" className="w-full bg-background border-t border-border" />
                   </div>
-                )}
-              </div>
-            </ResizablePanel>
+                </ResizablePanel>
 
-            <ResizableHandle withHandle />
+                <ResizableHandle withHandle />
 
-            {/* Bottom: Terminal */}
-            <ResizablePanel defaultSize={30} minSize={10} collapsible={true} collapsedSize={0}>
-              <CTPTerminal output={steps[currentStepIndex]?.stdout || []} />
-            </ResizablePanel>
-          </ResizablePanelGroup>
+                {/* Bottom: Terminal */}
+                <ResizablePanel defaultSize={30} minSize={10} collapsible={true} collapsedSize={0}>
+                  <CTPTerminal output={steps[currentStepIndex]?.stdout || []} />
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
+
+            {/* Footer Slot for Portal (e.g. Input Array for Monotonic Stack) - Removed duplicate */}
+          </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />

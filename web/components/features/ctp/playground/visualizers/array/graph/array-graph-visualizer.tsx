@@ -10,6 +10,7 @@ import {
     Edge,
     Handle,
     Position,
+    Controls,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { cn } from "@/lib/utils";
@@ -39,12 +40,19 @@ const ArrayNode = ({ data }: NodeProps<Node<ArrayNodeData>>) => {
             </div>
 
             <div className={cn(
-                "w-14 h-14 flex items-center justify-center text-lg font-bold shadow-sm border-2 rounded-md transition-colors duration-300",
-                data.isHighlighted
-                    ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/20"
-                    : data.isGhost
-                        ? "border-dashed border-muted-foreground/30 bg-muted/10 text-muted-foreground/30"
-                        : "border-border bg-card text-foreground"
+                "w-14 h-14 flex items-center justify-center text-lg font-bold shadow-sm border-2 rounded-md transition-all duration-300",
+                // 1. Status Highlighting (Priority Layer)
+                data.status === 'active' && "border-blue-500 bg-blue-500/10 text-blue-600 ring-4 ring-blue-500/20 scale-105 z-10",
+                data.status === 'comparing' && "border-yellow-500 bg-yellow-500/10 text-yellow-600 ring-4 ring-yellow-500/20 scale-110 z-20 animate-pulse",
+                data.status === 'pop' && "border-red-500 bg-red-500/10 text-red-500 ring-2 ring-red-500/20 opacity-60 scale-90",
+                data.status === 'success' && "border-green-500 bg-green-500/10 text-green-600 ring-2 ring-green-500/20",
+
+                // 2. Fallback / Legacy Highlighting (if no status)
+                (!data.status && data.isHighlighted) && "border-primary bg-primary/10 text-primary ring-2 ring-primary/20",
+
+                // 3. Ghost / Normal
+                (!data.status && !data.isHighlighted && data.isGhost) === true && "border-dashed border-muted-foreground/30 bg-muted/10 text-muted-foreground/30",
+                (!data.status && !data.isHighlighted && !data.isGhost) && "border-border bg-card text-foreground"
             )}>
                 {data.value}
 
@@ -62,23 +70,21 @@ import { useCTPStore } from '@/components/features/ctp/store/use-ctp-store';
 
 export function ArrayGraphVisualizer({
     data,
-    emptyMessage = "데이터가 없습니다."
-}: ArrayGraphVisualizerProps) {
+    emptyMessage = "데이터가 없습니다.",
+    withControls = true
+}: ArrayGraphVisualizerProps & { withControls?: boolean }) {
     const playState = useCTPStore(state => state.playState);
     const isLoading = playState === 'playing';
 
     // Auto-Layout: Grid System
     // [Safety Check]
-    if (!data || !Array.isArray(data)) {
-        return <CTPEmptyState isLoading={true} message="초기화 중..." />;
-    }
-
+    // [Fixed] React Hook Order: useMemo must be called before early returns
     const { nodes, edges } = useMemo(() => {
-        // ... (existing memo logic remains)
+        // [Safety Check inside Hook]
+        if (!data || !Array.isArray(data)) return { nodes: [], edges: [] };
+
         const flowNodes: Node[] = [];
-        const edges: Edge[] = [];
-        // Ensure data is treated as array safely
-        if (!Array.isArray(data)) return { nodes: [], edges: [] };
+        const flowEdges: Edge[] = []; // Renamed to flowEdges to avoid conflict
 
         const spacingX = 80;
         const spacingY = 80;
@@ -93,6 +99,7 @@ export function ArrayGraphVisualizer({
                     label: item.label ?? (Array.isArray(data[0]) ? undefined : `${c}`),
                     isHighlighted: item.isHighlighted,
                     isGhost: (item as any).isGhost,
+                    status: (item as any).status, // [NEW] Pass status
                     row: r,
                     col: c
                 },
@@ -112,8 +119,13 @@ export function ArrayGraphVisualizer({
             });
         }
 
-        return { nodes: flowNodes, edges };
+        return { nodes: flowNodes, edges: flowEdges };
     }, [data]);
+
+    // [Safety Check for UI]
+    if (!data || !Array.isArray(data)) {
+        return <CTPEmptyState isLoading={true} message="초기화 중..." />;
+    }
 
     if (!data || data.length === 0) {
         return <CTPEmptyState message={emptyMessage} isLoading={isLoading} />;
@@ -125,12 +137,14 @@ export function ArrayGraphVisualizer({
                 nodes={nodes}
                 nodeTypes={nodeTypes}
                 fitView
+                fitViewOptions={{ padding: 0.2 }}
                 attributionPosition="bottom-right"
                 minZoom={0.5}
                 maxZoom={2.0}
                 className="bg-transparent"
             >
                 <Background gap={20} size={1} className="opacity-50" />
+                {withControls && <Controls showInteractive={false} />}
             </ReactFlow>
         </div>
     );

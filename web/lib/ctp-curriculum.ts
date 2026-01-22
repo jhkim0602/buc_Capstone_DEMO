@@ -50,11 +50,21 @@ export const CTP_DATA: CTPCategory[] = [
           { id: "singly", title: "단일 연결 리스트 (Singly)" },
           { id: "doubly", title: "이중 연결 리스트 (Doubly)" },
           { id: "circular", title: "원형 연결 리스트 (Circular)" },
-          { id: "two-pointers", title: "투 포인터 (Two Pointers)" },
-          { id: "memory", title: "메모리 구조 (Memory)" }
+          { id: "two-pointers", title: "투 포인터 (Two Pointers)" }
         ]
       },
-      { id: "stack", title: "스택 (Stack)", description: "LIFO 구조, 재귀, 후위 표기법", difficulty: "Easy" },
+      {
+        id: "stack",
+        title: "스택 (Stack)",
+        description: "LIFO 구조, 재귀, 후위 표기법",
+        difficulty: "Easy",
+        subConcepts: [
+          { id: "lifo-basics", title: "LIFO & 기초 연산" },
+          { id: "array-stack", title: "배열 스택 (Array Stack)" },
+          { id: "linked-stack", title: "연결 리스트 스택 (LL Stack)" },
+          { id: "monotonic", title: "모노토닉 스택 (Monotonic)" }
+        ]
+      },
       { id: "queue", title: "큐 & 덱 (Queue & Deque)", description: "FIFO 구조, BFS, 캐시 구현", difficulty: "Easy" },
       { id: "hash-table", title: "해시 테이블 (Hash Table)", description: "Key-Value 매핑 (배열 기반 구현 포함)", difficulty: "Medium", isImportant: true },
     ],

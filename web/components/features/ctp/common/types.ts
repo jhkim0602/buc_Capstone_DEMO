@@ -17,6 +17,11 @@ export interface GuideSection {
 export interface CTPModuleConfig {
   title: string;
   description: string;
+  mode?: 'code' | 'interactive'; // Default: 'code'
+  interactive?: {
+    components: ('push' | 'pop' | 'peek')[];
+    maxSize?: number;
+  };
   tags?: string[];
   features?: { title: string; description: string }[];
   complexity?: {
@@ -24,6 +29,12 @@ export interface CTPModuleConfig {
     search: string;
     insertion: string;
     deletion: string;
+  };
+  complexityNames?: {
+    access?: string;
+    search?: string;
+    insertion?: string;
+    deletion?: string;
   };
   practiceProblems?: any[];
   implementation?: any[];
@@ -58,6 +69,7 @@ export interface VisualItem {
   isHighlighted?: boolean;
   label?: string; // Optional label (e.g., index or variable name)
   isGhost?: boolean; // For capacity visualization etc.
+  status?: 'active' | 'comparing' | 'pop' | 'success'; // [NEW] For detailed algorithm states
 }
 
 

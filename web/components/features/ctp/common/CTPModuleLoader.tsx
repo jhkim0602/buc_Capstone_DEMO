@@ -13,6 +13,8 @@ import { CTPPractice } from "../contents/shared/ctp-practice";
 import { CTPImplementation } from "../contents/shared/ctp-implementation";
 import { CTPPlayground } from "../playground/ctp-playground";
 import { CTPGuidePanel } from "../contents/shared/ctp-guide-panel";
+import { CTPInteractivePlayground } from "../playground/ctp-interactive-playground";
+import ReactMarkdown from "react-markdown";
 
 interface CTPModuleLoaderProps {
   module: CTPModule;
@@ -71,9 +73,9 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
         )}
         {config.story?.playgroundDescription ? (
           <div className="bg-muted/30 border-l-4 border-primary/50 p-4 mb-6 rounded-r-lg">
-            <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
-              {config.story.playgroundDescription}
-            </p>
+            <div className="text-muted-foreground leading-relaxed prose dark:prose-invert max-w-none prose-p:my-1 prose-li:my-0 prose-ul:my-2 prose-ol:my-2">
+              <ReactMarkdown>{config.story.playgroundDescription}</ReactMarkdown>
+            </div>
           </div>
         ) : (
           <p className="text-muted-foreground mb-4">
@@ -83,31 +85,40 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
 
         {/* [NEW] Interactive Guide Layout */}
         <div className="flex flex-col gap-6">
-          {/* Main Visualizer & Editor Area */}
-          <div className="w-full">
-            <CTPPlayground
-              initialCode={config.initialCode?.python ?? ""}
-              onRun={runSimulation}
-              visualizer={
-                <Visualizer
-                  data={currentData}
-                  emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
-                />
-              }
-            />
-          </div>
-
-          {/* Guide Panel (Bottom Toggle) */}
-          {config.guide && (
+          {config.mode === 'interactive' && config.interactive ? (
+            /* Interactive Mode: No Code Editor, Just Buttons */
             <div className="w-full">
-              <GuideToggleSection guide={config.guide} />
+              <CTPInteractivePlayground config={config.interactive} />
             </div>
+          ) : (
+            /* Standard Mode: Visualizer + Code Editor */
+            <>
+              <div className="w-full">
+                <CTPPlayground
+                  initialCode={config.initialCode?.python ?? ""}
+                  onRun={runSimulation}
+                  visualizer={
+                    <Visualizer
+                      data={currentData}
+                      emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
+                    />
+                  }
+                />
+              </div>
+
+              {/* Guide Panel (Bottom Toggle) */}
+              {config.guide && (
+                <div className="w-full">
+                  <GuideToggleSection guide={config.guide} />
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
 
       {/* 4. Complexity */}
-      {config.complexity && <CTPComplexity data={config.complexity} />}
+      {config.complexity && <CTPComplexity data={config.complexity} names={config.complexityNames} />}
 
       {/* 5. Implementation Code */}
       {config.implementation && <CTPImplementation examples={config.implementation} />}

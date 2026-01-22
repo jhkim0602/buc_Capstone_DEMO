@@ -223,9 +223,30 @@ function captureGlobals(globals) {
     }
 
     const result = {};
-    for (const key in globals) {
-        if (key.startsWith('__')) continue;
-        result[key] = serialize(globals[key]);
+
+    // [FIX] Robustly Handle Skulpt Globals (can be Dict or Object)
+    if (globals && globals.tp$name === 'dict') {
+        // Option A: Use internal storage if available and simple (unreliable across versions)
+        // Option B: Use iterator protocol (safest)
+        if (globals.tp$iter) {
+            const it = globals.tp$iter(globals);
+            let item;
+            while ((item = it.tp$iternext()) !== undefined) {
+                // Key is usually a Skulpt String
+                const jsKey = Sk.ffi.remapToJs(item);
+                const skVal = globals.mp$subscript(item);
+
+                if (typeof jsKey === 'string' && !jsKey.startsWith('__')) {
+                    result[jsKey] = serialize(skVal);
+                }
+            }
+        }
+    } else {
+        // Fallback for Python 2 or Plain Objects
+        for (const key in globals) {
+            if (key.startsWith('__')) continue;
+            result[key] = serialize(globals[key]);
+        }
     }
     return result;
 }

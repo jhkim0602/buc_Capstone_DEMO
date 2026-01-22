@@ -1,4 +1,7 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
+import ReactMarkdown from "react-markdown";
 import { BookOpen, Lightbulb, HelpCircle, ArrowDownCircle } from "lucide-react";
 
 interface CTPIntroProps {
@@ -51,9 +54,9 @@ export function CTPIntro({ category, title, description, tags = [], story }: CTP
                 <HelpCircle className="w-5 h-5" />
                 왜 필요할까? (Problem)
               </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                {story.problem}
-              </p>
+              <div className="text-lg text-muted-foreground leading-relaxed prose dark:prose-invert max-w-none prose-p:my-2">
+                <ReactMarkdown>{story.problem}</ReactMarkdown>
+              </div>
             </div>
           )}
 
@@ -64,9 +67,9 @@ export function CTPIntro({ category, title, description, tags = [], story }: CTP
                 <BookOpen className="w-5 h-5" />
                 핵심 정의 (Definition)
               </h3>
-              <p className="text-xl font-medium leading-relaxed font-serif text-foreground/90">
-                "{story.definition}"
-              </p>
+              <div className="text-xl font-medium leading-relaxed font-serif text-foreground/90 prose dark:prose-invert max-w-none">
+                <ReactMarkdown>{story.definition}</ReactMarkdown>
+              </div>
             </div>
           )}
 
@@ -79,9 +82,9 @@ export function CTPIntro({ category, title, description, tags = [], story }: CTP
               <h3 className="ml-6 text-lg font-bold text-amber-700 dark:text-amber-400 mb-2">
                 쉽게 이해하기 (Analogy)
               </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {story.analogy}
-              </p>
+              <div className="text-lg text-muted-foreground leading-relaxed prose dark:prose-invert max-w-none">
+                <ReactMarkdown>{story.analogy}</ReactMarkdown>
+              </div>
             </div>
           )}
 

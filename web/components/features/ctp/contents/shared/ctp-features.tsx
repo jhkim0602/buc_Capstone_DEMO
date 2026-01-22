@@ -1,5 +1,7 @@
 "use client";
 
+import ReactMarkdown from "react-markdown";
+
 interface FeatureItem {
   title: string;
   description: string;
@@ -16,7 +18,14 @@ export function CTPFeatures({ features }: CTPFeaturesProps) {
       <ul>
         {features.map((feature, idx) => (
           <li key={idx}>
-            <strong>{feature.title}:</strong> {feature.description}
+            <div className="inline-block">
+              <strong>{feature.title}: </strong>
+              <span className="text-muted-foreground inline-block align-top">
+                <ReactMarkdown components={{ p: ({ children }) => <span className="inline">{children}</span> }}>
+                  {feature.description}
+                </ReactMarkdown>
+              </span>
+            </div>
           </li>
         ))}
       </ul>

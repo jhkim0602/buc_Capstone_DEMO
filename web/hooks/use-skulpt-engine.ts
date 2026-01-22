@@ -56,10 +56,12 @@ export function useSkulptEngine(props: UseSkulptEngineProps = {}): SkulptEngine 
         // Fix: Load from public static assets to avoid Webpack/Next.js bundling issues
         // The worker is now located at /public/workers/skulpt.worker.js
         // Fix: Add cache busting to ensure latest worker code is loaded
+        console.log("[Skulpt] Initializing Worker...");
         const worker = new Worker(`/workers/skulpt.worker.js?v=${Date.now()}`);
         workerRef.current = worker;
 
         worker.onmessage = (e) => {
+            console.log("[Skulpt] Message from Worker:", e.data.type);
             const { type, line, variables, status: workerStatus, message } = e.data;
 
             if (type === 'STATUS') {
