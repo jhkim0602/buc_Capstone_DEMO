@@ -6,17 +6,17 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from src.shared.config import GEMINI_API_KEY, TAG_RETRY_BASE_MS
 
 ALLOWED_TAGS = [
-    # Frontend
+    # 프론트엔드
     "frontend", "react", "nextjs", "javascript", "typescript", "css", "web", "ui/ux", "design",
-    # Backend
+    # 백엔드
     "backend", "nodejs", "nestjs", "spring", "java", "python", "go", "api", "database",
-    # AI
+    # 인공지능 (AI)
     "ai", "ai-ml", "llm", "genai", "mlops", "nlp", "cv",
-    # DevOps
+    # 데브옵스 (DevOps)
     "devops", "kubernetes", "docker", "terraform", "monitoring", "logging", "sre", "cloud", "cicd",
-    # Architecture
+    # 아키텍처
     "architecture", "scalability", "micro frontend", "monorepo", "module federation", "system design",
-    # Else
+    # 기타
     "career", "culture", "business", "product", "ad", "case-study",
 ]
 
@@ -87,7 +87,7 @@ def generate_with_gemini(prompt, retry_count=0):
 
 def generate_tags_fallback(title, summary, author):
     """
-    Simple keyword matching fallback when AI API fails.
+    AI API 호출 실패 시 사용하는 단순 키워드 매칭 대체 로직입니다.
     """
     combined_text = (title + " " + summary).lower()
     found_tags = []
@@ -110,14 +110,14 @@ def generate_tags_fallback(title, summary, author):
     }
 
     import re
-    
-    # Pre-compile regex patterns for performance? 
-    # For now, just simple loop is fine as list is small.
-    
+
+    # 성능을 위해 정규식 패턴을 미리 컴파일할까요?
+    # 현재는 리스트가 작으므로 단순 반복문으로도 충분합니다.
+
     for keyword, tag in keyword_map.items():
-        # Escape keyword just in case, though they are simple words
+        # 단순 단어들이지만 만약을 위해 키워드를 이스케이프 처리합니다
         pattern = r"(?<![a-zA-Z0-9])" + re.escape(keyword) + r"(?![a-zA-Z0-9])"
-        # Search in combined_text
+        # 결합된 텍스트에서 검색
         if re.search(pattern, combined_text):
             found_tags.append(tag)
 
@@ -125,7 +125,7 @@ def generate_tags_fallback(title, summary, author):
 
 def generate_tags_for_article(article):
     """
-    article dict must contain: title, summary, author
+    article 딕셔너리는 반드시 title, summary, author를 포함해야 합니다.
     """
     if not GEMINI_API_KEY:
         print("⚠️ GEMINI_API_KEY missing - using fallback.")
@@ -139,7 +139,7 @@ def generate_tags_for_article(article):
         )
 
         text = generate_with_gemini(prompt)
-        # If API returns empty (max retries or error), use fallback
+        # API가 빈 값을 반환하면 (최대 재시도 초과 또는 오류), 대체 로직을 사용합니다
         if not text:
             print("⚠️ API failed/empty - using fallback tags.")
             return generate_tags_fallback(article.get("title", ""), article.get("summary", ""), article.get("author", ""))
@@ -148,7 +148,7 @@ def generate_tags_for_article(article):
         filtered = [tag for tag in parsed_tags if tag in ALLOWED_TAGS]
         result = merge_and_dedupe(filtered)[:6]
 
-        # If AI result is empty after filtering, try fallback just in case
+        # 필터링 후 AI 결과가 비어있다면, 혹시 모르니 대체 로직을 시도합니다
         if not result:
              return generate_tags_fallback(article.get("title", ""), article.get("summary", ""), article.get("author", ""))
 

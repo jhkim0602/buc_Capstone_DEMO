@@ -9,7 +9,7 @@ from src.shared.config import RSS_FEEDS, SUPABASE_URL, SUPABASE_KEY, TAG_REQUEST
 from src.shared.database import normalize_url, normalize_title, create_summary, extract_thumbnail
 from src.shared.tagger import generate_tags_for_article, base_tags_from_feed_category
 
-# Initialize Supabase
+# Supabase 초기화
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def get_existing_data():
@@ -40,11 +40,11 @@ def get_existing_data():
         print(f"✅ Loaded total {len(all_data)} articles")
 
         for item in all_data:
-            # Normalized URL
+            # URL 정규화
             if item.get("external_url"):
                 url_set.add(normalize_url(item["external_url"]))
 
-            # Author + Title map
+            # 저자 + 제목 매핑
             if item.get("title") and item.get("author"):
                 key = f"{item['author']}:{item['title']}"
                 author_title_map[key] = item
@@ -55,11 +55,11 @@ def get_existing_data():
         return set(), {}
 
 def is_duplicate(article, url_set, author_title_map):
-    # 1. URL Check
+    # 1. URL 확인
     if article["external_url"] in url_set:
         return True, "URL duplicate"
 
-    # 2. Author + Title Check
+    # 2. 저자 + 제목 확인
     key = f"{article['author']}:{article['title']}"
     if key in author_title_map:
         return True, "Author+Title duplicate"
@@ -69,7 +69,7 @@ def is_duplicate(article, url_set, author_title_map):
 def parse_feed(feed_config):
     print(f"📡 Parsing feed: {feed_config['name']}...")
     try:
-        # Use requests to get content first to handle headers often required
+        # 종종 요구되는 헤더를 처리하기 위해 먼저 requests를 사용하여 콘텐츠를 가져옵니다
         headers = {
              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
@@ -85,21 +85,21 @@ def parse_feed(feed_config):
 
             normalized_url = normalize_url(entry.link)
 
-            # PubDate
+            # 발행일 (PubDate)
             pub_date = datetime.now()
             if hasattr(entry, "published_parsed") and entry.published_parsed:
                  pub_date = datetime(*entry.published_parsed[:6])
             elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
                  pub_date = datetime(*entry.updated_parsed[:6])
 
-            # Summary
+            # 요약 (Summary)
             summary = create_summary(
                 entry.get("content", [{"value": ""}])[0]["value"] if "content" in entry else entry.get("summary", ""),
                 feed_config,
                 entry
             )
 
-            # Thumbnail
+            # 썸네일 (Thumbnail)
             thumbnail_url = extract_thumbnail(entry, feed_config)
 
             article = {
@@ -134,24 +134,24 @@ def insert_articles(articles, url_set, author_title_map, feed_name):
             duplicate_count += 1
             # print(f"   Duplicate ({reason}): {article['title'][:30]}...")
         else:
-            # Generate AI Tags if needed
+            # 필요한 경우 AI 태그 생성
             if not article["tags"]:
                 ai_tags = generate_tags_for_article(article)
                 if ai_tags:
                     article["tags"] = list(set(article["tags"] + ai_tags))[:8]
 
-                # Rate Limiting for AI API
+                # AI API 속도 제한 (Rate Limiting)
                 if TAG_REQUEST_DELAY_MS > 0:
                      time.sleep(TAG_REQUEST_DELAY_MS / 1000.0)
 
             new_articles.append(article)
 
-            # Update memory immediately
+            # 메모리 즉시 업데이트
             url_set.add(article["external_url"])
             key = f"{article['author']}:{article['title']}"
             author_title_map[key] = article
 
-            # Progress Log
+            # 진행 로그
             print(f"   👉 [{len(new_articles)}] Tagged & Ready: {article['title'][:40]}...")
 
     if not new_articles:
@@ -159,9 +159,9 @@ def insert_articles(articles, url_set, author_title_map, feed_name):
         return 0, duplicate_count
 
     try:
-        # Insert into Supabase
+        # Supabase에 삽입
         response = supabase.table("blogs").insert(new_articles).execute()
-        # In supabase-py v2, insert returns response object. response.data is the list of inserted rows.
+        # supabase-py v2에서 insert는 응답 객체를 반환합니다. response.data는 삽입된 행의 리스트입니다.
         inserted_count = len(response.data) if response.data else len(new_articles)
 
         print(f"✅ [{feed_name}] Inserted {inserted_count} new articles ({duplicate_count} duplicates)")
@@ -188,7 +188,7 @@ def run_tech_blog_crawler():
         total_dup += duplicates
         total_processed += len(articles)
 
-        time.sleep(1) # Interval between feeds
+        time.sleep(1) # 피드 간 간격
 
     print("\n🎉 RSS Crawling Completed!")
     print(f"📊 Total processed: {total_processed}")

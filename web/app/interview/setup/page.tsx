@@ -24,8 +24,74 @@ export default function InterviewSetupPage() {
       case 'final-check':
         return <FinalCheckStep />;
 
-      case 'complete':
-        return <div>Setup Complete! Redirecting...</div>;
+          case 'complete':
+            return (
+              <div className="w-full max-w-4xl mx-auto p-6 space-y-6 overflow-y-auto max-h-[80vh]">
+                <div className="flex items-center justify-between">
+                  <h1 className="text-2xl font-bold">🛠️ Developer Debug Board</h1>
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                    Development Mode
+                  </span>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-4">
+                    <div className="p-4 bg-white border rounded-lg shadow-sm">
+                      <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        🎯 Target Info
+                      </h2>
+                      <dl className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <dt className="text-gray-500">Category</dt>
+                          <dd className="font-medium">{useInterviewSetupStore.getState().targetJobCategory}</dd>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <dt className="text-gray-500">URL</dt>
+                          <dd className="font-mono text-xs bg-gray-50 p-1 rounded break-all">
+                            {useInterviewSetupStore.getState().targetUrl || 'N/A'}
+                          </dd>
+                        </div>
+                      </dl>
+                    </div>
+
+                    <div className="p-4 bg-white border rounded-lg shadow-sm">
+                      <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        📄 Resume Data
+                      </h2>
+                      <pre className="text-xs bg-gray-900 text-green-400 p-4 rounded-md overflow-x-auto">
+                        {JSON.stringify(useInterviewSetupStore.getState().resumeData, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="p-4 bg-white border rounded-lg shadow-sm">
+                      <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        💼 Job Data (JD)
+                      </h2>
+                      <pre className="text-xs bg-gray-900 text-blue-400 p-4 rounded-md overflow-x-auto max-h-[500px]">
+                        {JSON.stringify(useInterviewSetupStore.getState().jobData, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t">
+                  <button
+                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+                    onClick={() => window.location.reload()}
+                  >
+                    Reset
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium shadow-sm transition-colors"
+                    onClick={() => alert('실제 구현시에는 인터뷰 세션 생성 API를 호출하고 /interview/session/{id}로 이동합니다.')}
+                  >
+                    Start Interview Session (Mock)
+                  </button>
+                </div>
+              </div>
+            );
       default:
         return <TargetSelectionStep />;
     }

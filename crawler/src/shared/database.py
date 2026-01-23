@@ -13,13 +13,13 @@ def strip_html(html_content):
 def normalize_url(url):
     try:
         parsed = urlparse(url)
-        # Parameters to remove
+        # 제거할 파라미터
         params_to_remove = [
             "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
             "fbclid", "gclid", "fromRss", "trackingCode", "source", "rss"
         ]
 
-        # Reconstruct query params
+        # 쿼리 파라미터 재구성
         query_params = []
         if parsed.query:
             pairs = parsed.query.split("&")
@@ -30,7 +30,7 @@ def normalize_url(url):
 
         new_query = "&".join(query_params)
 
-        # Remove trailing slash from path if it's not root
+        # 루트가 아닌 경우 경로 끝의 슬래시 제거
         path = parsed.path
         if path.endswith("/") and path != "/":
             path = path[:-1]
@@ -42,14 +42,14 @@ def normalize_url(url):
 def normalize_title(title):
     if not title:
         return ""
-    # Normalize duplicate whitespace but keep special chars
+    # 중복 공백은 정규화하지만 특수 문자는 유지
     return re.sub(r'\s+', ' ', title).strip().lower()
 
 def create_summary(content, feed_config=None, entry=None):
-    # Medium logic if needed (simplified from JS)
+    # 필요한 경우 Medium 로직 (JS에서 단순화됨)
     if feed_config and "medium.com" in feed_config.get("url", ""):
-        # Try to find specific description in content
-        # For python, just use simple strip_html and truncate
+        # 콘텐츠에서 특정 설명 찾기 시도
+        # 파이썬의 경우, 단순한 html 태그 제거 및 잘라내기 사용
         pass
 
     cleaned = strip_html(content)
@@ -64,7 +64,7 @@ def fetch_thumbnail_from_web(url, blog_name="Web"):
     try:
         response = requests.get(url, headers=headers, timeout=10)
         if response.status_code != 200:
-            # Common anti-bot codes
+            # 일반적인 봇 방지 코드
             if response.status_code in [403, 401, 429]:
                  print(f"⚠️ [{blog_name} Thumbnail] Access Denied ({response.status_code}): {url}")
             else:
@@ -73,13 +73,13 @@ def fetch_thumbnail_from_web(url, blog_name="Web"):
 
         soup = BeautifulSoup(response.content, "lxml")
 
-        # og:image
+        # og:image 메타 태그
         og_image = soup.find("meta", attrs={"property": "og:image"})
         if og_image and og_image.get("content"):
             print(f"✅ [{blog_name} Thumbnail] Extracted from Web: {og_image['content']}")
             return og_image["content"]
 
-        # twitter:image
+        # twitter:image 메타 태그
         twitter_image = soup.find("meta", attrs={"name": "twitter:image"})
         if twitter_image and twitter_image.get("content"):
              print(f"✅ [{blog_name} Thumbnail] Extracted from Twitter Meta: {twitter_image['content']}")
@@ -92,7 +92,7 @@ def fetch_thumbnail_from_web(url, blog_name="Web"):
         return None
 
 def extract_thumbnail(entry, feed_config=None):
-    # Web Scraping Blogs list
+    # 웹 스크래핑이 필요한 블로그 목록
     web_scraping_domains = [
         "toss.tech", "oliveyoung.tech", "tech.kakao.com", "tech.kakaopay.com",
         "techblog.woowahan.com", "blog.banksalad.com", "tech.devsisters.com",
@@ -101,7 +101,7 @@ def extract_thumbnail(entry, feed_config=None):
 
     link = entry.get("link", "")
 
-    # Check if scraping is needed
+    # 스크래핑이 필요한지 확인
     for domain in web_scraping_domains:
         if domain in link:
             blog_name = feed_config.get("name", "Unknown") if feed_config else "Unknown"
@@ -111,26 +111,26 @@ def extract_thumbnail(entry, feed_config=None):
                 return thumb
             break
 
-    # 1. Enclosure
+    # 1. Enclosure (첨부 파일)
     if "enclosures" in entry:
         for enclosure in entry.enclosures:
             if enclosure.get("type", "").startswith("image/"):
                 return enclosure.get("href")
 
-    # 2. Media Content
+    # 2. Media Content (미디어 콘텐츠)
     if "media_content" in entry:
-        # feedparser puts media:content in media_content list
+        # feedparser는 media:content를 media_content 리스트에 넣습니다
         for media in entry.media_content:
              if "url" in media:
                  return media["url"]
 
-    # 3. Media Thumbnail
+    # 3. Media Thumbnail (미디어 썸네일)
     if "media_thumbnail" in entry:
-        # feedparser puts media:thumbnail in media_thumbnail list
+        # feedparser는 media:thumbnail을 media_thumbnail 리스트에 넣습니다
         if len(entry.media_thumbnail) > 0:
             return entry.media_thumbnail[0].get("url")
 
-    # 4. Content Image Extraction
+    # 4. 본문 이미지 추출
     content = ""
     if "content" in entry and len(entry.content) > 0:
         content = entry.content[0].value
@@ -141,10 +141,10 @@ def extract_thumbnail(entry, feed_config=None):
 
     soup = BeautifulSoup(content, "lxml")
 
-    # Special Logics (Naver, Tistory, Velog)
+    # 특수 로직 (네이버, 티스토리, 벨로그)
     if "blog.naver.com" in link:
-        # Naver specific patterns could be handled by generic img search often, but let's emulate provided logic if strictly needed
-        # Python's soup.find_all('img') is easier
+        # 네이버 특화 패턴은 일반 이미지 검색으로 처리될 수 있지만, 꼭 필요한 경우 제공된 로직을 에뮬레이션합니다
+        # 파이썬의 soup.find_all('img')가 더 쉽습니다
         pass
 
     imgs = soup.find_all("img")
@@ -156,11 +156,11 @@ def extract_thumbnail(entry, feed_config=None):
         if src.startswith("data:"):
             continue
 
-        # Convert relative to absolute
+        # 상대 경로를 절대 경로로 변환
         if not src.startswith("http"):
              src = urljoin(link, src)
 
-        # Naver specific clean up
+        # 네이버 특화 정리
         if "blog.naver.com" in link:
             src = src.split("?")[0]
 
