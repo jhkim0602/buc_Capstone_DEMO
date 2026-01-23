@@ -15,7 +15,8 @@
     "test:push": "node scripts/test-push-notification.js",
     "rss-stats": "node scripts/rss-stats.js",
     "crawl-rss": "node scripts/rss-crawler.js",
-    "backfill-tags": "node scripts/backfill-tags.js"
+    "backfill-tags": "node scripts/backfill-tags.js",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@blocknote/mantine": "^0.46.1",
