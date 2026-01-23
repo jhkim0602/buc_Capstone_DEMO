@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import { createClient } from "@/lib/supabase/server";

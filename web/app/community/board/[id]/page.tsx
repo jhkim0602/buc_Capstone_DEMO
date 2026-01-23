@@ -1,4 +1,6 @@
 import { getPost } from "@/lib/server/community";
+
+export const dynamic = "force-dynamic";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
