@@ -804,7 +804,10 @@ export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
   activeTaskId: null,
   activeDocId: null, // Start with no doc selected
 
-  setActiveTaskId: (id) => set({ activeTaskId: id }),
+  setActiveTaskId: (id) => {
+    console.log("[WorkspaceStore] Setting activeTaskId:", id);
+    set({ activeTaskId: id });
+  },
   setActiveDocId: (id) => set({ activeDocId: id }),
 
   syncProjectData: (projectId, data) =>

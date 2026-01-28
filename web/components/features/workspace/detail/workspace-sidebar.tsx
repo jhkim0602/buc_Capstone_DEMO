@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { InviteMemberModal } from "@/components/features/workspace/dialogs/invite-member-modal";
 import { DocumentList } from "@/components/features/workspace/docs/document-list";
 import { toast } from "sonner";
@@ -41,6 +41,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useSocketStore } from "@/components/features/workspace/store/socket-store";
+import { useNotifications } from "@/hooks/use-notifications";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface WorkspaceSidebarProps {
   projectId: string;
@@ -63,8 +75,51 @@ export function WorkspaceSidebar({
   onTabChange,
 }: WorkspaceSidebarProps) {
   const router = useRouter();
+  const {
+    channels,
+    joinChannel,
+    createChannel,
+    setChannelMention,
+    activeChannelId,
+  } = useSocketStore();
+  const { notifications, markAsRead } = useNotifications();
+
+  // One-way Sync: Unread Notifications -> Channel Badges
+  // Only sets to TRUE. Does not clear badge if notification is read (fixes user requirement).
+  useEffect(() => {
+    if (!channels.length || !notifications) return;
+
+    notifications.forEach((n) => {
+      if (!n.is_read && n.type === "MENTION") {
+        // Find channel by name matching the notification title
+        const channel = channels.find((c) => n.title.includes(`#${c.name}`));
+
+        if (channel) {
+          // Skip if this is the currently active channel (User is already viewing it)
+          if (channel.id === activeChannelId) {
+            // IF we are viewing it, mark the notification as read immediately
+            // This prevents it from appearing as a badge later when we switch channels
+            markAsRead(n.id);
+            return;
+          }
+
+          // Only update if not already mentioned to avoid loops
+          if (!channel.hasMention) {
+            setChannelMention(channel.id, true);
+          }
+        }
+      }
+    });
+  }, [notifications, channels, setChannelMention, activeChannelId]);
+
+  // ... (rest of component state)
+
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false); // State for Alert
+  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
+  const [isChannelDialogOpen, setIsChannelDialogOpen] = useState(false);
+  const [newChannelName, setNewChannelName] = useState("");
+  const [newChannelDesc, setNewChannelDesc] = useState("");
+
   const {
     data: project,
     error,
@@ -89,6 +144,15 @@ export function WorkspaceSidebar({
       toast.error((error as Error).message);
     }
   };
+
+  const handleCreateChannel = () => {
+    if (!newChannelName.trim() || !user) return;
+    createChannel(projectId, newChannelName, newChannelDesc, user.id);
+    setNewChannelName("");
+    setNewChannelDesc("");
+    setIsChannelDialogOpen(false);
+  };
+
   const navItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "board", label: "Board", icon: Kanban },
@@ -196,24 +260,67 @@ export function WorkspaceSidebar({
         <div>
           <div className="px-2 mb-1 text-xs font-semibold text-muted-foreground uppercase flex items-center justify-between group">
             Text Channels
-            <Plus className="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-pointer" />
+            <Plus
+              className="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-pointer hover:text-primary transition-opacity"
+              onClick={() => setIsChannelDialogOpen(true)}
+            />
           </div>
           <div className="space-y-0.5">
-            {["general", "dev", "random"].map((channel) => (
-              <Button
-                key={channel}
-                variant="ghost"
-                className={cn(
-                  "w-full justify-start h-8 px-2 text-muted-foreground font-normal",
-                  activeTab === `chat-${channel}` &&
-                    "bg-muted text-foreground font-medium",
-                )}
-                onClick={() => onTabChange(`chat-${channel}`)}
-              >
-                <Hash className="mr-2 h-3.5 w-3.5" />
-                {channel}
-              </Button>
-            ))}
+            {channels.map((channel) => {
+              const showBadge =
+                (channel.unreadCount || 0) > 0 || channel.hasMention;
+              const isMentioned = channel.hasMention;
+
+              return (
+                <Button
+                  key={channel.id}
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-between h-8 px-2 text-muted-foreground font-normal overflow-hidden",
+                    activeTab === `chat-${channel.id}` &&
+                      "bg-accent text-accent-foreground font-medium",
+                    showBadge && "text-foreground font-semibold",
+                    isMentioned && "text-primary",
+                  )}
+                  onClick={() => {
+                    joinChannel(channel.id);
+                    onTabChange(`chat-${channel.id}`);
+
+                    // Mark mentions as read in Inbox when entering channel
+                    // This syncs "Channel Visit" -> "Inbox Read"
+                    const relevantNotifications = notifications?.filter(
+                      (n) =>
+                        !n.is_read &&
+                        n.type === "MENTION" &&
+                        n.title.includes(`#${channel.name}`),
+                    );
+                    relevantNotifications?.forEach((n) => markAsRead(n.id));
+                  }}
+                >
+                  <div className="flex items-center min-w-0">
+                    <Hash className="mr-2 h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="truncate">{channel.name}</span>
+                  </div>
+                  {showBadge && (
+                    <span
+                      className={cn(
+                        "ml-auto flex items-center justify-center rounded-full",
+                        isMentioned
+                          ? "w-2.5 h-2.5 bg-rose-400" // Soft Red Dot
+                          : "text-[10px] px-1.5 py-0.5 min-w-[18px] bg-muted-foreground/30 text-foreground",
+                      )}
+                    >
+                      {!isMentioned && channel.unreadCount}
+                    </span>
+                  )}
+                </Button>
+              );
+            })}
+            {channels.length === 0 && (
+              <div className="px-2 text-xs text-muted-foreground/50 py-1">
+                No channels
+              </div>
+            )}
           </div>
         </div>
 
@@ -280,6 +387,36 @@ export function WorkspaceSidebar({
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
       />
+
+      {/* Channel Creation Dialog */}
+      <Dialog open={isChannelDialogOpen} onOpenChange={setIsChannelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Channel</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Channel Name</Label>
+              <Input
+                placeholder="e.g. general"
+                value={newChannelName}
+                onChange={(e) => setNewChannelName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Input
+                placeholder="Topic description"
+                value={newChannelDesc}
+                onChange={(e) => setNewChannelDesc(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleCreateChannel}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Alert Dialog */}
       <AlertDialog open={isLeaveAlertOpen} onOpenChange={setIsLeaveAlertOpen}>

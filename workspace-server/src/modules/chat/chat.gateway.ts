@@ -1,35 +1,110 @@
-import { Server, Socket } from 'socket.io';
+import { Server, Socket } from "socket.io";
+import { ChatService } from "./chat.service";
 
 export const setupChatGateway = (io: Server) => {
-  io.on('connection', (socket: Socket) => {
-
-    // Handle sending messages
-    socket.on('chat:message', (payload: { channelId: string; content: string; senderId: string; type: string }) => {
-      // In a real app, save to DB here
-      console.log(`[Chat] Message in ${payload.channelId}: ${payload.content}`);
-
-      // Broadcast to everyone in the project (simulated by broadcasting to all for now or specific room if joined)
-      // Assuming clients joined a room named after the project or channel.
-      // For simplicity, we broadcast to the client's connected project room if we had the context,
-      // but here we trust the client logic to filter or room logic.
-      // Better: io.to(payload.channelId).emit(...) if we joined channel rooms.
-      // Let's assume we join project rooms. We will broadcast to the project room.
-      // But we need to know WHICH project this socket belongs to.
-
-      // Since we don't have easy access to the `connectedUsers` map here without exporting it or passing state,
-      // we'll just emit to everyone for this demo or rely on the client to filter.
-      // IMPROVEMENT: Client joins `channelId` room.
-
-      io.emit('chat:message', {
-        ...payload,
-        id: `m-${Date.now()}`,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      });
+  io.on("connection", (socket: Socket) => {
+    // Join Channel Room
+    socket.on("chat:join", async (payload: { channelId: string }) => {
+      socket.join(payload.channelId);
     });
 
-    // Handle typing indicators
-    socket.on('chat:typing', (payload: { channelId: string; userId: string; isTyping: boolean }) => {
-      socket.broadcast.emit('chat:typing', payload);
+    // Leave Channel Room
+    socket.on("chat:leave", (payload: { channelId: string }) => {
+      socket.leave(payload.channelId);
     });
+
+    // Get Channels
+    socket.on(
+      "chat:get_channels",
+      async (payload: { workspaceId: string }, callback) => {
+        console.log(
+          `[Gateway] Received chat:get_channels for workspace: ${payload.workspaceId}`,
+        );
+        try {
+          const channels = await ChatService.getChannels(payload.workspaceId);
+          console.log(`[Gateway] Found ${channels.length} channels`);
+          if (callback) callback({ success: true, data: channels });
+        } catch (e: any) {
+          console.error(`[Gateway] Error fetching channels:`, e);
+          if (callback) callback({ success: false, error: e.message });
+        }
+      },
+    );
+
+    // Create Channel
+    socket.on(
+      "chat:create_channel",
+      async (
+        payload: {
+          workspaceId: string;
+          name: string;
+          description: string;
+          userId: string;
+        },
+        callback,
+      ) => {
+        try {
+          const channel = await ChatService.createChannel(
+            payload.workspaceId,
+            payload.name,
+            payload.description,
+          );
+          // Broadcast to workspace room? For simple integration, we might not have a workspace-wide room.
+          // Client can poll or we can implement a global event if needed.
+          // For now, assume client re-fetches or manually handling.
+          // Better: Emit to a room named `workspace:${workspaceId}` if implemented.
+          // We'll just callback for now.
+          if (callback) callback({ success: true, data: channel });
+        } catch (e: any) {
+          if (callback) callback({ success: false, error: e.message });
+        }
+      },
+    );
+
+    // Get Messages
+    socket.on(
+      "chat:get_messages",
+      async (payload: { channelId: string }, callback) => {
+        try {
+          const messages = await ChatService.getMessages(payload.channelId);
+          if (callback) callback({ success: true, data: messages });
+        } catch (e: any) {
+          if (callback) callback({ success: false, error: e.message });
+        }
+      },
+    );
+
+    // Send Message
+    socket.on(
+      "chat:message",
+      async (
+        payload: { channelId: string; content: string; senderId: string },
+        callback,
+      ) => {
+        try {
+          const message = await ChatService.saveMessage(
+            payload.channelId,
+            payload.content,
+            payload.senderId,
+          );
+
+          // Broadcast to everyone in channel
+          io.to(payload.channelId).emit("chat:message", message);
+
+          if (callback) callback({ success: true, data: message });
+        } catch (e: any) {
+          console.error("Chat Error", e);
+          if (callback) callback({ success: false, error: e.message });
+        }
+      },
+    );
+
+    // Typing Indicator
+    socket.on(
+      "chat:typing",
+      (payload: { channelId: string; userId: string; isTyping: boolean }) => {
+        socket.to(payload.channelId).emit("chat:typing", payload);
+      },
+    );
   });
 };

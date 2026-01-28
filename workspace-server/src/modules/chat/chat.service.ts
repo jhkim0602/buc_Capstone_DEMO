@@ -1,91 +1,186 @@
+import { PrismaClient } from "@prisma/client";
 
-import { Channel, Message } from './chat.types';
-
-// In-memory Storage for MVP
-// Map<ProjectId, Channel[]>
-const CHANNELS_DB = new Map<string, Channel[]>();
-
-// Map<ChannelId, Message[]>
-const MESSAGES_DB = new Map<string, Message[]>();
+const prisma = new PrismaClient();
 
 export class ChatService {
-
   // --- Channel Management ---
 
-  static async getChannels(projectId: string): Promise<Channel[]> {
-    if (!CHANNELS_DB.has(projectId)) {
-      // Initialize default channels for new projects
-      const defaults: Channel[] = [
-        { id: `ch-gen-${projectId}`, projectId, name: 'general', description: 'General discussion', type: 'public', createdAt: new Date().toISOString(), createdBy: 'system' },
-        { id: `ch-dev-${projectId}`, projectId, name: 'dev', description: 'Technical discussions', type: 'public', createdAt: new Date().toISOString(), createdBy: 'system' },
-        { id: `ch-design-${projectId}`, projectId, name: 'design', description: 'Design feedback', type: 'public', createdAt: new Date().toISOString(), createdBy: 'system' },
-        { id: `ch-random-${projectId}`, projectId, name: 'random', description: 'Downtime', type: 'public', createdAt: new Date().toISOString(), createdBy: 'system' }
-      ];
-      CHANNELS_DB.set(projectId, defaults);
+  static async getChannels(workspaceId: string) {
+    console.log(`[Service] getChannels called for workspaceId: ${workspaceId}`);
+    // If no channels exist for this workspace, create defaults?
+    // For now just return what is there.
+    const channels = await prisma.workspace_channels.findMany({
+      where: { workspace_id: workspaceId },
+      orderBy: { created_at: "asc" },
+    });
+    console.log(`[Service] DB returned ${channels.length} channels`);
 
-      // Initialize message buckets for defaults
-      defaults.forEach(c => MESSAGES_DB.set(c.id, []));
+    if (channels.length === 0) {
+      console.log(
+        `[Service] No channels found. Creating default 'general' channel.`,
+      );
+      // Create 'general' channel if none exist
+      const general = await this.createChannel(
+        workspaceId,
+        "general",
+        "General discussion",
+      );
+      return [general];
     }
-    return CHANNELS_DB.get(projectId) || [];
+
+    return channels;
   }
 
-  static async createChannel(projectId: string, name: string, description: string, userId: string): Promise<Channel> {
-    const channels = await this.getChannels(projectId);
-
+  static async createChannel(
+    workspaceId: string,
+    name: string,
+    description: string = "",
+  ) {
     // Check duplicate name
-    if (channels.find(c => c.name === name)) {
+    const existing = await prisma.workspace_channels.findFirst({
+      where: { workspace_id: workspaceId, name },
+    });
+
+    if (existing) {
       throw new Error(`Channel #${name} already exists.`);
     }
 
-    const newChannel: Channel = {
-      id: `ch-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-      projectId,
-      name,
-      description,
-      type: 'public', // Default to public for now
-      createdAt: new Date().toISOString(),
-      createdBy: userId
-    };
-
-    channels.push(newChannel);
-    CHANNELS_DB.set(projectId, channels);
-    MESSAGES_DB.set(newChannel.id, []); // Init storage
-
-    return newChannel;
+    return await prisma.workspace_channels.create({
+      data: {
+        workspace_id: workspaceId,
+        name,
+        description,
+        type: "PUBLIC",
+      },
+    });
   }
 
-  static async getChannelById(channelId: string): Promise<Channel | null> {
-    // Inefficient lookup for MVP (iterate all projects)
-    for (const channels of CHANNELS_DB.values()) {
-        const found = channels.find(c => c.id === channelId);
-        if (found) return found;
-    }
-    return null;
+  static async getChannelById(channelId: string) {
+    return await prisma.workspace_channels.findUnique({
+      where: { id: channelId },
+    });
   }
 
   // --- Message Management ---
 
-  static async getMessages(channelId: string): Promise<Message[]> {
-    return MESSAGES_DB.get(channelId) || [];
+  static async getMessages(channelId: string) {
+    const messages = await prisma.workspace_messages.findMany({
+      where: { channel_id: channelId },
+      orderBy: { created_at: "asc" },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            nickname: true,
+            avatar_url: true,
+          },
+        },
+      },
+    });
+
+    // Map to client expected format
+    return messages.map((msg) => ({
+      id: msg.id,
+      channelId: msg.channel_id,
+      content: msg.content,
+      senderId: msg.sender_id,
+      sender: msg.sender, // { id, nickname, avatar_url }
+      timestamp: msg.created_at.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      fullTimestamp: msg.created_at,
+      type: msg.type.toLowerCase(), // 'TEXT' -> 'text'
+    }));
   }
 
-  static async saveMessage(channelId: string, content: string, senderId: string): Promise<Message> {
-    const channel = await this.getChannelById(channelId);
-    if (!channel) throw new Error("Channel not found");
+  static async saveMessage(
+    channelId: string,
+    content: string,
+    senderId: string,
+  ) {
+    // Ensure channel exists
+    // const channel = await this.getChannelById(channelId);
+    // if (!channel) throw new Error("Channel not found");
 
-    const newMessage: Message = {
-      id: `msg-${Date.now()}`,
-      channelId,
-      content,
-      senderId,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      type: 'text'
+    const msg = await prisma.workspace_messages.create({
+      data: {
+        channel_id: channelId,
+        content,
+        sender_id: senderId,
+        type: "TEXT",
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            nickname: true,
+            avatar_url: true,
+          },
+        },
+      },
+    });
+
+    // --- Mention Handling & Notification Persistence (Non-blocking) ---
+    // Fire-and-forget to avoid delaying client response
+    (async () => {
+      try {
+        // Regex detects [@userId:name] - Updated to accept any ID format (not just 36 char UUID)
+        const mentionRegex = /\[@([^:]+):([^\]]+)\]/g;
+        const mentionedUserIds = new Set<string>();
+        let match;
+
+        while ((match = mentionRegex.exec(content)) !== null) {
+          if (match[1] !== senderId) {
+            // Self-mention check
+            mentionedUserIds.add(match[1]);
+          }
+        }
+
+        if (mentionedUserIds.size > 0) {
+          const channel = await this.getChannelById(channelId);
+          const workspaceId = channel?.workspace_id;
+
+          await Promise.all(
+            Array.from(mentionedUserIds).map(async (targetUserId) => {
+              // Clean content for notification display (replace [@id:name] with @name)
+              const displayContent = content.replace(
+                /\[@([^:]+):([^\]]+)\]/g,
+                "@$2",
+              );
+
+              await prisma.notifications.create({
+                data: {
+                  user_id: targetUserId,
+                  type: "MENTION",
+                  title: `New mention in #${channel?.name || "chat"}`,
+                  message: `${msg.sender?.nickname || "Someone"} mentioned you: "${displayContent.substring(0, 50)}${displayContent.length > 50 ? "..." : ""}"`,
+                  link: `/workspace/${workspaceId}`,
+                },
+              });
+            }),
+          );
+        }
+      } catch (error) {
+        console.error(
+          "[Service] Failed to create notifications (background):",
+          error,
+        );
+      }
+    })();
+
+    return {
+      id: msg.id,
+      channelId: msg.channel_id,
+      content: msg.content,
+      senderId: msg.sender_id,
+      sender: msg.sender,
+      timestamp: msg.created_at.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      fullTimestamp: msg.created_at,
+      type: msg.type.toLowerCase(),
     };
-
-    const messages = MESSAGES_DB.get(channelId) || [];
-    messages.push(newMessage);
-    MESSAGES_DB.set(channelId, messages);
-
-    return newMessage;
   }
 }

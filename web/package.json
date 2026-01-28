@@ -109,6 +109,7 @@
     "recharts": "2.15.0",
     "remark-gfm": "^4.0.1",
     "rss-parser": "latest",
+    "socket.io-client": "^4.8.3",
     "sonner": "^1.7.1",
     "swr": "^2.3.8",
     "tailwind-merge": "^2.5.5",
