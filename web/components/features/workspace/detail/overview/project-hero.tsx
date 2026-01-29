@@ -1,63 +1,98 @@
 "use client";
 
-import { useWorkspaceStore } from "../../store/mock-data";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, CalendarClock, Target } from "lucide-react";
+import {
+  ExternalLink,
+  Plus,
+  FileText,
+  Video,
+  CheckCircle2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ProjectHeroProps {
-  projectId: string;
+  project: any;
+  progress: number;
+  totalTasks: number;
+  completedTasks: number;
 }
 
-export function ProjectHero({ projectId }: ProjectHeroProps) {
-  const { projects } = useWorkspaceStore();
-  const project = projects.find(p => p.id === projectId);
-
+export function ProjectHero({
+  project,
+  progress,
+  totalTasks,
+  completedTasks,
+}: ProjectHeroProps) {
   if (!project) return null;
 
-  const dDay = project.dDay
-    ? Math.ceil((new Date(project.dDay).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-    : null;
-
   return (
-    <Card className="bg-gradient-to-br from-primary/5 via-primary/5 to-background border-primary/20">
-      <CardContent className="p-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-               <div className="flex items-center gap-2">
-                 <Badge variant="outline" className="bg-background">{project.type}</Badge>
-                 {project.status === 'live' && <Badge className="bg-green-500 hover:bg-green-600">LIVE</Badge>}
-               </div>
-               <h1 className="text-3xl font-bold tracking-tight">{project.title}</h1>
-               <p className="text-muted-foreground max-w-2xl">{project.description}</p>
+    <Card className="border bg-background shadow-sm">
+      <CardContent className="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
+        {/* Left: Info */}
+        <div className="space-y-4 max-w-2xl">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge
+                variant="outline"
+                className="bg-background border-primary/20 text-primary"
+              >
+                {project.type || "Side Project"}
+              </Badge>
+              <Badge className="bg-green-500 hover:bg-green-600">LIVE</Badge>
             </div>
-
-            {project.externalLink && (
-              <Button variant="outline" className="gap-2" asChild>
-                <a href={project.externalLink.url} target="_blank" rel="noreferrer">
-                  <ExternalLink className="h-4 w-4" />
-                  {project.externalLink.title}
-                </a>
-              </Button>
-            )}
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
+              {project.name}
+            </h1>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              {project.description || "No description provided."}
+            </p>
           </div>
 
-          <div className="flex gap-4 min-w-[200px]">
-             {dDay !== null && (
-               <div className="flex-1 bg-background rounded-xl border p-4 flex flex-col items-center justify-center text-center shadow-sm">
-                  <CalendarClock className="h-6 w-6 text-orange-500 mb-2" />
-                  <div className="text-2xl font-bold text-orange-600">D-{dDay}</div>
-                  <div className="text-xs text-muted-foreground">Days Remaining</div>
-               </div>
-             )}
-             <div className="flex-1 bg-background rounded-xl border p-4 flex flex-col items-center justify-center text-center shadow-sm">
-                <Target className="h-6 w-6 text-blue-500 mb-2" />
-                <div className="text-2xl font-bold text-blue-600">Goal</div>
-                <div className="text-xs text-muted-foreground">MVP Release</div>
-             </div>
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button className="rounded-full shadow-sm">
+              <Plus className="h-4 w-4 mr-2" />
+              New Task
+            </Button>
+            <Button variant="secondary" className="rounded-full">
+              <FileText className="h-4 w-4 mr-2" />
+              New Doc
+            </Button>
           </div>
+        </div>
+
+        {/* Right: Simple Stats */}
+        <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col items-center justify-center p-4 border rounded-xl min-w-[120px] bg-muted/30">
+            <CheckCircle2 className="h-5 w-5 text-primary mb-2 opacity-80" />
+            <span className="text-2xl font-bold">{totalTasks}</span>
+            <span className="text-xs text-muted-foreground font-medium uppercase">
+              Total Tasks
+            </span>
+          </div>
+          <div className="flex flex-col items-center justify-center p-4 border rounded-xl min-w-[120px] bg-muted/30">
+            <div className="h-5 w-5 rounded-full border-2 border-green-500 flex items-center justify-center mb-2">
+              <span className="h-2 w-2 rounded-full bg-green-500" />
+            </div>
+            <span className="text-2xl font-bold text-foreground">
+              {completedTasks}
+            </span>
+            <span className="text-xs text-muted-foreground font-medium uppercase">
+              Completed
+            </span>
+          </div>
+          {project.members && (
+            <div className="flex flex-col items-center justify-center p-4 border rounded-xl min-w-[120px] bg-muted/30">
+              <span className="text-xl mb-2">👥</span>
+              <span className="text-2xl font-bold">
+                {project.members.length}
+              </span>
+              <span className="text-xs text-muted-foreground font-medium uppercase">
+                Members
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

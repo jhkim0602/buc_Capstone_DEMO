@@ -1,35 +1,84 @@
 "use client";
 
+import useSWR from "swr";
+import { useAuth } from "@/hooks/use-auth";
 import { ProjectHero } from "./overview/project-hero";
-import { TeamWidget } from "./overview/team-widget";
+import { TeamPulse } from "./overview/team-pulse";
+
 import { UpcomingEvents } from "./overview/upcoming-events";
 import { DashboardCalendar } from "./overview/dashboard-calendar";
+import { Loader2 } from "lucide-react";
 
 interface DashboardOverviewProps {
   projectId: string;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export function DashboardOverview({ projectId }: DashboardOverviewProps) {
+  const { user } = useAuth();
+
+  // 1. Fetch Project Details
+  const { data: project, isLoading: isProjectLoading } = useSWR(
+    `/api/workspaces/${projectId}`,
+    fetcher,
+  );
+
+  // 2. Fetch Board Data (Tasks)
+  const { data: boardData, isLoading: isBoardLoading } = useSWR(
+    `/api/workspaces/${projectId}/board`,
+    fetcher,
+  );
+
+  if (isProjectLoading || isBoardLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // 3. Calc Stats
+  const tasks = boardData?.tasks || [];
+  const totalTasks = tasks.length;
+  // Assuming 'done' status id is likely 'done' or 'completed' based on column title logic
+  // API returns status as lowercase-hyphenated title.
+  const completedTasks = tasks.filter(
+    (t: any) =>
+      t.status === "done" ||
+      t.status === "completed" ||
+      t.status === "finished",
+  ).length;
+  const progress =
+    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
   return (
-    <div className="p-6 max-w-[1600px] mx-auto space-y-6">
+    <div className="p-6 max-w-[1600px] mx-auto space-y-6 animate-in fade-in duration-500">
       {/* Top Hero Section */}
-      <ProjectHero projectId={projectId} />
+      <ProjectHero
+        project={project}
+        progress={progress}
+        totalTasks={totalTasks}
+        completedTasks={completedTasks}
+      />
 
       {/* Main Grid Layout */}
-      <div className="grid gap-6 md:grid-cols-12 h-[600px]">
-        {/* Left Column: Team & Schedule */}
-        <div className="md:col-span-4 space-y-6 flex flex-col h-full">
-           <div className="flex-1 min-h-0">
-             <TeamWidget projectId={projectId} />
-           </div>
-           <div className="flex-1 min-h-0">
-             <UpcomingEvents projectId={projectId} />
-           </div>
+      <div className="grid gap-6 md:grid-cols-12 items-start">
+        {/* Left Column: Team & Stats */}
+        <div className="md:col-span-4 space-y-6 flex flex-col">
+          <div className="min-h-[300px]">
+            <TeamPulse members={boardData?.members} projectId={projectId} />
+          </div>
+          <div className="min-h-[300px]">
+            <UpcomingEvents projectId={projectId} tasks={tasks} />
+          </div>
         </div>
 
-        {/* Right Column: Calendar */}
-        <div className="md:col-span-8 h-full bg-background rounded-xl border shadow-sm overflow-hidden">
-           <DashboardCalendar projectId={projectId} />
+        {/* Center/Right Column */}
+        <div className="md:col-span-8 flex flex-col gap-6">
+          <div className="bg-background rounded-xl border shadow-sm overflow-hidden h-full min-h-[600px]">
+            <DashboardCalendar projectId={projectId} tasks={tasks} />
+          </div>
         </div>
       </div>
     </div>

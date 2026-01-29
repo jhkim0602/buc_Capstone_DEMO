@@ -89,7 +89,7 @@ const MyBriefcase = dynamic(
     loading: () => <Skeleton className="h-full w-full rounded-lg" />,
   },
 );
-import { TaskDetailModal } from "@/components/features/workspace/modules/task/detail-modal";
+import { AdvancedTaskModal } from "@/components/features/workspace/detail/board/advanced-task-modal";
 import { useWorkspaceStore } from "@/components/features/workspace/store/mock-data";
 import { useSocketStore } from "@/components/features/workspace/store/socket-store";
 import { useAuth } from "@/hooks/use-auth";
@@ -217,17 +217,15 @@ export default function WorkspaceDetailPage() {
         </main>
       </div>
 
-      {activeTask && (
-        <TaskDetailModal
-          taskId={activeTaskId || ""}
-          task={activeTask}
-          availableTags={tags} // tags from store
-          members={realMembers} // Pass real members
-          onClose={() => setActiveTaskId(null)}
-          onUpdate={updateTask}
-          onDelete={deleteTask}
-        />
-      )}
+      {/* Rewritten Modal usage - Handles data fetching internally */}
+      <AdvancedTaskModal
+        open={!!activeTaskId}
+        onOpenChange={(open) => {
+          if (!open) setActiveTaskId(null);
+        }}
+        taskId={activeTaskId}
+        projectId={projectId}
+      />
     </SidebarLayout>
   );
 }

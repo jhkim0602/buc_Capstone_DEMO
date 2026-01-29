@@ -171,8 +171,8 @@ export function SmartInput({
                     value={`${task.title}-${task.id}`}
                     onSelect={() => insertTag(`[#${task.title}]`)}
                   >
-                    <Hash className="h-4 w-4 mr-2" />
-                    {task.title}
+                    <Hash className="h-4 w-4 mr-2 shrink-0 opacity-70" />
+                    <span className="font-medium">{task.title}</span>
                   </CommandItem>
                 ))}
             </CommandGroup>

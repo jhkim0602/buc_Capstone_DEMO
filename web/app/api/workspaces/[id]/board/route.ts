@@ -99,7 +99,6 @@ export async function GET(
       id: c.id,
       title: c.title,
       statusId: c.title.toLowerCase().replace(/\s+/g, "-"), // Generate statusId from title for now
-      color: "gray", // Default
       category: c.category || "todo",
       color:
         c.category === "in-progress"
@@ -119,7 +118,10 @@ export async function GET(
       assignee: t.assignee ? t.assignee.nickname : null,
       assigneeId: t.assignee_id,
       tags: t.tags,
+      priority: t.priority || "medium",
       priorityId: t.priority || "medium",
+      // Stable category for styling: 'todo', 'in-progress', 'done'
+      category: columns.find((c) => c.id === t.column_id)?.category || "todo",
       status:
         columns
           .find((c) => c.id === t.column_id)

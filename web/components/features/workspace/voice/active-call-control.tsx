@@ -12,22 +12,16 @@ import {
   PhoneOff,
   Volume2,
   Users,
-  Monitor,
-  Settings2,
-  Wifi,
+  Video,
+  VideoOff,
   Maximize2,
   Minimize2,
+  Wifi,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ConnectionQuality } from "livekit-client";
 
 export function ActiveCallControl() {
@@ -36,6 +30,7 @@ export function ActiveCallControl() {
   const participants = useParticipants();
   const [isMuted, setIsMuted] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(false);
 
   // Connection Quality Hook
   const { quality } = useConnectionQualityIndicator({
@@ -45,7 +40,12 @@ export function ActiveCallControl() {
   useEffect(() => {
     if (!localParticipant) return;
     setIsMuted(!localParticipant.isMicrophoneEnabled);
-  }, [localParticipant, localParticipant.isMicrophoneEnabled]);
+    setIsVideoEnabled(localParticipant.isCameraEnabled);
+  }, [
+    localParticipant,
+    localParticipant.isMicrophoneEnabled,
+    localParticipant.isCameraEnabled,
+  ]);
 
   const toggleMute = async (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -53,6 +53,18 @@ export function ActiveCallControl() {
     const newState = !isMuted;
     await localParticipant.setMicrophoneEnabled(!newState);
     setIsMuted(newState);
+  };
+
+  const toggleCamera = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!localParticipant) return;
+    const newState = !isVideoEnabled;
+    try {
+      await localParticipant.setCameraEnabled(newState);
+      setIsVideoEnabled(newState);
+    } catch (e) {
+      console.error("Failed to toggle camera", e);
+    }
   };
 
   const handleDisconnect = (e?: React.MouseEvent) => {
@@ -234,20 +246,23 @@ export function ActiveCallControl() {
                 )}
               </Button>
 
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground"
-                    >
-                      <Monitor className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Share Screen (Coming Soon)</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Button
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  "h-9 w-9 rounded-lg transition-colors",
+                  isVideoEnabled
+                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                )}
+                onClick={toggleCamera}
+              >
+                {isVideoEnabled ? (
+                  <Video className="h-4 w-4" />
+                ) : (
+                  <VideoOff className="h-4 w-4" />
+                )}
+              </Button>
             </div>
 
             <Button
