@@ -57,7 +57,13 @@ interface Workspace {
   member_count: number;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error("Failed to fetch");
+  }
+  return res.json();
+};
 
 export function ProjectList() {
   const {
@@ -118,79 +124,83 @@ export function ProjectList() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {workspaces?.map((workspace) => (
-          <div key={workspace.id} className="relative group">
-            <Link href={`/workspace/${workspace.id}`} className="block h-full">
-              <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full flex flex-col relative overflow-hidden">
-                {/* Gradient Background Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+        {Array.isArray(workspaces) &&
+          workspaces.map((workspace) => (
+            <div key={workspace.id} className="relative group">
+              <Link
+                href={`/workspace/${workspace.id}`}
+                className="block h-full"
+              >
+                <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full flex flex-col relative overflow-hidden">
+                  {/* Gradient Background Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                <CardHeader className="pb-4 pr-12">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                      {workspace.name.charAt(0)}
+                  <CardHeader className="pb-4 pr-12">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                        {workspace.name.charAt(0)}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="capitalize">
+                          {workspace.my_role}
+                        </Badge>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="capitalize">
-                        {workspace.my_role}
-                      </Badge>
+                    <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors">
+                      {workspace.name}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-2 mt-2 min-h-[40px]">
+                      {workspace.description || "설명이 없습니다."}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    {/* Stats / Meta info */}
+                  </CardContent>
+                  <CardFooter className="pt-0 border-t bg-muted/20 p-4 flex justify-between items-center text-xs text-muted-foreground mt-auto">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {formatDistanceToNow(new Date(workspace.updated_at), {
+                        addSuffix: true,
+                        locale: ko,
+                      })}
                     </div>
-                  </div>
+                    <div className="flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {workspace.member_count}명
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Link>
 
-                  <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors">
-                    {workspace.name}
-                  </CardTitle>
-                  <CardDescription className="line-clamp-2 mt-2 min-h-[40px]">
-                    {workspace.description || "설명이 없습니다."}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  {/* Stats / Meta info */}
-                </CardContent>
-                <CardFooter className="pt-0 border-t bg-muted/20 p-4 flex justify-between items-center text-xs text-muted-foreground mt-auto">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {formatDistanceToNow(new Date(workspace.updated_at), {
-                      addSuffix: true,
-                      locale: ko,
-                    })}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    {workspace.member_count}명
-                  </div>
-                </CardFooter>
-              </Card>
-            </Link>
-
-            {/* Owner Actions - Positioned absolutely but outside the Link */}
-            {workspace.my_role === "owner" && (
-              <div className="absolute top-4 right-4 z-20">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 hover:bg-muted"
-                    >
-                      <MoreVertical className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      className="text-red-600 focus:text-red-600 focus:bg-red-50"
-                      onClick={() => setWorkspaceToDelete(workspace)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      삭제하기
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )}
-          </div>
-        ))}
+              {/* Owner Actions - Positioned absolutely but outside the Link */}
+              {workspace.my_role === "owner" && (
+                <div className="absolute top-4 right-4 z-20">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 hover:bg-muted"
+                      >
+                        <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                        onClick={() => setWorkspaceToDelete(workspace)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        삭제하기
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
+            </div>
+          ))}
 
         {/* New Project Placeholder */}
         <CreateWorkspaceDialog>

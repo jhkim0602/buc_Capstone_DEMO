@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
+import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 import { GlobalHeader } from "@/components/layout/global-header";
 import { GlobalMobileNav } from "@/components/layout/mobile-nav";
 import { Suspense } from "react";
+import { PresenceProvider } from "@/components/providers/presence-provider";
+import { VoiceManager } from "@/components/features/workspace/voice/voice-manager";
 
 export const metadata: Metadata = {
   title: {
@@ -55,22 +58,34 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head>
-      <body suppressHydrationWarning className="min-h-screen bg-background font-sans antialiased">
+      <body
+        suppressHydrationWarning
+        className="min-h-screen bg-background font-sans antialiased"
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
-            <Suspense fallback={<div className="h-14 bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/50 dark:border-slate-700/50" />}>
-              <GlobalHeader />
-            </Suspense>
-            <div className="flex-1 pt-14">{children}</div>
-            <GlobalMobileNav />
-          </div>
-          <Toaster />
-          <Analytics />
+          <PresenceProvider>
+            <VoiceManager>
+              <div className="relative flex min-h-screen flex-col">
+                <Suspense
+                  fallback={
+                    <div className="h-14 bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/50 dark:border-slate-700/50" />
+                  }
+                >
+                  <GlobalHeader />
+                </Suspense>
+                <div className="flex-1 pt-14">{children}</div>
+                <GlobalMobileNav />
+              </div>
+            </VoiceManager>
+            <Toaster />
+            <SonnerToaster />
+            <Analytics />
+          </PresenceProvider>
         </ThemeProvider>
       </body>
     </html>

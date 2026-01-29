@@ -26,16 +26,26 @@ const MarkdownEditor = dynamic(
         에디터 로딩 중...
       </div>
     ),
-  }
+  },
 );
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 
-export default function PostForm() {
+interface PostFormProps {
+  initialData?: {
+    id: string;
+    title: string;
+    content: string;
+    category: string;
+    tags?: string[];
+  };
+}
+
+export default function PostForm({ initialData }: PostFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("");
+  const [content, setContent] = useState(initialData?.content || "");
+  const [category, setCategory] = useState(initialData?.category || "");
 
   const { user } = useAuth();
 
@@ -43,13 +53,17 @@ export default function PostForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent reload absolutely
 
-    if (!category) {
-      toast.error("카테고리를 선택해주세요.");
-      return;
-    }
+    const formData = new FormData(e.currentTarget);
+    const titleVal = formData.get("title");
 
-    if (!content.trim()) {
-      toast.error("내용을 입력해주세요.");
+    // Validation
+    const missingFields = [];
+    if (!titleVal) missingFields.push("제목");
+    if (!category) missingFields.push("카테고리");
+    if (!content.trim()) missingFields.push("내용");
+
+    if (missingFields.length > 0) {
+      toast.error(`다음 항목을 확인해주세요: ${missingFields.join(", ")}`);
       return;
     }
 
@@ -59,8 +73,6 @@ export default function PostForm() {
     }
 
     setLoading(true);
-    const formData = new FormData(e.currentTarget);
-    const titleVal = formData.get("title");
 
     // Prepare API Payload
     const payload = {
@@ -72,8 +84,12 @@ export default function PostForm() {
     };
 
     try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
+      const isEdit = !!initialData?.id;
+      const url = isEdit ? `/api/posts/${initialData.id}` : "/api/posts";
+      const method = isEdit ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method: method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -84,8 +100,10 @@ export default function PostForm() {
         toast.error(result.error);
         setLoading(false);
       } else {
-        toast.success("게시글이 작성되었습니다.");
-        router.push(`/community/board/${result.id}`);
+        toast.success(
+          isEdit ? "게시글이 수정되었습니다." : "게시글이 작성되었습니다.",
+        );
+        router.push(`/community/board/${isEdit ? initialData.id : result.id}`);
       }
     } catch (error) {
       console.error(error);
@@ -98,12 +116,7 @@ export default function PostForm() {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
       <div className="space-y-2">
         <Label htmlFor="category">카테고리</Label>
-        <Select
-          name="category"
-          required
-          onValueChange={setCategory}
-          value={category}
-        >
+        <Select name="category" onValueChange={setCategory} value={category}>
           <SelectTrigger>
             <SelectValue placeholder="카테고리를 선택하세요" />
           </SelectTrigger>
@@ -122,8 +135,8 @@ export default function PostForm() {
         <Input
           id="title"
           name="title"
+          defaultValue={initialData?.title || ""}
           placeholder="제목을 입력하세요 (예: React Query 캐싱 질문있습니다)"
-          required
           className="text-lg font-medium"
         />
       </div>
@@ -131,7 +144,11 @@ export default function PostForm() {
       <div className="space-y-2">
         <Label>내용</Label>
         <div className="border rounded-lg min-h-[500px] bg-card shadow-sm p-4 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-          <MarkdownEditor onChange={setContent} className="min-h-[500px]" />
+          <MarkdownEditor
+            onChange={setContent}
+            className="min-h-[500px]"
+            initialContent={initialData?.content}
+          />
         </div>
         <p className="text-xs text-muted-foreground">
           Markdown 문법을 지원합니다. 슬래시(/)를 입력하여 메뉴를 호출하세요.
@@ -149,7 +166,7 @@ export default function PostForm() {
         </Button>
         <Button type="submit" disabled={loading || !content}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          작성 완료
+          {initialData ? "수정 완료" : "작성 완료"}
         </Button>
       </div>
     </form>

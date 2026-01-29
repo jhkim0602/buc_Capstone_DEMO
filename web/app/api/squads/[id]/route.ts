@@ -48,7 +48,7 @@ export async function DELETE(
   }
 }
 
-// Update Status (e.g. Close Recruitment)
+// Update Squad (Status or Content)
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } },
@@ -65,11 +65,12 @@ export async function PATCH(
 
     const { id } = params;
     const userId = session.user.id;
-    const { status } = await request.json(); // e.g. "recruiting", "closed", "active"
+    const body = await request.json();
 
+    // Verify ownership
     const squad = await prisma.squads.findUnique({
       where: { id },
-      select: { leader_id: true },
+      select: { leader_id: true, status: true },
     });
 
     if (!squad) {
@@ -80,14 +81,47 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await prisma.squads.update({
+    // Determine if it's a status update or full edit
+    // If body contains 'status' and keys length is 1, it's a status update (from SquadActions)
+    // Otherwise it's from SquadForm
+
+    // However, to be safe, we can just update mostly everything provided in body that is allowed.
+    // We should allow status updates here too.
+
+    const {
+      title,
+      content,
+      type,
+      capacity,
+      tech_stack,
+      place_type,
+      location,
+      status,
+    } = body;
+
+    // Construct update data dynamically
+    const updateData: any = {};
+    if (title) updateData.title = title;
+    if (content) updateData.content = content;
+    if (type) updateData.type = type;
+    if (capacity) updateData.capacity = Number(capacity); // Ensure number
+    if (tech_stack) updateData.tech_stack = tech_stack;
+    if (place_type) updateData.place_type = place_type;
+    // Handle location explicitly. If place_type is online, location might be cleared or set to something else.
+    // SquadForm sends location even if online (as 'reference').
+    if (location !== undefined) updateData.location = location;
+    if (status) updateData.status = status;
+
+    updateData.updated_at = new Date();
+
+    const updatedSquad = await prisma.squads.update({
       where: { id },
-      data: { status },
+      data: updateData,
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json(updatedSquad);
   } catch (error: any) {
-    console.error("API: Update Squad Status Error", error);
+    console.error("API: Update Squad Error", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

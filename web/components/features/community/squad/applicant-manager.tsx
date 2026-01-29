@@ -147,7 +147,6 @@ export default function ApplicantManager({
         <Button className="w-full" variant="secondary">
           <UserPlus className="mr-2 w-4 h-4" />
           신청자 관리
-          {/* If loading, maybe show spinner? Or just current count */}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">

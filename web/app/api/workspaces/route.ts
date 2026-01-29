@@ -11,6 +11,11 @@ export async function GET(request: Request) {
       data: { session },
     } = await supabase.auth.getSession();
 
+    console.log(
+      "[API] Workspaces Check Session:",
+      session ? `User ${session.user.id}` : "No Session",
+    );
+
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

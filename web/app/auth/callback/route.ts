@@ -7,13 +7,20 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get("code");
 
   if (code) {
-    const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient({
-      cookies: () => cookieStore as any,
-    });
-    await supabase.auth.exchangeCodeForSession(code);
+    const supabase = createRouteHandlerClient({ cookies });
+    try {
+      await supabase.auth.exchangeCodeForSession(code);
+      console.log("Auth Callback: Session exchanged successfully");
+    } catch (e) {
+      console.error("Auth Callback: Exchange failed", e);
+    }
   }
 
   // URL to redirect to after sign in process completes
-  return NextResponse.redirect(requestUrl.origin);
+  const next = requestUrl.searchParams.get("next");
+  if (next) {
+    return NextResponse.redirect(new URL(next, requestUrl.origin));
+  }
+
+  return NextResponse.redirect(new URL("/", requestUrl.origin));
 }

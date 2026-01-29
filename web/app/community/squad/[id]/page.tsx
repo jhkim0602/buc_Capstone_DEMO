@@ -15,14 +15,16 @@ import {
   Monitor,
   Share2,
   AlertTriangle,
+  UserPlus,
 } from "lucide-react";
 import { fetchDevEventById } from "@/lib/server/dev-events";
 
 // Components
 import ApplicationButton from "@/components/features/community/squad/application-button";
 import ApplicantManager from "@/components/features/community/squad/applicant-manager";
-import { SquadActions } from "@/components/features/community/squad-actions";
+import SquadActions from "@/components/features/community/squad-actions";
 import { CreateWorkspaceDialog } from "@/components/features/workspace/dialogs/create-workspace-dialog";
+import { SquadHeaderActions } from "@/components/features/community/squad-header-actions";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -78,8 +80,11 @@ export default async function SquadDetailPage({ params }: PageProps) {
       .select("status")
       .eq("squad_id", id)
       .eq("user_id", currentUserId)
-      .single();
-    applicationStatus = application?.status;
+      .maybeSingle(); // Use maybeSingle to avoid errors
+
+    if (application) {
+      applicationStatus = application.status;
+    }
   }
 
   // Fetch Applications if Leader
@@ -145,6 +150,9 @@ export default async function SquadDetailPage({ params }: PageProps) {
                 })}
               </span>
               <div className="ml-auto flex items-center gap-2">
+                {isLeader && (
+                  <SquadHeaderActions squadId={squad.id} isLeader={isLeader} />
+                )}
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                   <Share2 className="w-4 h-4" />
                 </Button>
@@ -196,58 +204,61 @@ export default async function SquadDetailPage({ params }: PageProps) {
         {/* Right Column: Sidebar */}
         <div className="space-y-6">
           {/* Action Card */}
-          <Card className="shadow-lg border-primary/20 relative overflow-hidden">
-            {squad.status === "recruiting" && (
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
-            )}
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center text-lg">
-                <span>현재 모집 현황</span>
-                <span className="text-primary font-bold text-xl">
-                  {squad.recruited_count} / {squad.capacity}{" "}
-                  <span className="text-sm font-normal text-muted-foreground">
-                    명
+          <Card className="shadow-sm border-border relative overflow-hidden">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-end mb-2">
+                <CardTitle className="text-base font-semibold">
+                  모집 현황
+                </CardTitle>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-primary">
+                    {squad.recruited_count}
                   </span>
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+                  <span className="text-sm text-muted-foreground font-medium">
+                    / {squad.capacity}명
+                  </span>
+                </div>
+              </div>
               {/* Progress Bar */}
-              <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
+              <div className="w-full bg-secondary/50 h-2 rounded-full overflow-hidden">
                 <div
-                  className="bg-primary h-full transition-all duration-500"
+                  className="bg-primary h-full transition-all duration-500 ease-out"
                   style={{
                     width: `${(squad.recruited_count / squad.capacity) * 100}%`,
                   }}
                 />
               </div>
-
+            </CardHeader>
+            <CardContent className="space-y-3 pt-0">
               {isLeader ? (
-                <div className="pt-2 space-y-2">
-                  <p className="text-sm text-center text-muted-foreground mb-4">
-                    리더 권한으로 팀원을 관리할 수 있습니다.
-                  </p>
-                  {/* @ts-ignore */}
-                  <ApplicantManager
-                    squadId={squad.id}
-                    initialApplications={applications}
-                  />
-                  <Button variant="outline" className="w-full">
-                    모집글 수정하기
-                  </Button>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* @ts-ignore */}
+                    <ApplicantManager
+                      squadId={squad.id}
+                      initialApplications={applications}
+                    />
 
-                  <CreateWorkspaceDialog fromSquadId={squad.id}>
-                    <Button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0">
-                      🚀 워크스페이스로 전환하기
-                    </Button>
-                  </CreateWorkspaceDialog>
+                    {/* Management Buttons */}
+                    <SquadActions
+                      squadId={squad.id}
+                      isLeader={isLeader}
+                      status={squad.status}
+                    />
+                  </div>
 
-                  {/* Management Actions */}
-                  <SquadActions
-                    squadId={squad.id}
-                    isLeader={isLeader}
-                    status={squad.status}
-                  />
+                  <div className="pt-2 border-t">
+                    <CreateWorkspaceDialog fromSquadId={squad.id}>
+                      <Button className="w-full" variant="default">
+                        <Monitor className="w-4 h-4 mr-2" />
+                        워크스페이스 생성
+                      </Button>
+                    </CreateWorkspaceDialog>
+                    <p className="text-xs text-center text-muted-foreground mt-2">
+                      팀원이 모두 모였다면 워크스페이스로 이동하여 협업을
+                      시작하세요.
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="pt-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
 import { SidebarLayout } from "@/components/layout/sidebar-layout";
@@ -93,7 +93,6 @@ import { TaskDetailModal } from "@/components/features/workspace/modules/task/de
 import { useWorkspaceStore } from "@/components/features/workspace/store/mock-data";
 import { useSocketStore } from "@/components/features/workspace/store/socket-store";
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect } from "react";
 
 export default function WorkspaceDetailPage() {
   const params = useParams();

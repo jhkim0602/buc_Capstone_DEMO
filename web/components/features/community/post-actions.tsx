@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, FileEdit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -37,14 +37,25 @@ export function PostActions({ postId, isAuthor }: PostActionsProps) {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-1">
       <Button
-        variant="destructive"
+        variant="ghost"
+        size="sm"
+        onClick={() => router.push(`/community/board/${postId}/edit`)}
+        className="text-muted-foreground hover:text-foreground"
+      >
+        <FileEdit className="w-4 h-4 mr-2" />
+        수정
+      </Button>
+
+      <Button
+        variant="ghost"
         size="sm"
         onClick={handleDelete}
-        className="gap-2"
+        className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
       >
-        <Trash2 className="w-4 h-4" /> 삭제
+        <Trash2 className="w-4 h-4 mr-2" />
+        삭제
       </Button>
     </div>
   );

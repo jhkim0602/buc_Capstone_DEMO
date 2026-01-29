@@ -30,23 +30,41 @@ const MarkdownEditor = dynamic(
         에디터 로딩 중...
       </div>
     ),
-  }
+  },
 );
 
-export default function SquadForm() {
+interface SquadFormProps {
+  initialData?: {
+    id: string;
+    title: string;
+    content: string;
+    type: string;
+    capacity: number;
+    place_type: "online" | "offline" | "hybrid";
+    location?: string;
+    tech_stack: string[];
+    activity_id?: string;
+    activity_title?: string;
+  };
+}
+
+export default function SquadForm({ initialData }: SquadFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const activityId = searchParams.get("activityId");
-  const activityTitle = searchParams.get("activityTitle");
+  const activityId = initialData?.activity_id || searchParams.get("activityId");
+  const activityTitle =
+    initialData?.activity_title || searchParams.get("activityTitle");
 
   const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState("");
-  const [type, setType] = useState("project"); // Default
-  const [placeType, setPlaceType] = useState("online");
+  const [content, setContent] = useState(initialData?.content || "");
+  const [type, setType] = useState(initialData?.type || "project");
+  const [placeType, setPlaceType] = useState(
+    initialData?.place_type || "online",
+  );
 
   // Tag Managment
   const [tagInput, setTagInput] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(initialData?.tech_stack || []);
   const [noTechStack, setNoTechStack] = useState(false);
   const { user } = useAuth(); // Get user from auth hook
 
@@ -78,13 +96,21 @@ export default function SquadForm() {
       const locationVal = formData.get("location");
 
       // Validation
-      let validationError = "";
-      if (!titleVal) validationError += "제목 ";
-      if (!type) validationError += "유형 ";
-      if (!content) validationError += "내용 ";
+      const missingFields = [];
+      if (!titleVal) missingFields.push("제목");
+      if (!type) missingFields.push("모임 유형");
+      if (!content) missingFields.push("상세 내용");
+      if (placeType !== "online" && !locationVal)
+        missingFields.push("주 활동 지역");
 
-      if (validationError) {
-        toast.error(`다음 항목을 입력해주세요: ${validationError}`);
+      if (missingFields.length > 0) {
+        toast.error(`다음 항목을 확인해주세요: ${missingFields.join(", ")}`);
+        return;
+      }
+
+      const capacityNum = Number(capacityVal);
+      if (isNaN(capacityNum) || capacityNum < 2 || capacityNum > 20) {
+        toast.error("모집 인원은 2명 이상 20명 이하로 설정해주세요.");
         return;
       }
 
@@ -107,8 +133,12 @@ export default function SquadForm() {
         user_id: user.id,
       };
 
-      const response = await fetch("/api/squads", {
-        method: "POST",
+      const isEdit = !!initialData?.id;
+      const url = isEdit ? `/api/squads/${initialData.id}` : "/api/squads";
+      const method = isEdit ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method: method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -119,9 +149,11 @@ export default function SquadForm() {
         toast.error(result.error || "작성 중 오류가 발생했습니다.");
         setLoading(false);
       } else {
-        toast.success("모집글이 등록되었습니다.");
-        router.push(`/community/squad/${result.id}`);
-        router.refresh(); // Ensure list updates
+        toast.success(
+          isEdit ? "모집글이 수정되었습니다." : "모집글이 등록되었습니다.",
+        );
+        router.push(`/community/squad/${isEdit ? initialData.id : result.id}`);
+        router.refresh();
       }
     } catch (e: any) {
       console.error(e);
@@ -175,7 +207,7 @@ export default function SquadForm() {
           <Input
             type="number"
             name="capacity"
-            defaultValue={4}
+            defaultValue={initialData?.capacity || 4}
             min={2}
             max={20}
             required
@@ -186,7 +218,7 @@ export default function SquadForm() {
           <Label htmlFor="place_type">진행 방식</Label>
           <Select
             value={placeType}
-            onValueChange={setPlaceType}
+            onValueChange={(val: any) => setPlaceType(val)}
             name="place_type"
           >
             <SelectTrigger>
@@ -206,6 +238,7 @@ export default function SquadForm() {
           </Label>
           <Input
             name="location"
+            defaultValue={initialData?.location || ""}
             placeholder={
               placeType === "online"
                 ? "예: 디스코드, 게더타운"
@@ -270,8 +303,8 @@ export default function SquadForm() {
               noTechStack
                 ? "기술 무관이 선택되었습니다."
                 : tags.length === 0
-                ? "기술 스택을 입력하고 엔터를 누르세요 (예: React, Java)"
-                : "태그 추가..."
+                  ? "기술 스택을 입력하고 엔터를 누르세요 (예: React, Java)"
+                  : "태그 추가..."
             }
           />
         </div>
@@ -282,6 +315,7 @@ export default function SquadForm() {
         <Input
           id="title"
           name="title"
+          defaultValue={initialData?.title || ""}
           placeholder="모집글 제목을 입력하세요"
           required
           className="text-lg font-medium"
@@ -294,7 +328,9 @@ export default function SquadForm() {
           <MarkdownEditor
             onChange={setContent}
             className="min-h-[400px]"
-            initialContent={`
+            initialContent={
+              initialData?.content ||
+              `
 ### 1. 프로젝트/스터디 소개
 어떤 주제로 무엇을 만들거나 공부하는지 알려주세요.
 
@@ -303,7 +339,8 @@ export default function SquadForm() {
 
 ### 3. 진행 방식
 예상 일정, 회의 주기, 사용 툴 등을 적어주세요.
-`}
+`
+            }
           />
         </div>
       </div>
@@ -320,7 +357,7 @@ export default function SquadForm() {
         {/* Manual submit handler */}
         <Button type="button" onClick={handleManualSubmit} disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          작성 완료
+          {initialData ? "수정 완료" : "작성 완료"}
         </Button>
       </div>
     </form>

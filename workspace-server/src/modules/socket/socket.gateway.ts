@@ -1,7 +1,7 @@
-import { Server, Socket } from 'socket.io';
-import { setupChatGateway } from '../chat/chat.gateway';
+import { Server, Socket } from "socket.io";
+import { setupChatGateway } from "../chat/chat.gateway";
 // import { setupHuddleGateway } from '../huddle/huddle.gateway'; // Removed
-import { setupBoardGateway } from '../board/board.gateway';
+import { setupBoardGateway } from "../board/board.gateway";
 
 interface ConnectedUser {
   socketId: string;
@@ -14,40 +14,47 @@ interface ConnectedUser {
 export const connectedUsers = new Map<string, ConnectedUser>();
 
 export const setupSocketGateway = (io: Server) => {
-  io.on('connection', (socket: Socket) => {
+  io.on("connection", (socket: Socket) => {
     console.log(`Client connected: ${socket.id}`);
 
     // Handle initial join/auth
-    socket.on('join', ({ userId, projectId }) => {
+    socket.on("join", ({ userId, projectId }) => {
       console.log(`User ${userId} joined project ${projectId}`);
 
       connectedUsers.set(socket.id, {
         socketId: socket.id,
         userId,
         projectId,
-        online: true
+        online: true,
       });
 
       // Join project room
       socket.join(projectId);
 
       // Broadcast presence update
-      io.to(projectId).emit('presence:update', {
+      io.to(projectId).emit("presence:update", {
         userId,
-        status: 'online'
+        status: "online",
       });
     });
 
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       const user = connectedUsers.get(socket.id);
       if (user) {
         console.log(`User ${user.userId} disconnected`);
-        io.to(user.projectId).emit('presence:update', {
+        io.to(user.projectId).emit("presence:update", {
           userId: user.userId,
-          status: 'offline'
+          status: "offline",
         });
         connectedUsers.delete(socket.id);
       }
+    });
+
+    // Voice State Update Relay
+    socket.on("voice:update", ({ projectId }) => {
+      // Broadcast to everyone in the project (including sender, though sender usually updates self)
+      // Using broadcast.to avoids sender re-fetch if desired, but io.to is safer to ensure consistency
+      socket.to(projectId).emit("voice:update");
     });
   });
 

@@ -1,6 +1,9 @@
 import useSWR from "swr";
+import { usePresence } from "@/components/providers/presence-provider";
+import { useVoice } from "@/components/features/workspace/voice/voice-manager";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   LayoutDashboard,
   Kanban,
@@ -43,6 +46,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useSocketStore } from "@/components/features/workspace/store/socket-store";
 import { useNotifications } from "@/hooks/use-notifications";
+
 import { useAuth } from "@/hooks/use-auth";
 import {
   Dialog,
@@ -83,6 +87,39 @@ export function WorkspaceSidebar({
     activeChannelId,
   } = useSocketStore();
   const { notifications, markAsRead } = useNotifications();
+  const { user } = useAuth();
+
+  // Real-time Presence (Global)
+  const { onlineUsers } = usePresence();
+
+  // Voice Channels
+  const { joinRoom, currentRoom, isConnected } = useVoice();
+
+  // Poll for Room Participants (Socket-driven + 60s fallback)
+  const { data: roomParticipants, mutate: mutateRooms } = useSWR(
+    "/api/livekit/rooms",
+    fetcher,
+    {
+      refreshInterval: 60000,
+    },
+  );
+
+  const { socket } = useSocketStore();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleVoiceUpdate = () => {
+      console.log("[Sidebar] Received voice update, refreshing list...");
+      mutateRooms();
+    };
+
+    socket.on("voice:update", handleVoiceUpdate);
+
+    return () => {
+      socket.off("voice:update", handleVoiceUpdate);
+    };
+  }, [socket, mutateRooms]);
 
   // One-way Sync: Unread Notifications -> Channel Badges
   // Only sets to TRUE. Does not clear badge if notification is read (fixes user requirement).
@@ -111,8 +148,6 @@ export function WorkspaceSidebar({
       }
     });
   }, [notifications, channels, setChannelMention, activeChannelId]);
-
-  // ... (rest of component state)
 
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
@@ -332,24 +367,91 @@ export function WorkspaceSidebar({
           </div>
           <div className="space-y-0.5">
             <Button
-              variant="ghost"
+              variant={currentRoom === "dev-room" ? "secondary" : "ghost"}
               className={cn(
                 "w-full justify-start h-8 px-2 text-muted-foreground font-normal",
-                activeTab === "huddle" &&
-                  "bg-muted text-foreground font-medium",
+                currentRoom === "dev-room" &&
+                  "bg-green-500/10 text-green-600 hover:bg-green-500/20 font-medium",
               )}
-              onClick={() => onTabChange("huddle")}
+              onClick={() => joinRoom(projectId, "dev-room")}
             >
               <Volume2 className="mr-2 h-3.5 w-3.5" />
               Dev Room
             </Button>
+            {roomParticipants?.["dev-room"]?.length > 0 && (
+              <div className="pl-4 pb-1 flex flex-col gap-1 mt-1">
+                {roomParticipants["dev-room"].map((p: any) => (
+                  <div
+                    key={p.identity}
+                    className="flex items-center gap-3 py-1 px-3 rounded-md hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="relative">
+                      <Avatar className="h-6 w-6 rounded-full ring-2 ring-background shadow-sm">
+                        <AvatarImage
+                          src={p.avatarUrl}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-medium">
+                          {p.name?.[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="absolute bottom-0 right-0 block h-2 w-2 rounded-full ring-1 ring-background bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium opacity-90 truncate max-w-[120px]">
+                      {p.name || "Unknown"}
+                      {p.identity === user?.id && (
+                        <span className="ml-1 text-xs text-muted-foreground font-normal">
+                          (Me)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
             <Button
-              variant="ghost"
-              className="w-full justify-start h-8 px-2 text-muted-foreground font-normal"
+              variant={currentRoom === "lounge" ? "secondary" : "ghost"}
+              className={cn(
+                "w-full justify-start h-8 px-2 text-muted-foreground font-normal",
+                currentRoom === "lounge" &&
+                  "bg-green-500/10 text-green-600 hover:bg-green-500/20 font-medium",
+              )}
+              onClick={() => joinRoom(projectId, "lounge")}
             >
               <Volume2 className="mr-2 h-3.5 w-3.5" />
               Lounge
             </Button>
+            {roomParticipants?.["lounge"]?.length > 0 && (
+              <div className="pl-4 pb-1 flex flex-col gap-1 mt-1">
+                {roomParticipants["lounge"].map((p: any) => (
+                  <div
+                    key={p.identity}
+                    className="flex items-center gap-3 py-1 px-3 rounded-md hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="relative">
+                      <Avatar className="h-6 w-6 rounded-full ring-2 ring-background shadow-sm">
+                        <AvatarImage
+                          src={p.avatarUrl}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-medium">
+                          {p.name?.[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="absolute bottom-0 right-0 block h-2 w-2 rounded-full ring-1 ring-background bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium opacity-90 truncate max-w-[120px]">
+                      {p.name || "Unknown"}
+                      {p.identity === user?.id && (
+                        <span className="ml-1 text-xs text-muted-foreground font-normal">
+                          (Me)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -363,22 +465,25 @@ export function WorkspaceSidebar({
           />
         </div>
         <div className="space-y-1">
-          {project?.members?.map((member: any, i: number) => (
-            <div
-              key={i}
-              className="flex items-center justify-between px-2 py-1.5 text-sm group hover:bg-muted/50 rounded-md"
-            >
-              <div className="flex items-center overflow-hidden">
-                <div
-                  className={`h-2 w-2 rounded-full mr-2 ${member.online ? "bg-green-500" : "bg-slate-300"}`}
-                ></div>
-                <span className="truncate">{member.name}</span>
+          {project?.members?.map((member: any, i: number) => {
+            const isOnline = onlineUsers.has(member.id);
+            return (
+              <div
+                key={i}
+                className="flex items-center justify-between px-2 py-1.5 text-sm group hover:bg-muted/50 rounded-md"
+              >
+                <div className="flex items-center overflow-hidden">
+                  <div
+                    className={`h-2 w-2 rounded-full mr-2 ${isOnline ? "bg-green-500" : "bg-slate-300"}`}
+                  ></div>
+                  <span className="truncate">{member.name}</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground border px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  {member.role}
+                </span>
               </div>
-              <span className="text-[10px] text-muted-foreground border px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                {member.role}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
