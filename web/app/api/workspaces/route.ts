@@ -23,6 +23,7 @@ export async function GET(request: Request) {
     const userId = session.user.id;
 
     // Find workspaces where I am a member
+    // Find workspaces where I am a member
     const memberships = await prisma.workspace_members.findMany({
       where: { user_id: userId },
       include: {
@@ -30,6 +31,19 @@ export async function GET(request: Request) {
           include: {
             _count: {
               select: { members: true },
+            },
+            members: {
+              take: 4,
+              orderBy: { joined_at: "desc" },
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    nickname: true,
+                    avatar_url: true,
+                  },
+                },
+              },
             },
           },
         },
@@ -44,6 +58,11 @@ export async function GET(request: Request) {
       ...m.workspace,
       my_role: m.role,
       member_count: m.workspace._count.members,
+      recent_members: m.workspace.members.map((wm) => ({
+        id: wm.user.id,
+        avatar_url: wm.user.avatar_url,
+        nickname: wm.user.nickname,
+      })),
     }));
 
     return NextResponse.json(workspaces);
@@ -67,7 +86,7 @@ export async function POST(request: Request) {
 
     const userId = session.user.id;
     const body = await request.json();
-    const { name, description, fromSquadId } = body;
+    const { name, description, category, fromSquadId } = body;
 
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -80,6 +99,7 @@ export async function POST(request: Request) {
         data: {
           name,
           description,
+          category: category || "Side Project",
           from_squad_id: fromSquadId || null,
         },
       });

@@ -126,17 +126,6 @@ export default function WorkspaceDetailPage() {
     realTasks.find((t: any) => t.id === activeTaskId) ||
     tasks.find((t) => t.id === activeTaskId);
 
-  console.log("--- WORKSPACE DETAIL PAGE DEBUG ---");
-  console.log("activeTaskId:", activeTaskId);
-  console.log("realTasks count:", realTasks.length);
-  console.log("activeTask found:", !!activeTask);
-  if (activeTaskId && !activeTask) {
-    console.log(
-      "Tasks IDs available:",
-      realTasks.map((t: any) => t.id),
-    );
-  }
-
   useEffect(() => {
     if (projectId && user) {
       const url = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:4000";

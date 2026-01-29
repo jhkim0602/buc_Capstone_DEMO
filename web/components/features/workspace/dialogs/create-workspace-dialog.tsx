@@ -9,6 +9,14 @@ import { mutate } from "swr";
 import { toast } from "sonner";
 import { Plus, Loader2 } from "lucide-react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,6 +43,7 @@ const formSchema = z.object({
     .string()
     .min(2, "워크스페이스 이름은 2글자 이상이어야 합니다.")
     .max(50),
+  category: z.string().min(1, "유형을 선택해주세요."),
   description: z
     .string()
     .max(200, "설명은 200자 이내로 입력해주세요.")
@@ -58,6 +67,7 @@ export function CreateWorkspaceDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      category: "Side Project",
       description: "",
     },
   });
@@ -147,6 +157,38 @@ export function CreateWorkspaceDialog({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>유형</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="워크스페이스 유형 선택" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Side Project">
+                        사이드 프로젝트
+                      </SelectItem>
+                      <SelectItem value="Startup">스타트업</SelectItem>
+                      <SelectItem value="Competition">공모전/대회</SelectItem>
+                      <SelectItem value="School">학교/동아리</SelectItem>
+                      <SelectItem value="Personal">개인용</SelectItem>
+                      <SelectItem value="Enterprise">기업</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="description"

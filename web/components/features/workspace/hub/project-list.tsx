@@ -51,10 +51,16 @@ interface Workspace {
   name: string;
   description?: string;
   icon_url?: string;
+  category?: string;
   created_at: string;
   updated_at: string;
   my_role: string;
   member_count: number;
+  recent_members?: {
+    id: string;
+    avatar_url: string | null;
+    nickname: string | null;
+  }[];
 }
 
 const fetcher = async (url: string) => {
@@ -131,44 +137,60 @@ export function ProjectList() {
                 href={`/workspace/${workspace.id}`}
                 className="block h-full"
               >
-                <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full flex flex-col relative overflow-hidden">
-                  {/* Gradient Background Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                  <CardHeader className="pb-4 pr-12">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                        {workspace.name.charAt(0)}
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="capitalize">
-                          {workspace.my_role}
-                        </Badge>
-                      </div>
+                <Card className="hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col relative overflow-hidden bg-card group shadow-sm hover:shadow-md">
+                  <CardHeader className="pb-3 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <Badge
+                        variant="secondary"
+                        className="bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-md px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider"
+                      >
+                        {workspace.category || "Side Project"}
+                      </Badge>
                     </div>
 
-                    <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors">
-                      {workspace.name}
-                    </CardTitle>
-                    <CardDescription className="line-clamp-2 mt-2 min-h-[40px]">
-                      {workspace.description || "설명이 없습니다."}
-                    </CardDescription>
+                    <div className="space-y-1.5">
+                      <CardTitle className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">
+                        {workspace.name}
+                      </CardTitle>
+                      <CardDescription className="line-clamp-2 text-sm text-muted-foreground h-10">
+                        {workspace.description ||
+                          "프로젝트에 대한 설명이 없습니다."}
+                      </CardDescription>
+                    </div>
                   </CardHeader>
-                  <CardContent className="flex-1">
-                    {/* Stats / Meta info */}
+
+                  <CardContent className="pb-4">
+                    <div className="flex items-center -space-x-2 overflow-hidden pl-1">
+                      {workspace?.recent_members?.map((member) => (
+                        <Avatar
+                          key={member.id}
+                          className="inline-block h-8 w-8 ring-2 ring-background transition-transform hover:-translate-y-1"
+                        >
+                          <AvatarImage src={member.avatar_url || ""} />
+                          <AvatarFallback className="bg-muted text-xs">
+                            {member.nickname?.slice(0, 1) || "?"}
+                          </AvatarFallback>
+                        </Avatar>
+                      ))}
+                      {workspace.member_count > 4 && (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full ring-2 ring-background bg-muted text-[10px] font-medium text-muted-foreground">
+                          +{workspace.member_count - 4}
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
-                  <CardFooter className="pt-0 border-t bg-muted/20 p-4 flex justify-between items-center text-xs text-muted-foreground mt-auto">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
+
+                  <CardFooter className="pt-0 p-6 mt-auto border-t bg-muted/5 flex justify-between items-center text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5" />
                       {formatDistanceToNow(new Date(workspace.updated_at), {
                         addSuffix: true,
                         locale: ko,
                       })}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="h-3 w-3" />
-                      {workspace.member_count}명
+                    {/* D-Day Placeholder or Member role */}
+                    <div className="text-xs font-medium text-orange-500">
+                      {workspace.my_role === "owner" ? "Owner" : "Member"}
                     </div>
                   </CardFooter>
                 </Card>

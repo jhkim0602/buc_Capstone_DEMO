@@ -539,6 +539,7 @@ model workspaces {
   name        String
   description String?
   icon_url    String?
+  category    String   @default("Side Project")
   
   // Optional link to origin squad
   from_squad_id String? @unique @db.Uuid

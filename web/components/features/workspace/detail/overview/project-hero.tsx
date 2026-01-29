@@ -38,7 +38,7 @@ export function ProjectHero({
                 variant="outline"
                 className="bg-background border-primary/20 text-primary"
               >
-                {project.type || "Side Project"}
+                {project.category || "Side Project"}
               </Badge>
               <Badge className="bg-green-500 hover:bg-green-600">LIVE</Badge>
             </div>
