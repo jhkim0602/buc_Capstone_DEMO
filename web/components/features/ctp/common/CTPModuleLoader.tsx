@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, Lightbulb, ArrowDownCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,9 +12,14 @@ import { CTPComplexity } from "../contents/shared/ctp-complexity";
 import { CTPPractice } from "../contents/shared/ctp-practice";
 import { CTPImplementation } from "../contents/shared/ctp-implementation";
 import { CTPPlayground } from "../playground/ctp-playground";
+import { CTPSortingPlayground } from "../playground/ctp-sorting-playground";
+import { CTPMergeSortPlayground } from "../playground/ctp-merge-sort-playground";
+import { CTPHeapSortPlayground } from "../playground/ctp-heap-sort-playground";
 import { CTPGuidePanel } from "../contents/shared/ctp-guide-panel";
+import { CTPInteractiveModule } from "../playground/ctp-interactive-module";
 import { CTPInteractivePlayground } from "../playground/ctp-interactive-playground";
 import ReactMarkdown from "react-markdown";
+import { applyContentExpansion } from "../contents/shared/ctp-content-expansion";
 
 interface CTPModuleLoaderProps {
   module: CTPModule;
@@ -24,14 +29,16 @@ interface CTPModuleLoaderProps {
 
 export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoaderProps) {
   const { config, useSim, Visualizer } = module;
-  const { runSimulation } = useSim();
+  const mergedConfig = useMemo(() => applyContentExpansion(config, activeKey), [config, activeKey]);
+  const sim = useSim();
+  const { runSimulation, interactive } = sim;
   const { reset, steps, currentStepIndex, setCode } = useCTPStore();
 
   // Reset & Init Simulation when Module Changes
   useEffect(() => {
     reset();
-    if (config.initialCode) {
-      const code = config.initialCode.python || "";
+    if (mergedConfig.initialCode) {
+      const code = mergedConfig.initialCode.python || "";
       setCode(code);
       // Auto-run disabled as per user request
     }
@@ -40,41 +47,71 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
     return () => {
       reset();
     };
-  }, [activeKey, config, reset, setCode, runSimulation]);
+  }, [activeKey, mergedConfig, reset, setCode, runSimulation]);
 
-  const currentData = steps[currentStepIndex]?.data || [];
+  const currentPayload = steps[currentStepIndex]?.data || [];
+  const currentEvents = useMemo(() => {
+    if (currentStepIndex < 0 || steps.length === 0) return [];
+    return steps
+      .slice(0, currentStepIndex + 1)
+      .flatMap((step) => step.events ?? []);
+  }, [steps, currentStepIndex]);
+  const currentData =
+    currentPayload && typeof currentPayload === "object" && "nodes" in currentPayload
+      ? (currentPayload as any).nodes
+      : currentPayload;
+  const currentEdges =
+    currentPayload && typeof currentPayload === "object" && "edges" in currentPayload
+      ? (currentPayload as any).edges
+      : undefined;
+  const currentRoot =
+    currentPayload && typeof currentPayload === "object" && "rootId" in currentPayload
+      ? (currentPayload as any).rootId
+      : undefined;
+  const currentOrientation =
+    currentPayload && typeof currentPayload === "object" && "orientation" in currentPayload
+      ? (currentPayload as any).orientation
+      : undefined;
+  const isMergeSortModule = activeKey === "merge-sort";
+  const isHeapSortModule = activeKey === "heap-sort";
+  const isSortingModule = [
+    "bubble-sort",
+    "selection-sort",
+    "insertion-sort",
+    "quick-sort",
+  ].includes(activeKey);
 
   return (
     <div className="space-y-12 pb-20">
       {/* 1. Overview */}
       <CTPIntro
         category={category || ""}
-        title={config.title || "Untitled"}
-        description={config.description || ""}
-        tags={config.tags || []}
-        story={config.story}
+        title={mergedConfig.title || "Untitled"}
+        description={mergedConfig.description || ""}
+        tags={mergedConfig.tags || []}
+        story={mergedConfig.story}
       />
 
       {/* 2. Features */}
-      {config.features && <CTPFeatures features={config.features} />}
+      {mergedConfig.features && <CTPFeatures features={mergedConfig.features} />}
 
       {/* 3. Visualizer */}
-      <section id="visualization" className="space-y-6">
+      <section id="visualization" data-toc="main" data-toc-level="1" className="space-y-6">
         <h2 className="text-2xl font-bold tracking-tight">시각화 학습하기</h2>
 
         {/* [NEW] Playground Limit (Story Connection) */}
-        {config.story?.playgroundLimit && (
+        {mergedConfig.story?.playgroundLimit && (
           <div className="flex items-start gap-3 py-2 text-muted-foreground">
             <ArrowDownCircle className="w-5 h-5 mt-1 animate-bounce text-primary" />
             <p className="font-medium text-primary">
-              {config.story.playgroundLimit}
+              {mergedConfig.story.playgroundLimit}
             </p>
           </div>
         )}
-        {config.story?.playgroundDescription ? (
+        {mergedConfig.story?.playgroundDescription ? (
           <div className="bg-muted/30 border-l-4 border-primary/50 p-4 mb-6 rounded-r-lg">
             <div className="text-muted-foreground leading-relaxed prose dark:prose-invert max-w-none prose-p:my-1 prose-li:my-0 prose-ul:my-2 prose-ol:my-2">
-              <ReactMarkdown>{config.story.playgroundDescription}</ReactMarkdown>
+              <ReactMarkdown>{mergedConfig.story.playgroundDescription}</ReactMarkdown>
             </div>
           </div>
         ) : (
@@ -85,31 +122,103 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
 
         {/* [NEW] Interactive Guide Layout */}
         <div className="flex flex-col gap-6">
-          {config.mode === 'interactive' && config.interactive ? (
-            /* Interactive Mode: No Code Editor, Just Buttons */
+          {mergedConfig.mode === 'interactive' && mergedConfig.interactive ? (
             <div className="w-full">
-              <CTPInteractivePlayground config={config.interactive} />
+              {interactive ? (
+                <CTPInteractiveModule
+                  components={mergedConfig.interactive.components}
+                  runtime={interactive}
+                  Visualizer={Visualizer}
+                  maxSize={mergedConfig.interactive.maxSize}
+                  emptyMessage="데이터를 추가해보세요!"
+                />
+              ) : mergedConfig.interactive.components.every((c) => c === "push" || c === "pop" || c === "peek") ? (
+                <CTPInteractivePlayground config={mergedConfig.interactive} />
+              ) : (
+                <div className="p-6 border rounded-lg bg-muted/20 text-sm text-muted-foreground">
+                  이 모듈은 아직 인터랙티브 시뮬레이션이 준비되지 않았습니다.
+                </div>
+              )}
             </div>
           ) : (
             /* Standard Mode: Visualizer + Code Editor */
             <>
               <div className="w-full">
-                <CTPPlayground
-                  initialCode={config.initialCode?.python ?? ""}
-                  onRun={runSimulation}
-                  visualizer={
-                    <Visualizer
-                      data={currentData}
-                      emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
-                    />
-                  }
-                />
+                {isMergeSortModule ? (
+                  <CTPMergeSortPlayground
+                    initialCode={mergedConfig.initialCode?.python ?? ""}
+                    onRun={runSimulation}
+                    visualizer={
+                      <Visualizer
+                        data={currentData}
+                        edges={currentEdges}
+                        rootId={currentRoot}
+                        orientation={currentOrientation}
+                        events={currentEvents}
+                        emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
+                      />
+                    }
+                  />
+                ) : isHeapSortModule ? (
+                  <CTPHeapSortPlayground
+                    initialCode={mergedConfig.initialCode?.python ?? ""}
+                    onRun={runSimulation}
+                    visualizer={
+                      <Visualizer
+                        data={currentData}
+                        edges={currentEdges}
+                        rootId={currentRoot}
+                        orientation={currentOrientation}
+                        events={currentEvents}
+                        emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
+                      />
+                    }
+                  />
+                ) : isSortingModule ? (
+                  <CTPSortingPlayground
+                    initialCode={mergedConfig.initialCode?.python ?? ""}
+                    onRun={runSimulation}
+                    visualizer={
+                      <Visualizer
+                        data={currentData}
+                        edges={currentEdges}
+                        rootId={currentRoot}
+                        orientation={currentOrientation}
+                        events={currentEvents}
+                        emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
+                      />
+                    }
+                  />
+                ) : (
+                  <CTPPlayground
+                    initialCode={mergedConfig.initialCode?.python ?? ""}
+                    onRun={runSimulation}
+                    showStatePanel={mergedConfig.showStatePanel ?? false}
+                    statePanelMode={mergedConfig.statePanelMode ?? "summary"}
+                    visualizer={
+                      <Visualizer
+                        data={currentData}
+                        edges={currentEdges}
+                        rootId={currentRoot}
+                        orientation={currentOrientation}
+                        events={currentEvents}
+                        emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
+                      />
+                    }
+                  />
+                )}
               </div>
 
               {/* Guide Panel (Bottom Toggle) */}
-              {config.guide && (
-                <div className="w-full">
-                  <GuideToggleSection guide={config.guide} />
+              {mergedConfig.guide && (
+                <div
+                  id="guide"
+                  data-toc="sub"
+                  data-toc-level="2"
+                  data-toc-title="실습 가이드"
+                  className="w-full"
+                >
+                  <GuideToggleSection guide={mergedConfig.guide} />
                 </div>
               )}
             </>
@@ -118,13 +227,13 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
       </section>
 
       {/* 4. Complexity */}
-      {config.complexity && <CTPComplexity data={config.complexity} names={config.complexityNames} />}
+      {mergedConfig.complexity && <CTPComplexity data={mergedConfig.complexity} names={mergedConfig.complexityNames} />}
 
       {/* 5. Implementation Code */}
-      {config.implementation && <CTPImplementation examples={config.implementation} />}
+      {mergedConfig.implementation && <CTPImplementation examples={mergedConfig.implementation} />}
 
       {/* 6. Practice Problems */}
-      {config.practiceProblems && <CTPPractice problems={config.practiceProblems} />}
+      {mergedConfig.practiceProblems && <CTPPractice problems={mergedConfig.practiceProblems} />}
     </div>
   );
 }

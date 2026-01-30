@@ -15,7 +15,11 @@ export const STACK_LIFO_CONFIG: CTPModuleConfig = {
         problem: `컴퓨터의 '되돌리기(Ctrl+Z)' 기능이나, 웹 브라우저의 '뒤로 가기' 버튼은 어떤 순서로 동작할까요?
 우리가 가장 최근에 한 작업을 먼저 취소하고, 그다음 최근 작업을 취소합니다. 즉, 시간의 역순으로 데이터에 접근해야 합니다.`,
         definition: `스택(Stack)은 '쌓다'라는 의미로, 데이터를 차곡차곡 쌓아 올리는 자료구조입니다.
-가장 중요한 특징은 **LIFO (Last-In, First-Out)**, 즉 '나중에 들어온 것이 먼저 나간다'는 원칙입니다.`,
+가장 중요한 특징은 **LIFO (Last-In, First-Out)**, 즉 '나중에 들어온 것이 먼저 나간다'는 원칙입니다.
+
+**불변식**
+- 가장 최근에 넣은 데이터가 항상 Top에 있다.
+- Pop은 항상 Top에서만 일어난다.`,
         analogy: `**프링글스 통**이나 **설거지 접시 더미**를 상상해보세요.
 1. 접시를 닦아서 쌓을 때는 맨 위에 둡니다. (Push)
 2. 접시를 꺼내서 쓸 때는 맨 위의 것부터 꺼냅니다. (Pop)
@@ -24,8 +28,27 @@ export const STACK_LIFO_CONFIG: CTPModuleConfig = {
 1. **Push**: 버튼을 눌러 데이터를 스택에 넣습니다. (최대 7개)
 2. **Pop**: 맨 위의 데이터를 꺼냅니다.
 3. **Overflow**: 꽉 찼을 때 Push를 하면 어떻게 되나요?
-4. **Underflow**: 비어있을 때 Pop을 하면 어떻게 되나요?`
+4. **Underflow**: 비어있을 때 Pop을 하면 어떻게 되나요?
+
+**실습 요약**
+- Push/Pop 순서를 바꾸면 결과가 어떻게 달라지는지 확인
+- Top이 항상 최근 요소를 가리키는지 확인`
     },
+
+    features: [
+        {
+            title: "LIFO 순서 보장",
+            description: "가장 마지막 작업이 가장 먼저 되돌려지는 구조입니다. 실행 취소, 뒤로 가기, 깊이 우선 탐색에 적합합니다."
+        },
+        {
+            title: "O(1) Push / Pop",
+            description: "스택의 맨 위(Top)만 다루므로 삽입과 삭제가 매우 빠릅니다."
+        },
+        {
+            title: "Top 중심 접근",
+            description: "중간 데이터는 직접 접근할 수 없고, 반드시 위에서부터 차례대로 처리해야 합니다."
+        }
+    ],
 
     complexity: {
         access: "O(n)",

@@ -7,7 +7,7 @@ import requests
 
 from src.shared.config import RSS_FEEDS, SUPABASE_URL, SUPABASE_KEY, TAG_REQUEST_DELAY_MS
 from src.shared.database import normalize_url, normalize_title, create_summary, extract_thumbnail
-from src.shared.tagger import generate_tags_for_article, base_tags_from_feed_category
+from src.shared.tagger import generate_tags_for_article, base_tags_from_feed_category, infer_category_from_tags
 
 # Supabase 초기화
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -139,6 +139,11 @@ def insert_articles(articles, url_set, author_title_map, feed_name):
                 ai_tags = generate_tags_for_article(article)
                 if ai_tags:
                     article["tags"] = list(set(article["tags"] + ai_tags))[:8]
+
+            # 카테고리가 없는 경우 태그 기반으로 추론
+            if not article["category"]:
+                article["category"] = infer_category_from_tags(article["tags"])
+
 
                 # AI API 속도 제한 (Rate Limiting)
                 if TAG_REQUEST_DELAY_MS > 0:

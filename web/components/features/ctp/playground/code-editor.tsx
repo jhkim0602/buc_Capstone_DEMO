@@ -10,6 +10,8 @@ interface CodeEditorProps {
   onChange?: (value: string | undefined) => void;
   readOnly?: boolean;
   activeLine?: number; // 1-based line number to highlight
+  hiddenLinePatterns?: RegExp[];
+  hideFromMarker?: string;
 }
 
 export function CodeEditor({
@@ -17,7 +19,9 @@ export function CodeEditor({
   value,
   onChange,
   readOnly = false,
-  activeLine
+  activeLine,
+  hiddenLinePatterns = [],
+  hideFromMarker
 }: CodeEditorProps) {
   const { theme } = useTheme();
   const editorRef = useRef<any>(null);
@@ -64,6 +68,51 @@ export function CodeEditor({
       decorationsRef.current = editor.deltaDecorations(decorationsRef.current, []);
     }
   }, [activeLine]);
+
+  // Hidden Lines Effect (for visualization/output helpers)
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const model = editor.getModel();
+    if (!model) return;
+
+    const text = model.getValue();
+    const lines = text.split("\n");
+    const ranges: { startLineNumber: number; startColumn: number; endLineNumber: number; endColumn: number }[] = [];
+
+    let hideFromIndex: number | null = null;
+    if (hideFromMarker) {
+      const idx = lines.findIndex((line) => line.includes(hideFromMarker));
+      if (idx >= 0) hideFromIndex = idx;
+    }
+
+    const matchesPattern = (line: string) => hiddenLinePatterns.some((re) => re.test(line));
+
+    lines.forEach((line, idx) => {
+      if (hideFromIndex !== null && idx >= hideFromIndex) {
+        return;
+      }
+      if (matchesPattern(line)) {
+        ranges.push({
+          startLineNumber: idx + 1,
+          endLineNumber: idx + 1,
+          startColumn: 1,
+          endColumn: 1
+        });
+      }
+    });
+
+    if (hideFromIndex !== null) {
+      ranges.push({
+        startLineNumber: hideFromIndex + 1,
+        endLineNumber: lines.length,
+        startColumn: 1,
+        endColumn: 1
+      });
+    }
+
+    editor.setHiddenAreas(ranges);
+  }, [value, hiddenLinePatterns, hideFromMarker]);
 
   return (
     <div className="h-full w-full min-h-[300px] rounded-md overflow-hidden border border-border/50">

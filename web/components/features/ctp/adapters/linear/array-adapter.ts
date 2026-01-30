@@ -22,11 +22,50 @@ export class ArrayAdapter extends BaseAdapter {
 
         if (!Array.isArray(startList)) return [];
 
-        return startList.map((val: any, idx: number) => ({
-            id: `item-${idx}`,
-            value: this.cleanValue(val),
-            label: idx.toString()
-        }));
+        const toIndex = (val: any) => (Number.isInteger(val) ? val : null);
+        const toIndexList = (val: any) => {
+            if (!Array.isArray(val)) return [] as number[];
+            return val.filter((v) => Number.isInteger(v)) as number[];
+        };
+
+        const activeIndex =
+            toIndex(globals['active_index']) ??
+            toIndex(globals['current_index']) ??
+            toIndex(globals['pivot_index']) ??
+            toIndex(globals['mid']);
+
+        const successIndex =
+            toIndex(globals['found_index']) ??
+            toIndex(globals['target_index']);
+
+        const comparingIndices = [
+            ...toIndexList(globals['compare_indices']),
+            ...toIndexList(globals['active_indices']),
+            ...toIndexList(globals['pivot_indices']),
+        ];
+
+        const highlightIndices = [
+            ...toIndexList(globals['visited_indices']),
+            ...toIndexList(globals['highlight_indices']),
+        ];
+
+        const lowIndex = toIndex(globals['low']);
+        const highIndex = toIndex(globals['high']);
+
+        return startList.map((val: any, idx: number) => {
+            let status: LinearItem['status'];
+            if (successIndex === idx) status = 'success';
+            else if (activeIndex === idx) status = 'active';
+            else if (comparingIndices.includes(idx) || lowIndex === idx || highIndex === idx) status = 'comparing';
+
+            return {
+                id: `item-${idx}`,
+                value: this.cleanValue(val),
+                label: idx.toString(),
+                status,
+                isHighlighted: !status && highlightIndices.includes(idx) ? true : undefined,
+            };
+        });
     }
 
     // Static helper for direct usage if needed

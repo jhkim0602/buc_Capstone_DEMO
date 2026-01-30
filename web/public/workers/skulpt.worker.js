@@ -13,6 +13,15 @@ const ctx = self;
 let isRunning = false;
 let nextResolver = null; // Promise resolve function to resume execution
 let stepsBuffer = []; // Global buffer to avoid closure issues
+let pendingEvents = [];
+
+const TRACE_PREAMBLE = `# --- CTP Trace Helper ---
+def trace(event_type, scope=None, **payload):
+    payload["type"] = event_type
+    if scope is not None:
+        payload["scope"] = scope
+    _ctp_trace_emit(payload)
+`;
 
 // --- 2. Message Handler ---
 ctx.onmessage = async (e) => {
@@ -43,7 +52,10 @@ async function runSkulpt(pythonCode) {
     // Reset State
     ctx.postMessage({ type: 'STATUS', status: 'running' });
     let stepCount = 0;
-    const MAX_STEPS = 500; // Safety limit
+    let lastLine = null;
+    const MAX_STEPS = 10000; // Safety limit (increased for complex sorting/graph demos)
+    const MAX_EVENTS = 2000; // Cap event buffer to avoid runaway memory
+    pendingEvents = [];
 
     // Mock "output" handler
     const outputBuffer = [];
@@ -55,6 +67,21 @@ async function runSkulpt(pythonCode) {
 
     // Configure Skulpt
     // @ts-ignore
+    // Inject tracer bridge
+    Sk.builtins._ctp_trace_emit = new Sk.builtin.func(function (event) {
+        const jsEvent = Sk.ffi.remapToJs(event);
+        if (jsEvent && typeof jsEvent === 'object') {
+            if (!jsEvent.scope) jsEvent.scope = 'generic';
+            if (pendingEvents.length < MAX_EVENTS) {
+                pendingEvents.push(jsEvent);
+            }
+        }
+        return Sk.builtin.none.none$;
+    });
+
+    const preambleLineCount = TRACE_PREAMBLE.trimEnd().split('\n').length;
+    const mergedCode = `${TRACE_PREAMBLE}\n${pythonCode}`;
+
     Sk.configure({
         output: outf,
         read: builtinRead,
@@ -63,16 +90,19 @@ async function runSkulpt(pythonCode) {
         // --- THE MAGIC: Custom Suspension for Debugging ---
         // This function is called by Skulpt at every line if 'debugging' is true
         breakpoints: function (filename, lineno, colno) {
+            if (lineno <= preambleLineCount) return;
             // 1. Capture State (Deep Copy needed to avoid mutation during pause)
             const snapshot = captureGlobals(Sk.globals);
 
             // 2. Buffer "Step" 
             stepsBuffer.push({
-                line: lineno,
+                line: Math.max(1, lineno - preambleLineCount),
                 col: colno,
                 variables: snapshot,
-                stdout: [...outputBuffer]
+                stdout: [...outputBuffer],
+                events: pendingEvents.splice(0)
             });
+            lastLine = lineno;
 
             // 3. NO PAUSE - Continuous Execution for CTP Prototype
             // To prevent UI freezing in heavy loops, we could await a tiny delay every N steps
@@ -92,8 +122,19 @@ async function runSkulpt(pythonCode) {
         // @ts-ignore
         await Sk.misceval.asyncToPromise(() => {
             // @ts-ignore
-            return Sk.importMainWithBody("<stdin>", false, pythonCode, true);
+            return Sk.importMainWithBody("<stdin>", false, mergedCode, true);
         });
+
+        if (pendingEvents.length > 0) {
+            const snapshot = captureGlobals(Sk.globals);
+            stepsBuffer.push({
+                line: lastLine ? Math.max(1, lastLine - preambleLineCount) : 1,
+                col: 0,
+                variables: snapshot,
+                stdout: [...outputBuffer],
+                events: pendingEvents.splice(0)
+            });
+        }
 
         // SEND ALL STEPS AT ONCE
         ctx.postMessage({ type: 'BATCH_STEPS', steps: stepsBuffer });

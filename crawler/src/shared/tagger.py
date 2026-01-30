@@ -14,11 +14,58 @@ ALLOWED_TAGS = [
     "ai", "ai-ml", "llm", "genai", "mlops", "nlp", "cv",
     # 데브옵스 (DevOps)
     "devops", "kubernetes", "docker", "terraform", "monitoring", "logging", "sre", "cloud", "cicd",
-    # 아키텍처
+    # 아키텍처 (매핑: 주로 Backend로, micro frontend는 Frontend로)
     "architecture", "scalability", "micro frontend", "monorepo", "module federation", "system design",
-    # 기타
-    "career", "culture", "business", "product", "ad", "case-study",
+    # 모바일
+    "mobile", "ios", "android", "flutter", "react-native", "swift", "kotlin", "app",
+    # 데이터
+    "data", "sql", "mysql", "postgresql", "mongodb", "hadoop", "spark", "redis",
+    # 보안
+    "security", "network", "blockchain",
 ]
+
+CATEGORY_MAPPING = {
+    "Frontend": [
+        # Allowed
+        "frontend", "react", "nextjs", "javascript", "typescript", "css", "web", "ui/ux", "design",
+        "micro frontend", "module federation",
+        # Synonyms
+        "html", "vue", "angular"
+    ],
+    "Backend": [
+        # Allowed
+        "backend", "nodejs", "nestjs", "spring", "java", "python", "go", "api", "database",
+        "architecture", "scalability", "system design", "monorepo",
+        # Synonyms
+        "node", "golang", "django", "express", "php", "laravel", "kafka", "rabbitmq", "elastic", "elasticsearch", "rust", "c++", "c#"
+    ],
+    "Mobile": [
+        # Allowed
+        "mobile", "ios", "android", "flutter", "react-native", "swift", "kotlin", "app"
+    ],
+    "AI": [
+        # Allowed
+        "ai", "ai-ml", "llm", "genai", "mlops", "nlp", "cv",
+        # Synonyms
+        "gpt", "machine learning", "tensorflow", "pytorch", "deep-learning"
+    ],
+    "DevOps": [
+        # Allowed
+        "devops", "kubernetes", "docker", "terraform", "monitoring", "logging", "sre", "cloud", "cicd",
+        # Synonyms
+        "k8s", "aws", "gcp", "azure", "linux", "ubuntu", "jenkins", "github actions"
+    ],
+    "Data": [
+        # Allowed
+        "data", "sql", "mysql", "postgresql", "mongodb", "hadoop", "spark", "redis",
+        # Synonyms
+        "oracle"
+    ],
+    "Security": [
+        # Allowed
+        "security", "network", "blockchain"
+    ]
+}
 
 def merge_and_dedupe(tags):
     normalized = []
@@ -39,16 +86,25 @@ def parse_tags_from_text(text):
 def build_prompt(title, summary="", author=""):
     allowed = ", ".join(ALLOWED_TAGS)
     return f"""
-You are a concise tagger for a tech blog aggregator.
-Article:
+You are an expert technical content classifier for a software engineering blog platform.
+Your goal is to assign standardized technical tags to categorize the article into domains: Frontend, Backend, AI, Mobile, DevOps, Data, Security.
+
+Article Info:
 - Title: {title}
-- Author/Blog: {author}
+- Blog/Author: {author}
 - Summary: {summary}
 
-Task: Choose 3-6 tags that best describe the article from the allowed list.
-Allowed List: {allowed}
+Instructions:
+1. Analyze the content to identify specific technologies or technical domains.
+2. Select 3-6 tags STRICTLY from the Allowed List below.
+3. Do NOT invent new tags. Use ONLY the provided list.
+4. If an article is about team culture or career but specific to a domain (e.g., "Frontend Team Culture"), tag it with that domain ("frontend").
+5. Return an empty string if the content is completely unrelated to technology.
 
-Output Format: Comma-separated list only. No extra text.
+Allowed List:
+{allowed}
+
+Output Format: Comma-separated list of tags only (e.g., "react, frontend, web"). No explanations.
 """.strip()
 
 def generate_with_gemini(prompt, retry_count=0):
@@ -105,8 +161,6 @@ def generate_tags_fallback(title, summary, author):
         "linux": "devops", "ubuntu": "devops", "jira": "cooperation", "confluence": "cooperation", "slack": "cooperation",
         "ai": "ai", "llm": "llm", "gpt": "genai", "machine learning": "ai-ml",
         "design": "design", "ux": "ui/ux", "ui": "ui/ux",
-        "career": "career", "interview": "career", "salary": "career",
-        "startup": "business", "agile": "culture", "scrum": "culture"
     }
 
     import re
@@ -161,12 +215,40 @@ def base_tags_from_feed_category(category):
     if not category:
         return []
     key = str(category).upper()
-    if key == "FE":
+    if key == "FRONTEND":
         return ["frontend", "web"]
-    elif key == "BE":
+    elif key == "BACKEND":
         return ["backend"]
     elif key == "AI":
         return ["ai"]
-    elif key == "APP":
+    elif key == "MOBILE":
         return ["mobile"]
+    elif key == "DEVOPS":
+        return ["devops", "cloud"]
+    elif key == "DATA":
+        return ["data"]
+    elif key == "SECURITY":
+        return ["security"]
     return []
+
+def infer_category_from_tags(tags):
+    if not tags: return None
+
+    counts = {cat: 0 for cat in CATEGORY_MAPPING}
+
+    for tag in tags:
+        t = str(tag).lower().strip()
+        for cat, cat_tags in CATEGORY_MAPPING.items():
+            if t in cat_tags:
+                counts[cat] += 1
+
+    # Find the category with the highest count
+    best_cat = None
+    max_count = 0
+
+    for cat, count in counts.items():
+        if count > max_count:
+            max_count = count
+            best_cat = cat
+
+    return best_cat

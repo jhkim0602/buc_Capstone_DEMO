@@ -27,7 +27,26 @@ export function useBlogData(params: UseBlogDataParams) {
         let query = supabase.from("blogs").select("*", { count: "exact" });
 
         // Apply filters here based on params
+        // Apply filters here based on params
         // blogType filtering removed as we only support "company" now
+
+        // Category Filter
+        if (params.tagCategory && params.tagCategory !== "all") {
+          query = query.eq("category", params.tagCategory);
+        }
+
+        if (params.selectedSubTags && params.selectedSubTags.length > 0) {
+           query = query.overlaps("tags", params.selectedSubTags);
+        }
+
+        if (params.searchQuery) {
+          query = query.or(`title.ilike.%${params.searchQuery}%,author.ilike.%${params.searchQuery}%`);
+        }
+
+        // Blog Author (Company) Filter
+        if (params.selectedBlog && params.selectedBlog !== "all") {
+          query = query.eq("author", params.selectedBlog);
+        }
 
         // Pagination
         const page = params.page || 1;

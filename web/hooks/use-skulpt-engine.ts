@@ -83,7 +83,9 @@ export function useSkulptEngine(props: UseSkulptEngineProps = {}): SkulptEngine 
                         description: `Line ${s.line}`,
                         activeLine: s.line,
                         data: visualData,
-                        stdout: s.stdout // [NEW] Pass captured stdout
+                        stdout: s.stdout,
+                        events: s.events,
+                        variables: s.variables
                     };
                 });
 

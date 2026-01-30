@@ -11,6 +11,8 @@ export interface VisualStep {
   highlightedIndices?: number[]; // indices to highlight
   activeLine?: number; // code line number associated with this step
   stdout?: string[]; // accumulated console output
+  events?: any[]; // tracer events (optional)
+  variables?: any; // raw globals snapshot for state panels
 }
 
 interface CTPState {

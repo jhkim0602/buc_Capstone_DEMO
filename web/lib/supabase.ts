@@ -16,8 +16,7 @@ export interface Blog {
   thumbnail_url: string | null;
   external_url: string;
   views: number;
-  blog_type: "company";
-  category: "FE" | "BE" | "AI" | "APP" | null;
+  category: "AI" | "Backend" | "Frontend" | "DevOps" | "Mobile" | "Data" | "Security" | null;
   created_at: string;
   updated_at: string;
 }
@@ -26,7 +25,7 @@ export interface Blog {
 interface AuthorInfo {
   author: string;
   blog_type: "company";
-  category?: "FE" | "BE" | "AI" | "APP" | null;
+  category?: "AI" | "Backend" | "Frontend" | "DevOps" | "Mobile" | "Data" | "Security" | null;
 }
 
 // 사용 가능한 블로그 목록 조회 (기업별)
@@ -223,13 +222,37 @@ export async function deleteBlog(id: number) {
 }
 
 // 조회수 증가
+// 조회수 증가
 export async function incrementViews(id: number) {
+  // 1. Try RPC first
   const { error } = await supabase.rpc("increment_views", { blog_id: id });
 
   if (error) {
-    console.error("조회수 증가 실패:", error.message);
+    console.warn("RPC increment_views failed, falling back to manual update:", error.message);
+
+    // 2. Fallback: Fetch & Update
+    try {
+        const { data: blog, error: fetchError } = await supabase
+            .from("blogs")
+            .select("views")
+            .eq("id", id)
+            .single();
+
+        if (fetchError || !blog) throw fetchError;
+
+        const { error: updateError } = await supabase
+            .from("blogs")
+            .update({ views: (blog.views || 0) + 1 })
+            .eq("id", id);
+
+        if (updateError) throw updateError;
+
+    } catch (manualError) {
+        console.error("Manual view increment failed:", manualError);
+    }
   }
 }
+
 
 // 주간 인기글 조회
 export async function fetchWeeklyPopularBlogs(limit = 5) {

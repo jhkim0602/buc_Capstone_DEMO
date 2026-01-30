@@ -25,15 +25,7 @@ export function Footer() {
             >
               개인정보 처리방침
             </Link>
-            <a
-              href="https://github.com/jhkim0602/Graduation-work_DEMO"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
-              title="GitHub"
-            >
-              <Github className="h-5 w-5" />
-            </a>
+
           </div>
         </div>
 

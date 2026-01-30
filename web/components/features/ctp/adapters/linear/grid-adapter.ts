@@ -23,13 +23,57 @@ export class GridAdapter extends BaseAdapter {
 
         if (!gridData || !Array.isArray(gridData)) return [];
 
+        const toCell = (val: any) => {
+            if (!Array.isArray(val) || val.length < 2) return null;
+            const r = val[0];
+            const c = val[1];
+            if (!Number.isInteger(r) || !Number.isInteger(c)) return null;
+            return { r, c };
+        };
+
+        const toCellList = (val: any) => {
+            if (!Array.isArray(val)) return [] as { r: number; c: number }[];
+            return val.map(toCell).filter(Boolean) as { r: number; c: number }[];
+        };
+
+        const activeCells = [
+            ...toCellList(globals['active_cells']),
+            ...toCellList(globals['frontier_cells']),
+        ];
+        const activeCell = toCell(globals['active_cell']) || toCell(globals['frontier_cell']);
+        if (activeCell) activeCells.push(activeCell);
+
+        const successCells = toCellList(globals['path_cells']);
+        const highlightCells = toCellList(globals['visited_cells']);
+
+        const visitedGrid = globals['visited'];
+        const hasVisitedGrid =
+            Array.isArray(visitedGrid) &&
+            visitedGrid.length === gridData.length &&
+            Array.isArray(visitedGrid[0]);
+
         return gridData.map((row: any[], rIdx: number) => {
             if (!Array.isArray(row)) return [];
-            return row.map((val: any, cIdx: number) => ({
-                id: `cell-${rIdx}-${cIdx}`,
-                value: this.cleanValue(val),
-                label: `${rIdx},${cIdx}`
-            }));
+            return row.map((val: any, cIdx: number) => {
+                let status: GridItem['status'];
+                if (successCells.some((cell) => cell.r === rIdx && cell.c === cIdx)) {
+                    status = 'success';
+                } else if (activeCells.some((cell) => cell.r === rIdx && cell.c === cIdx)) {
+                    status = 'active';
+                }
+
+                const visited =
+                    highlightCells.some((cell) => cell.r === rIdx && cell.c === cIdx) ||
+                    (hasVisitedGrid && visitedGrid[rIdx]?.[cIdx]);
+
+                return {
+                    id: `cell-${rIdx}-${cIdx}`,
+                    value: this.cleanValue(val),
+                    label: `${rIdx},${cIdx}`,
+                    status,
+                    isHighlighted: !status && visited ? true : undefined,
+                };
+            });
         });
     }
 }

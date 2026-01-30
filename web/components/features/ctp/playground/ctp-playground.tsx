@@ -7,12 +7,13 @@ import {
 } from "@/components/ui/resizable";
 import { CodeEditor } from "./code-editor";
 import { CTPTerminal } from "./ctp-terminal";
+import { CTPStatePanel } from "./ctp-state-panel";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Play, RotateCcw, ChevronRight, Pause, ChevronLeft, FastForward, Settings2, Maximize2, Minimize2 } from "lucide-react";
+import { Play, RotateCcw, ChevronRight, Pause, ChevronLeft, FastForward, Settings2, Maximize2, Minimize2, Eye, EyeOff } from "lucide-react";
 import { useCTPStore } from "../store/use-ctp-store";
 import { cn } from "@/lib/utils";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -32,9 +33,23 @@ interface CTPPlaygroundProps {
   initialCode: string;
   visualizer: ReactNode; // The visualized component (Left Panel)
   onRun?: (code: string) => void; // Trigger execution simulation
+  restrictedEditing?: boolean;
+  editBoundaryStart?: string;
+  editBoundaryEnd?: string;
+  showStatePanel?: boolean;
+  statePanelMode?: "summary" | "full";
 }
 
-export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundProps) {
+export function CTPPlayground({
+  initialCode,
+  visualizer,
+  onRun,
+  restrictedEditing = false,
+  editBoundaryStart = "# === USER CODE START ===",
+  editBoundaryEnd = "# === USER CODE END ===",
+  showStatePanel = true,
+  statePanelMode = "full",
+}: CTPPlaygroundProps) {
   const {
     code,
     setCode,
@@ -51,6 +66,29 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
   } = useCTPStore();
 
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isStatePanelOpen, setIsStatePanelOpen] = useState(showStatePanel);
+  const currentVariables = steps[currentStepIndex]?.variables;
+  const currentEvents = useMemo(() => {
+    if (currentStepIndex < 0) return [];
+    return steps
+      .slice(0, currentStepIndex + 1)
+      .flatMap((step) => step.events ?? []);
+  }, [steps, currentStepIndex]);
+
+  const extractedUserBlock = useMemo(() => {
+    const source = code || initialCode;
+    return extractUserBlock(source, editBoundaryStart, editBoundaryEnd);
+  }, [code, initialCode, editBoundaryStart, editBoundaryEnd]);
+
+  useEffect(() => {
+    if (!code && initialCode) {
+      setCode(initialCode);
+    }
+  }, [code, initialCode, setCode]);
+
+  useEffect(() => {
+    setIsStatePanelOpen(showStatePanel);
+  }, [showStatePanel]);
 
   // Auto-Play Logic
   useEffect(() => {
@@ -77,7 +115,13 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
     if (onRun) {
       // If code is empty (initial state), use initialCode
       // CodeEditor updates store synchronously on change, so 'code' should be current.
-      onRun(code || initialCode);
+      const source = code || initialCode;
+      if (!restrictedEditing) {
+        onRun(source);
+        return;
+      }
+      const merged = replaceUserBlock(source, editBoundaryStart, editBoundaryEnd, extractedUserBlock);
+      onRun(merged);
     }
   };
 
@@ -195,6 +239,18 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {showStatePanel && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 px-2 text-xs gap-1 text-muted-foreground"
+              onClick={() => setIsStatePanelOpen((prev) => !prev)}
+            >
+              {isStatePanelOpen ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              상태 패널 {isStatePanelOpen ? "숨기기" : "보기"}
+            </Button>
+          )}
+
           <div className="h-6 w-px bg-border mx-1" />
 
           <Button size="sm" variant="default" className="h-8 text-xs gap-1.5 bg-green-600 hover:bg-green-700 text-white" onClick={() => {
@@ -202,7 +258,7 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
             handleRun();
           }}>
             <Play className="w-3.5 h-3.5 fill-current" />
-            <span className="hidden sm:inline">코드 초기화</span>
+            <span className="hidden sm:inline">시뮬레이션 초기화</span>
           </Button>
 
           <div className="h-4 w-px bg-border mx-1" />
@@ -261,9 +317,20 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
                 </ResizablePanel>
 
                 <ResizableHandle withHandle />
+                {showStatePanel && isStatePanelOpen && (
+                  <>
+                    <ResizableHandle withHandle />
+                    <ResizablePanel defaultSize={22} minSize={12} collapsible={true} collapsedSize={0}>
+                      <div className="h-full w-full bg-background border-t border-border">
+                        <CTPStatePanel variables={currentVariables} events={currentEvents} mode={statePanelMode} />
+                      </div>
+                    </ResizablePanel>
+                  </>
+                )}
 
                 {/* Bottom: Terminal */}
-                <ResizablePanel defaultSize={30} minSize={10} collapsible={true} collapsedSize={0}>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={18} minSize={10} collapsible={true} collapsedSize={0}>
                   <CTPTerminal output={steps[currentStepIndex]?.stdout || []} />
                 </ResizablePanel>
               </ResizablePanelGroup>
@@ -279,12 +346,55 @@ export function CTPPlayground({ initialCode, visualizer, onRun }: CTPPlaygroundP
         <ResizablePanel defaultSize={50} minSize={30}>
           <CodeEditor
             initialCode={initialCode}
-            value={code}
-            onChange={(val) => setCode(val || "")}
+            value={restrictedEditing ? extractedUserBlock : code}
+            onChange={(val) => {
+              if (!restrictedEditing) {
+                setCode(val || "");
+                return;
+              }
+              const source = code || initialCode;
+              const next = replaceUserBlock(source, editBoundaryStart, editBoundaryEnd, val || "");
+              setCode(next);
+            }}
             activeLine={steps[currentStepIndex]?.activeLine}
+            readOnly={false}
+            hiddenLinePatterns={[
+              new RegExp("^# === USER CODE START ==="),
+              new RegExp("^# === USER CODE END ==="),
+              new RegExp("^#\\s*---\\s*출력 확인\\s*---"),
+              new RegExp("^\\s*def _dump\\b"),
+              new RegExp("^\\s*for _k in \\["),
+              new RegExp("^\\s*if name in globals\\(\\):?"),
+              new RegExp("^\\s*trace\\s*\\("),
+              new RegExp("^\\s*(active_index|compare_indices|highlight_indices|swap_indices|heap_size|active_range|k_index|found_index|target_index|visited_indices|path_nodes|active_prefix|probe_path|rehash_.*|queue_view)\\s*="),
+            ]}
+            hideFromMarker="# --- 출력 확인 ---"
           />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div >
   );
 }
+
+const extractUserBlock = (code: string, start: string, end: string) => {
+  if (!code) return "";
+  const startIdx = code.indexOf(start);
+  const endIdx = code.indexOf(end);
+  if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
+    return code;
+  }
+  const sliceStart = startIdx + start.length;
+  return code.slice(sliceStart, endIdx).trim();
+};
+
+const replaceUserBlock = (code: string, start: string, end: string, userBlock: string) => {
+  if (!code) return userBlock;
+  const startIdx = code.indexOf(start);
+  const endIdx = code.indexOf(end);
+  if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
+    return userBlock;
+  }
+  const before = code.slice(0, startIdx + start.length);
+  const after = code.slice(endIdx);
+  return `${before}\n${userBlock}\n${after}`;
+};
