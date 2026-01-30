@@ -27,7 +27,6 @@ const MENUS = {
     href: "/career",
     submenus: [
       { href: "/career/activities", label: "대외활동" },
-      { href: "/career/contest", label: "공모전" },
       { href: "/career/jobs", label: "채용공고" },
     ],
   },
@@ -88,10 +87,7 @@ export function GlobalHeader() {
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
               <span className="font-black text-xl text-foreground bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
-                <span className="bg-foreground text-background px-1 rounded mr-1">
-                  SL
-                </span>
-                StackLoad
+                디벗
               </span>
             </Link>
 

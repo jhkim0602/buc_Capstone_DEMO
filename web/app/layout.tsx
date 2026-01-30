@@ -9,8 +9,8 @@ import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: {
-    default: "StackLoad - Developer Productivity Platform",
-    template: "%s | StackLoad",
+    default: "DIBUT - Developer Productivity Platform",
+    template: "%s | DIBUT",
   },
   description:
     "Integrated platform for Tech Blogs, AI Interview Practice, and Project Collaboration.",
@@ -18,12 +18,12 @@ export const metadata: Metadata = {
     "Tech Blog",
     "AI Interview",
     "Developer Tools",
-    "StackLoad",
+    "DIBUT",
     "Collaboration",
   ],
-  authors: [{ name: "StackLoad Team" }],
-  creator: "StackLoad",
-  publisher: "StackLoad",
+  authors: [{ name: "DIBUT Team" }],
+  creator: "DIBUT",
+  publisher: "DIBUT",
   robots: {
     index: true,
     follow: true,
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: "https://stackload.dev",
-    title: "StackLoad",
+    title: "DIBUT",
     description: "Developer Productivity Platform",
-    siteName: "StackLoad",
+    siteName: "DIBUT",
   },
 };
 
