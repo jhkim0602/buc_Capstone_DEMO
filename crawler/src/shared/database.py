@@ -74,16 +74,19 @@ def fetch_thumbnail_from_web(url, blog_name="Web"):
         soup = BeautifulSoup(response.content, "lxml")
 
         # og:image
+        # og:image
         og_image = soup.find("meta", attrs={"property": "og:image"})
         if og_image and og_image.get("content"):
-            print(f"✅ [{blog_name} Thumbnail] Extracted from Web: {og_image['content']}")
-            return og_image["content"]
+            img_url = urljoin(url, og_image["content"])
+            print(f"✅ [{blog_name} Thumbnail] Extracted from Web: {img_url}")
+            return img_url
 
         # twitter:image
         twitter_image = soup.find("meta", attrs={"name": "twitter:image"})
         if twitter_image and twitter_image.get("content"):
-             print(f"✅ [{blog_name} Thumbnail] Extracted from Twitter Meta: {twitter_image['content']}")
-             return twitter_image["content"]
+             img_url = urljoin(url, twitter_image["content"])
+             print(f"✅ [{blog_name} Thumbnail] Extracted from Twitter Meta: {img_url}")
+             return img_url
 
         print(f"❌ [{blog_name} Thumbnail] No meta image found: {url}")
         return None

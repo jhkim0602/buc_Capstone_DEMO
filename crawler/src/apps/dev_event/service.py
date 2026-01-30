@@ -26,8 +26,8 @@ def load_existing_events():
             return {}
     return {}
 
-def run_dev_event_crawler():
-    logger.info("🚀 Starting Dev-Event Crawler...")
+def run_dev_event_crawler(limit: int = 5):
+    logger.info(f"🚀 Starting Dev-Event Crawler (Deep Crawl Limit: {limit})...")
     
     # 0. Load existing data to preserve 'content' and 'thumbnail'
     existing_map = load_existing_events()
@@ -45,8 +45,7 @@ def run_dev_event_crawler():
 
     # 3. Merge & Process
     processed_count = 0
-    MAX_DEEP_CRAWL = 5 # Limit per run to avoid huge delays/costs
-
+    
     for event in events:
         # Check against existing
         existing = existing_map.get(event.link)
@@ -57,6 +56,18 @@ def run_dev_event_crawler():
                 event.thumbnail = existing.get('thumbnail')
             if existing.get('content'):
                 event.content = existing.get('content')
+            
+            # Preserve parsed fields if they exist and we're skipping deep crawl (optional)
+            # Actually, if we re-run deep crawl, we might want to update them.
+            # But the logic below says "if NOT event.content", so if it exists, skip.
+            # However, allow updating if we want to refresh structured data?
+            # For now, let's stick to "fill missing" logic to respect the limit.
+            if existing.get('summary'): # Check if structured data exists
+                 event.summary = existing.get('summary')
+                 event.target_audience = existing.get('target_audience', [])
+                 event.fee = existing.get('fee')
+                 event.schedule = existing.get('schedule', [])
+                 event.benefits = existing.get('benefits', [])
         
         # 3.1 Fetch Thumbnail if missing
         if not event.thumbnail:
@@ -68,17 +79,35 @@ def run_dev_event_crawler():
              except Exception as e:
                 logger.warning(f"Failed to fetch thumbnail for {event.title}: {e}")
 
-        # 3.2 Deep Crawl if missing content
-        if not event.content and processed_count < MAX_DEEP_CRAWL:
+        # 3.2 Deep Crawl if missing content OR missing structured data
+        # Check if we should crawl: 
+        # (Missing Content OR Missing Structured Data) AND Below Limit
+        needs_crawl = (not event.content or not event.summary)
+        
+        if needs_crawl and processed_count < limit:
             try:
                 logger.info(f"🧠 Generating content for: {event.title}")
                 result = deep_crawl_event(event)
                 if result:
-                    event.content = result.get('content_markdown')
-                    # Update title to Korean if provided
+                    # Update fields
                     if result.get('title_ko'):
-                         logger.info(f"   KR Title: {result.get('title_ko')}")
+                         # Log change if significant
+                         # logger.info(f"   KR Title: {result.get('title_ko')}")
                          event.title = result.get('title_ko')
+                    
+                    # Ensure list type for list fields
+                    def ensure_list(val):
+                        if isinstance(val, list): return val
+                        if isinstance(val, str) and val: return [val]
+                        return []
+
+                    event.content = result.get('content')
+                    event.description = result.get('description')
+                    event.summary = result.get('summary')
+                    event.target_audience = ensure_list(result.get('target_audience'))
+                    event.fee = result.get('fee')
+                    event.schedule = ensure_list(result.get('schedule'))
+                    event.benefits = ensure_list(result.get('benefits'))
                     
                     processed_count += 1
             except Exception as e:

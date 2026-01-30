@@ -28,7 +28,6 @@ const MENUS = {
     href: "/career",
     submenus: [
       { href: "/career/activities", label: "대외활동" },
-      { href: "/career/contest", label: "공모전" },
       { href: "/career/jobs", label: "채용공고" },
     ],
   },

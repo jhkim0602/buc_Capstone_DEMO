@@ -11,6 +11,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EditWorkspaceDialog } from "../../dialogs/edit-workspace-dialog";
 
 interface ProjectHeroProps {
   project: any;
@@ -59,6 +60,8 @@ export function ProjectHero({
               <FileText className="h-4 w-4 mr-2" />
               New Doc
             </Button>
+
+            <EditWorkspaceDialog workspace={project} />
           </div>
         </div>
 

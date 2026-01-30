@@ -15,4 +15,11 @@ export interface DevEvent {
   description?: string;
   thumbnail?: string;
   content?: string;
+
+  // AI Structured Fields
+  summary?: string;
+  target_audience?: string[];
+  fee?: string;
+  schedule?: string[];
+  benefits?: string[];
 }

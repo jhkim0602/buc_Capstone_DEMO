@@ -1,5 +1,6 @@
 import time
 import os
+import json
 from firecrawl import FirecrawlApp
 import google.generativeai as genai
 from loguru import logger
@@ -44,8 +45,11 @@ def process_content_with_gemini(title: str, raw_markdown: str):
     global AI_AVAILABLE
     
     if not GEMINI_API_KEY:
-        logger.warning("⚠️ GEMINI_API_KEY is missing.")
+        logger.warning("⚠️ GEMINI_API_KEY is missing in config.")
         return None
+
+    logger.info(f"🔑 Configuring Gemini with Key: {GEMINI_API_KEY[:5]}... ({len(GEMINI_API_KEY)} chars)")
+    genai.configure(api_key=GEMINI_API_KEY)
 
     if not AI_AVAILABLE:
         # Fail fast if we already know quota is exceeded
@@ -59,116 +63,73 @@ def process_content_with_gemini(title: str, raw_markdown: str):
             """.strip()
         }
 
-    genai.configure(api_key=GEMINI_API_KEY)
-    
-    # Using gemini-2.0-flash-exp as configured
-    model = genai.GenerativeModel("gemini-2.0-flash-exp")
+    # Using gemini-1.5-flash as configured
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     # Limit chars to avoid token limits
     truncated_md = raw_markdown[:15000]
 
     prompt = f"""
-    You are an expert tech event curator. Your goal is to transform raw event information into a compelling, easy-to-read event detail page for developers, AND to translate the event title into natural Korean if it's in English.
+    You are an expert tech event curator. Analyze the following event information and extract structured data.
     
     Event Title: {title}
     
-    Raw Content (Markdown):
+    Raw Content:
     {truncated_md}
     
     Task:
-    1. **Translate Title**: Provide a natural Korean title for this event. If it's already Korean, keep it or refine it (remove dates/hosts if redundant).
-    2. **Refine Content**: Analyze the raw content and regenerate it into a structured, engaging Markdown document.
+    Extract the following fields into a pure JSON object (Language: Korean):
+    1. **title_ko**: Translated Korean title.
+    2. **summary**: A 2-3 sentence engaging summary of the event.
+    3. **target_audience**: List of target audience (e.g. "Junior Developers", "Students").
+    4. **fee**: Cost of entry (e.g. "Free", "10,000 KRW").
+    5. **schedule**: List of schedule items (e.g. "14:00 Registration", "14:30 Keynote").
+    6. **benefits**: List of benefits (e.g. "Swag", "Networking", "Dinner provided").
+    7. **description**: A cleaned, well-structured Markdown version of the event details.
+       - **CRITICAL**: Remove ALL "YouTube/Video player" text.
+       - Remove navigation menus, footers, sidebars, and "Related Links" sections.
+       - Remove text that functions as buttons like "Go to Apply", "Read More", "Shortcut", "바로가기".
+       - **Remove the Event Title, Date, Time, and Location** from the top if they are just metadata (since we show them in the header).
+       - Keep valuable details like **Introduction, Speaker Bios, Session Descriptions, and detailed FAQ**.
+       - Use H2/H3 headers for sections.
     
-    
-    Guidelines for Content:
-    1. **Language**: **MUST BE KOREAN (한국어)**. You must translate ALL content into natural Korean, even if the source is English.
-    2. **Tone**: Professional yet inviting for developers.
-    3. **Structure**: Use the exact structure below.
-    4. **Formatting**: Use emojis, bold text for emphasis, and bullet points.
-    
-    Required Structure for Markdown Content:
-    
-    ## 행사 소개 (Overview)
-    [Write a compelling 2-3 sentence summary of what this event is and why developers should attend.]
-    
-    ## 핵심 정보 (Key Information)
-    | 구분 | 내용 |
-    |---|---|
-    | **일시** | [Date & Time] |
-    | **장소** | [Location or Online URL] |
-    | **비용** | [Cost (e.g., Free, 10,000 KRW)] |
-    | **대상** | [Target Audience (e.g., Junior Devs, AI Researchers)] |
-    
-    ## 프로그램 일정 (Agenda)
-    [List the schedule clearly. Use a table or time-ordered list.]
-    - **14:00 - 14:30**: 등록 및 안내
-    - ...
-    
-    ## 연사 소개 (Speakers)
-    [If available, list speakers with their roles/companies.]
-    
-    ## 신청 및 상세 정보
-    [Focus on how to register or where to find more info.]
-    
-    **Note**: If any section information is missing in the raw content, explicitly state "정보 없음" or omit the section if it's minor. Do not hallucinate details.
-    
-    Output Format (JSON):
-    {{
-        "title_ko": "Translated Korean Title",
-        "content_markdown": "Full Markdown content string..."
-    }}
+    IMPORTANT: You MUST generate the 'description' field. Do not leave it empty.
+    If the content is short, just clean it up.
 
-    IMPORTANT: 
-    - You must output valid JSON. 
-    - If the markdown content contains backslashes (e.g. LaTeX, paths), you MUST escape them as double backslashes (\\\\) in the JSON string.
-    - Do not use single backslashes in the output string value.
+    Output JSON Format:
+    {{
+        "title_ko": "...",
+        "summary": "...",
+        "target_audience": ["..."],
+        "fee": "...",
+        "schedule": ["..."],
+        "benefits": ["..."],
+        "description": "Markdown string..."
+    }}
     """
 
-    max_retries = 1 # Fail fast if quota is out
-    retry_delay = 2 
+    max_retries = 3 # Increased retries
+    retry_delay = 5
 
     for attempt in range(max_retries):
         try:
-            # gemini-pro generally supports JSON output via prompt instruction even if strict JSON mode isn't enforced
-            # But let's try strict mode first. If it fails (some versions of pro don't support it), retry without.
             response = model.generate_content(prompt, generation_config={"response_mime_type": "application/json"})
-            
             text = response.text.strip()
-            # Clean Markdown code blocks if present
+            
+            # Basic cleanup
             if text.startswith("```"):
                 text = text.replace("```json", "").replace("```", "").strip()
-            
-            import json
-            import re
-            
-            def repair_json(json_str):
-                # Fix common invalid escape sequences in LLM JSON
-                # 1. Escape backslashes that are strictly NOT part of valid JSON escapes
-                # Valid escapes: " \\ / b f n r t uXXXX
-                # Regex looks for backslash NOT followed by one of these chars
-                pattern = r'\\(?![/u"bfnrt\\])'
-                return re.sub(pattern, r'\\\\', json_str)
 
-            try:
-                result = json.loads(text)
-            except json.JSONDecodeError:
-                # Attempt repair
-                repaired_text = repair_json(text)
-                try:
-                    result = json.loads(repaired_text)
-                except Exception:
-                     # One last try: aggressive escape? No, better fail and fallback.
-                     # Or try demjson if installed (not installed here).
-                     logger.warning(f"JSON Parse failed even after repair. Raw text sample: {text[:100]}...")
-                     raise
+            result = json.loads(text)
             
-            # Handle list response (take first item)
+            # Handle list response
             if isinstance(result, list):
-                if len(result) > 0:
+                if len(result) > 0 and isinstance(result[0], dict):
                     result = result[0]
                 else:
-                    raise ValueError("Gemini returned an empty list")
+                    return None
             
+            logger.info(f"✨ Gemini keys: {list(result.keys())}") 
             return result
         except Exception as e:
             error_str = str(e)
@@ -190,7 +151,7 @@ def process_content_with_gemini(title: str, raw_markdown: str):
     logger.warning("⚠️ Using raw content fallback due to AI failure.")
     return {
         "title_ko": title, # Keep original title
-        "content_markdown": f"""
+        "content": f"""
 ## 💡 행사 소개 (Overview)
 *AI 요약 실패로 원문 데이터를 표시합니다.*
 
@@ -211,10 +172,19 @@ def deep_crawl_event(event):
         return None
     
     # Proactive rate limiting
-    logger.info("⏳ Rate limiting: Waiting 4s to be polite...")
-    time.sleep(4) 
+    logger.info("⏳ Rate limiting: Waiting 20s to be polite...")
+    time.sleep(20) 
 
     # 2. Process with Gemini
     result = process_content_with_gemini(event.title, raw_md)
+    
+    # Inject Content logic
+    if result:
+        # If AI provided a cleaned description, use it as the main content
+        if result.get('description'):
+            result['content'] = result.get('description')
+        else:
+            # Fallback to raw if logic missing
+            result['content'] = raw_md
     
     return result

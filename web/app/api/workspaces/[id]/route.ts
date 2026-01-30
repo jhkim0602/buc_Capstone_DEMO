@@ -60,6 +60,10 @@ export async function GET(
       },
     });
 
+    console.log(
+      `[API] Workspace Detail Found: ${workspace?.id} / Name: ${workspace?.name}`,
+    );
+
     if (!workspace) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -79,6 +83,56 @@ export async function GET(
     return NextResponse.json(formattedWorkspace);
   } catch (error: any) {
     console.error("API: Get Workspace Error", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// PATCH: Update Workspace Details
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const resolvedParams = await params;
+    const { id: workspaceId } = resolvedParams;
+    const body = await request.json();
+    const { name, description, category } = body;
+
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Check ownership
+    const membership = await prisma.workspace_members.findUnique({
+      where: {
+        workspace_id_user_id: {
+          workspace_id: workspaceId,
+          user_id: session.user.id,
+        },
+      },
+    });
+
+    if (!membership || membership.role !== "owner") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const updated = await prisma.workspaces.update({
+      where: { id: workspaceId },
+      data: {
+        name,
+        description,
+        category,
+      },
+    });
+
+    return NextResponse.json(updated);
+  } catch (error: any) {
+    console.error("API: Update Workspace Error", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

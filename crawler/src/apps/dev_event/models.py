@@ -16,3 +16,10 @@ class DevEvent(BaseModel):
     description: Optional[str] = None
     thumbnail: Optional[str] = None
     content: Optional[str] = None
+    
+    # AI Structured Fields
+    summary: Optional[str] = None
+    target_audience: List[str] = []
+    fee: Optional[str] = None
+    schedule: List[str] = []
+    benefits: List[str] = []

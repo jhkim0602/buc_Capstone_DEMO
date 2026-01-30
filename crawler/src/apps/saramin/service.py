@@ -14,8 +14,8 @@ OUTPUT_FILE = BASE_DIR.parent / "web" / "public" / "data" / "recruit-jobs.json"
 
 SEARCH_KEYWORDS = ["Frontend", "Backend", "Mobile", "AI/ML", "DevOps"]
 
-def run_saramin_crawler():
-    logger.info("🚀 Starting Saramin Crawler...")
+def run_saramin_crawler(limit: int = 10):
+    logger.info(f"🚀 Starting Saramin Crawler (Limit: {limit})...")
     
     crawler = SaraminCrawler()
     
@@ -25,9 +25,9 @@ def run_saramin_crawler():
     
     logger.info("🔍 Phase 1: Searching for 'IT General' (Category Scan)...")
     
-    # Limit pages to 2 for quick testing (Total potential is 10k+, but we only fetch 40-80 here)
-    # Limit pages to 2 for quick testing (Total potential is 10k+, but we only fetch 40-80 here)
-    jobs = crawler.fetch_jobs_by_keyword("개발자", limit_pages=2)
+    # Adjust page limit based on target item count (rough estimate: 40 items per page)
+    target_pages = (limit // 40) + 2
+    jobs = crawler.fetch_jobs_by_keyword("개발자", limit_pages=target_pages)
     
     for job in jobs:
         if job.id not in job_map:
@@ -37,8 +37,8 @@ def run_saramin_crawler():
 
     unique_jobs = list(job_map.values())
     
-    # User Request: Limit to 10 for quick testing (was 50)
-    unique_jobs = unique_jobs[:10]
+    # Limit to requested count
+    unique_jobs = unique_jobs[:limit]
     
     logger.info(f"✅ Phase 1 Complete. {len(unique_jobs)} unique jobs selected for Deep Crawl.")
     

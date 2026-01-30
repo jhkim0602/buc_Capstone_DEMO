@@ -1,309 +1,49 @@
 [
   {
-    "title": "기본기 중심의 게임 개발자 완성 트랙",
-    "link": "https://event.wanted.co.kr/potenup_game_4",
-    "host": "원티드",
-    "date": "12. 01(월) ~ 01. 16(금)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인",
-      "유료",
-      "교육"
-    ],
-    "category": "Education",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://static.wanted.co.kr/events/thumbnail/7r2MSNW4hNiS2awLbNDMZd/F2OWMJER.jpg",
-    "content": "## 행사 소개 (Overview)\n기본기를 탄탄하게 다져 게임 개발 전문가로 발돋움할 수 있는 기회, 게임 개발자 완성 트랙에 참여하세요! 이 트랙은 게임 개발의 핵심 원리를 이해하고 실제 게임 제작 능력을 향상시키도록 설계되었습니다. 원티드에서 제공하는 특별한 교육 과정을 통해 꿈을 현실로 만드세요.\n\n## 핵심 정보 (Key Information)\n| 구분 | 내용 |\n|---|---|\n| **일시** | 2025년 11월 30일 (일) 19:30 - 2026년 01월 16일 (금) 00:00 |\n| **장소** | 정보 없음 |\n| **비용** | 정보 없음 |\n| **대상** | 게임 개발자 지망생, 주니어 개발자 |\n\n## 프로그램 일정 (Agenda)\n- **1주차**: 게임 개발 기초 다지기\n- **2주차**: 핵심 게임 디자인 원리 이해\n- **3주차**: 실제 게임 제작 실습\n- **4주차**: 고급 게임 개발 기술 습득\n- ... (자세한 내용은 추후 공지)\n\n## 연사 소개 (Speakers)\n정보 없음\n\n## 신청 및 상세 정보\n자세한 내용 확인 및 신청은 다음 링크에서 가능합니다. [https://lean-mahogany-686.notion.site/POTENUP-1-29c09c484bff80dab4e9ebe87b4c5c44?source=copy_link](https://lean-mahogany-686.notion.site/POTENUP-1-29c09c484bff80dab4e9ebe87b4c5c44?source=copy_link) 또는 [https://forms.gle/Hp7LZ34PphNgtriU9](https://forms.gle/Hp7LZ34PphNgtriU9) 에서 예비 신청이 가능합니다.\n",
-    "id": "5d401521-9a8a-568d-8c44-4aa0ac13795d"
-  },
-  {
-    "title": "AI SEOUL 2026",
+    "title": "AI 서울 2026",
     "link": "https://www.aiseoul2026.com/kr/",
-    "host": "AI SEOUL 2026",
-    "date": "12. 01(월) ~ 01. 16(금)",
+    "host": "서울특별시",
+    "date": "01. 20(화) ~ 01. 29(목)",
     "start_date": null,
     "end_date": null,
     "tags": [
-      "오프라인(서울 강남)",
+      "오프라인(서울 코엑스)",
       "무료",
       "AI"
     ],
     "category": "Other",
     "status": "recruiting",
     "source": "github",
-    "description": null,
+    "description": "AI 서울 2026은 \"전환의 시대, 도입을 넘어선\"이라는 대주제로 인공지능의 현재와 미래를 탐구하는 컨퍼런스입니다. 서울 코엑스 그랜드볼룸에서 개최됩니다.\n\n## 주요 내용\n\n### 테마\n*   **The Transformation Era: Beyond Adoption**\n*   **전환의 시대, 도입을 넘어선**\n\n## 연사 소개\n\n### 기조 세션 - AI x Insight\n*   **피터 노빅** - Google 연구총괄\n*   **대프니 콜러** - 전 스탠퍼드대학교 컴퓨터과학부 교수\n*   **요슈아 벤지오** - Mila 설립자, 자문위원\n*   **오세훈** - 서울시장\n*   **조규진** - 서울대학교 기계공학부 교수\n*   **정송** - KAIST 김재철AI대학원 원장\n\n### 산업 세션 - AI x Industry\n*   **매트 화이트** - PyTorch Foundation 전무이사\n*   **닉 호스** - 옥스퍼드 로봇공학 연구소 소장\n*   **댄 피게이레두** - Microsoft 글로벌 AI 기술 전략가\n*   **정소영** - 엔비디아코리아 대표\n*   **진요한** - LG CNS AI 센터장\n*   **강필성** - 서울대학교 산업공학과 교수\n\n### 규제 세션 - AI x Regulation\n*   **하이럼 앤더슨** - Cisco AI Security 총괄\n*   **고상원** - 정보통신정책연구원(KISDI) 선임연구위원\n*   **김명주** - AI안전연구소 초대소장\n*   **김지희** - 동국대학교 컴퓨터·AI학부 교수\n*   **천현득** - 서울대학교 과학학과 교수\n\n### 도시 세션 - AI x City\n*   **미코 루사마** - 전 헬싱키시 최고디지털책임자(CDO)\n*   **카를로 라티** - MIT 건축·도시계획대학원 교수\n*   **데미안 페레이아** - 주한 퀘벡정부 대표부 대표\n*   **박찬진** - 서울 AI 허브 센터장\n*   **황준석** - 서울대학교 글로벌R&DB센터장\n\n### 스페셜세션 - AI x Human\n*   **이세돌** - 세계 바둑 챔피언\n*   **조승연** - 작가·세계문화칼럼니스트\n\n### 랩업세션 - AI SEOUL 2026 결산\n*   **민무홍** - 성균관대학교 컴퓨터교육과 교수",
     "thumbnail": "https://www.aiseoul2026.com/ttl.png",
-    "content": "## 행사 소개 (Overview)\nAI 서울 2026 컨퍼런스는 인공지능 기술의 현재와 미래를 조망하고, 다양한 산업 분야에 적용되는 AI 사례를 공유하는 행사입니다. 개발자들은 이 컨퍼런스를 통해 최신 AI 트렌드를 배우고, 업계 전문가들과 네트워킹하며, AI 기술 혁신의 기회를 발견할 수 있습니다. 🚀\n\n## 핵심 정보 (Key Information)\n| 구분 | 내용 |\n|---|---|\n| **일시** | 2026년 1월 30일 (금) |\n| **장소** | 서울 코엑스 그랜드볼룸 |\n| **비용** | 정보 없음 |\n| **대상** | AI 개발자, 연구원, 관련 분야 종사자 |\n\n## 프로그램 일정 (Agenda)\n- **기조 세션**: AI x Insight\n   - 피터 노빅 (Google 연구총괄)\n   - 대프니 콜러 (전 스탠퍼드대학교 컴퓨터과학부 교수)\n   - 요슈아 벤지오 (Mila 설립자, 자문위원)\n   - 오세훈 (서울시장)\n   - 조규진 (서울대학교 기계공학부 교수)\n   - 정송 (KAIST 김재철AI대학원 원장)\n- **산업 세션**: AI x Industry\n   - 매트 화이트 (PyTorch Foundation 전무이사)\n   - 닉 호스 (옥스퍼드 로봇공학 연구소 소장)\n   - 존 프렌치 (Google Global Business 디렉터)\n   - 정소영 (엔비디아코리아 대표)\n   - 진요한 (LG CNS AI 센터장)\n   - 강필성 (서울대학교 산업공학과 교수)\n- **규제 세션**: AI x Regulation\n   - 하이럼 앤더슨 (Cisco AI Security 총괄)\n   - 고상원 (정보통신정책연구원(KISDI) 박사)\n   - 김명주 (AI안전연구소 초대소장)\n   - 김지희 (동국대학교 컴퓨터·AI학부 교수)\n   - 천현득 (서울대학교 과학학과 교수)\n- **도시 세션**: AI x City\n   - 미코 루사마 (전 헬싱키시 최고디지털책임자(CDO))\n   - 카를로 라티 (MIT 건축·도시계획대학원 교수)\n   - 데미안 페레이아 (주한 퀘벡정부 대표부 대표)\n   - 박찬진 (서울 AI 허브 센터장)\n   - 황준석 (서울대학교 글로벌R&DB센터장)\n- **스페셜 세션**: AI x Human\n   - 이세돌 (세계 바둑 챔피언)\n   - 조승연 (작가·세계문화칼럼니스트)\n- **랩업 세션**: AI SEOUL 2026 결산\n   - 민무홍 (성균관대학교 컴퓨터교육과 교수)\n\n## 연사 소개 (Speakers)\n- 피터 노빅 (Google 연구총괄)\n- 대프니 콜러 (전 스탠퍼드대학교 컴퓨터과학부 교수)\n- 요슈아 벤지오 (Mila 설립자, 자문위원)\n- 오세훈 (서울시장)\n- 조규진 (서울대학교 기계공학부 교수)\n- 정송 (KAIST 김재철AI대학원 원장)\n- 매트 화이트 (PyTorch Foundation 전무이사)\n- 닉 호스 (옥스퍼드 로봇공학 연구소 소장)\n- 존 프렌치 (Google Global Business 디렉터)\n- 정소영 (엔비디아코리아 대표)\n- 진요한 (LG CNS AI 센터장)\n- 강필성 (서울대학교 산업공학과 교수)\n- 하이럼 앤더슨 (Cisco AI Security 총괄)\n- 고상원 (정보통신정책연구원(KISDI) 박사)\n- 김명주 (AI안전연구소 초대소장)\n- 김지희 (동국대학교 컴퓨터·AI학부 교수)\n- 천현득 (서울대학교 과학학과 교수)\n- 미코 루사마 (전 헬싱키시 최고디지털책임자(CDO))\n- 카를로 라티 (MIT 건축·도시계획대학원 교수)\n- 데미안 페레이아 (주한 퀘벡정부 대표부 대표)\n- 박찬진 (서울 AI 허브 센터장)\n- 황준석 (서울대학교 글로벌R&DB센터장)\n- 이세돌 (세계 바둑 챔피언)\n- 조승연 (작가·세계문화칼럼니스트)\n- 민무홍 (성균관대학교 컴퓨터교육과 교수)\n\n## 신청 및 상세 정보\n자세한 프로그램 정보 및 등록은 다음 링크를 참조하세요: [프로그램](https://www.aiseoul2026.com/kr/p1.php?s=31), [사전 등록](https://www.aiseoul2026.com/kr/r_user.php?s=61) 📝\n",
-    "id": "399ad7d2-bf2f-5b5d-98b6-e4c05d3a8a1a"
-  },
-  {
-    "title": "2026 Fast Builderthon : AI 해커톤 모집",
-    "link": "https://fastcampus.co.kr/builderthon2026",
-    "host": "패스트캠퍼스",
-    "date": "01. 02(금) ~ 01. 16(금)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "무료",
-      "AI"
+    "content": "AI 서울 2026은 \"전환의 시대, 도입을 넘어선\"이라는 대주제로 인공지능의 현재와 미래를 탐구하는 컨퍼런스입니다. 서울 코엑스 그랜드볼룸에서 개최됩니다.\n\n## 주요 내용\n\n### 테마\n*   **The Transformation Era: Beyond Adoption**\n*   **전환의 시대, 도입을 넘어선**\n\n## 연사 소개\n\n### 기조 세션 - AI x Insight\n*   **피터 노빅** - Google 연구총괄\n*   **대프니 콜러** - 전 스탠퍼드대학교 컴퓨터과학부 교수\n*   **요슈아 벤지오** - Mila 설립자, 자문위원\n*   **오세훈** - 서울시장\n*   **조규진** - 서울대학교 기계공학부 교수\n*   **정송** - KAIST 김재철AI대학원 원장\n\n### 산업 세션 - AI x Industry\n*   **매트 화이트** - PyTorch Foundation 전무이사\n*   **닉 호스** - 옥스퍼드 로봇공학 연구소 소장\n*   **댄 피게이레두** - Microsoft 글로벌 AI 기술 전략가\n*   **정소영** - 엔비디아코리아 대표\n*   **진요한** - LG CNS AI 센터장\n*   **강필성** - 서울대학교 산업공학과 교수\n\n### 규제 세션 - AI x Regulation\n*   **하이럼 앤더슨** - Cisco AI Security 총괄\n*   **고상원** - 정보통신정책연구원(KISDI) 선임연구위원\n*   **김명주** - AI안전연구소 초대소장\n*   **김지희** - 동국대학교 컴퓨터·AI학부 교수\n*   **천현득** - 서울대학교 과학학과 교수\n\n### 도시 세션 - AI x City\n*   **미코 루사마** - 전 헬싱키시 최고디지털책임자(CDO)\n*   **카를로 라티** - MIT 건축·도시계획대학원 교수\n*   **데미안 페레이아** - 주한 퀘벡정부 대표부 대표\n*   **박찬진** - 서울 AI 허브 센터장\n*   **황준석** - 서울대학교 글로벌R&DB센터장\n\n### 스페셜세션 - AI x Human\n*   **이세돌** - 세계 바둑 챔피언\n*   **조승연** - 작가·세계문화칼럼니스트\n\n### 랩업세션 - AI SEOUL 2026 결산\n*   **민무홍** - 성균관대학교 컴퓨터교육과 교수",
+    "summary": "AI 서울 2026은 '전환의 시대, 도입을 넘어선'이라는 주제로 인공지능의 미래와 다양한 분야로의 확장을 논의하는 컨퍼런스입니다. 구글, 스탠퍼드, 마이크로소프트 등 글로벌 리더들과 서울시장, 국내 주요 대학 및 기업 전문가들이 참여하여 AI x Insight, Industry, Regulation, City, Human 등 다채로운 세션을 진행합니다. 이 행사는 AI 기술의 발전 방향과 사회적 영향에 대한 깊이 있는 통찰을 제공할 것입니다.",
+    "target_audience": [
+      "AI 연구자",
+      "산업 전문가",
+      "정책 입안자",
+      "도시 계획가",
+      "학생",
+      "AI에 관심 있는 일반인"
     ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://cdn.day1company.io/prod/uploads/202512/193306-199/builderthon-active.png",
-    "content": "## 행사 소개 (Overview)\n미래를 바꿀 최고의 빌더를 찾는 여정, 2026 패스트 빌더톤에 여러분을 초대합니다! AI 기술을 활용하여 일과 학습의 미래를 혁신할 아이디어를 현실로 구현하고, 푸짐한 상금과 특별한 혜택을 누리세요. 지금 바로 당신의 아이디어로 미래를 빌딩하세요!\n\n## 핵심 정보 (Key Information)\n| 구분 | 내용 |\n|---|---| \n| **일시** | 2026년 1월 31일(토) ~ 2월 1일(일) / 무박 2일 |\n| **장소** | 드림플러스 강남 (서울특별시 서초구 강남대로 311) |\n| **비용** | 정보 없음 |\n| **대상** | 만 19세 이상 대학(원)생 및 일반인, AI 관련 서비스 또는 AI 관련 부서 재직자 및 창업자 우대 |\n\n## 프로그램 일정 (Agenda)\n- **예선 접수 마감**: 2026년 1월 18일 23:59\n- **예선 심사 결과 발표**: 2026년 1월 23일 17:00 이후\n- **Tech Session (온라인)**: 본선 진출자 대상 별도 공개\n- **오프라인 참가 최종 안내**: 2026년 1월 29일 17:00 이후 예정\n- **본선 일정**: 2026년 1월 31일(토) ~ 2월 1일(일) / 무박 2일\n\n## 연사 소개 (Speakers)\n- **테디노트**: LangChain Global Ambassador, 브레인크루 대표, 유튜브 'Teddynote' 운영\n- **이엽**: 現) Anthropic Head of Startup Partnerships, APAC, 前) Head of Product, Coxwave\n- **박지혁**: 現) Waddle CEO, OpenAI 해커톤 1위, OpenAI K-Startup MeetUp in US 수상\n- **박지웅**: 現) 패스트트랙아시아 / 패스트벤처스 대표, 前) 스톤브릿지캐피탈 투자팀장\n\n## 신청 및 상세 정보\n- **신청 방법**: Google Form을 통해 온라인 접수\n  - 팀 구성원 전원 참가 신청서 내 정보 입력 필수\n- **신청 링크**: [신청서 바로 쓰러 가기 →](https://docs.google.com/forms/d/e/1FAIpQLSdy1_tlyXNKc2c9pcVR3HWBrEqpVdjn_R8UBEWSTTfbC9jOKA/viewform)\n\n**참가 혜택**\n\n**예선 지원자 전원**\n\n・패스트캠퍼스 AI 강의 50% 할인 쿠폰 (1인 1매)\n\n**본선 참가자 전원**\n\n※ 본선 미 참가 시 혜택 제공이 불가할 수 있습니다.\n\n**1. 공동 주최사 및 파트너사 제공**　───────────────\n\n**NVIDIA DLI Credit**\n\n\\* 개인당 지원\n\n**$90**\n\n**Anthropic Credit**\n\n\\* 개인당 지원\n\n**$15**\n\n**replit Credit**\n\n\\* 개인당 지원\n\n**$25**\n\n**ElevenLabs Credit**\n\n\\* 개인당 지원 (Normally 3개월권)\n\n**$66**\n\n**Tech Session 참가 권한 (온라인, 실시간 Live)**\n추후 안내\n\n**네트워크 세션 참가 권한 (Day 2 Lunch Time)**\n\n**2. 패스트캠퍼스 제공**  ─────────────────────\n\n**・패스트캠퍼스 AI 강의 구독권 (3개월)**\n\n**・참가 인증서 (PDF) 제공**\n추후 희망자에 한해 발급\n\n**본선 수상자**\n\n※ 본선 상금 및 리워드 '팀당' 지급 기준 (개별 지급 X)\n\n**🏆 대상 (1팀)**\n\n・ **상금 : 500만 원**\n\n・Anthropic Credit : $5,000\n\n・NVIDIA Brev.dev Credit : $500\n\n・ElevenLabs Credit : $1,485 (Pro-tier, 3month / 최대 지원금)\n\n・심사위원 심사평 제공\n\n・수상 인증서 발급\n\n* * *\n\n**🏆 최우수상 (1팀)**\n\n・ **상금 : 300만 원**\n\n・Anthropic Credit : $3,000\n\n・NVIDIA Brev.dev Credit : $500\n\n・ElevenLabs Credit : $1,485 (Pro-tier, 3month / 최대 지원금)\n\n・심사위원 심사평 제공\n\n・수상 인증서 발급\n\n* * *\n\n**🏆 우수상 (1팀)**\n\n・ **상금 : 100만 원**\n\n・Anthropic Credit : $1,000\n\n・NVIDIA Brev.dev Credit : $500\n\n・ElevenLabs Credit : $1,485 (Pro-tier, 3month / 최대 지원금)\n\n・심사위원 심사평 제공\n\n・수상 인증서 발급\n\n* * *\n\n**🏅특별상 (NVIDIA 특별상, 1팀)**\n\n・NVIDIA Brev.dev Credit : $500\n\n・수상 인증서 발급\n\n(본 상은 본선 당일 발표되지 않으며, 본선 종료 후 별도 추가 발표 됩니다)\n\n* * *\n\n**🏅특별상 (replit 특별상, 1팀)**\n\n・replit Credit : $5,000\n\n・수상 인증서 발급\n\n(본 상은 본선 당일 발표되지 않으며, 본선 종료 후 별도 추가 발표 됩니다)\n\n* * *\n\n**🏅특별상 (ElevenLabs 특별상, 1팀)**\n\n・ElevenLabs Credit : $1,980 (Scale tier, 6month)\n\n・수상 인증서 발급\n\n(본 상은 본선 당일 발표되지 않으며, 본선 종료 후 별도 추가 발표 됩니다)",
-    "id": "31c74228-6359-58bf-bb44-234bd4f0e478"
-  },
-  {
-    "title": "6주완성 : 멋쟁이사자처럼",
-    "link": "https://likelion.net/onboarding",
-    "host": "멋쟁이사자처럼",
-    "date": "01. 13(화) ~ 01. 16(금) 14:00",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "유료",
-      "교육"
+    "fee": "정보 없음",
+    "schedule": [
+      "2026년 1월 30일(금)",
+      "기조 세션 - AI x Insight",
+      "산업 세션 - AI x Industry",
+      "규제 세션 - AI x Regulation",
+      "도시 세션 - AI x City",
+      "스페셜세션 - AI x Human",
+      "랩업세션 - AI SEOUL 2026 결산"
     ],
-    "category": "Education",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "/img/og_kdc.webp",
-    "content": "## 행사 소개 (Overview)\n6주 동안 진행되는 멋쟁이사자처럼 집중 교육 과정에 참여하여 웹 개발 전문가로 발돋움하세요! 이 과정은 개발 경험이 없는 분들도 쉽게 따라올 수 있도록 설계되었으며, 실전 프로젝트 경험을 통해 빠르게 성장할 수 있도록 돕습니다. 지금 바로 등록하고 여러분의 개발 역량을 한 단계 업그레이드하세요!\n\n## 핵심 정보 (Key Information)\n| 구분 | 내용 |\n|---|---| \n| **일시** | 정보 없음 |\n| **장소** | 정보 없음 |\n| **비용** | 정보 없음 |\n| **대상** | 정보 없음 |\n\n## 프로그램 일정 (Agenda)\n정보 없음\n\n## 연사 소개 (Speakers)\n정보 없음\n\n## 신청 및 상세 정보\n멋쟁이사자처럼에 대한 더 많은 정보는 다음 링크에서 확인하세요.\n\n*   [네이버 블로그](https://blog.naver.com/likelion_official)\n*   [인스타그램](https://www.instagram.com/likelion.official/)\n*   [유튜브](https://www.youtube.com/channel/UCYaDkwVaOhuoe_LuFr3lWkA)",
-    "id": "80970038-88b6-5f77-81e0-d534a0a1cdc9"
+    "benefits": "정보 없음",
+    "id": "cb28de9b-08dd-5a0c-975e-83eeb9293de1"
   },
   {
-    "title": "AI 이후, 실리콘밸리 개발자는 어떻게 일하고 있는가",
-    "link": "https://tech.goorm.io/2601_commit/",
-    "host": "구름",
-    "date": "01. 13(화) ~ 01. 16(금) 17:00",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(경기 성남)",
-      "무료",
-      "AI"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://tech.goorm.io/wp-content/uploads/2026/01/BLOG_thumbnail.jpg",
-    "content": "## 행사 소개 (Overview)\nAI 기술 발전 이후 실리콘밸리 개발자들은 어떻게 일하고 있을까요? 이번 COMMIT 행사에서는 실리콘밸리 현지 개발자들과의 교류를 통해 얻은 생생한 경험을 공유하고, 앞으로 개발자들이 준비해야 할 변화에 대한 힌트를 얻을 수 있습니다. 🚀\n\n## 핵심 정보 (Key Information)\n| 구분 | 내용 |\n|---|---|\n| **일시** | 2026년 1월 20일 (화) 19:00 ~ 20:30 |\n| **장소** | 판교디지털센터 A동 901호 구름스퀘어 판교 ([https://goorm-square.oopy.io/](https://goorm-square.oopy.io/)) |\n| **비용** | 무료 |\n| **대상** | 실리콘밸리 개발 트렌드에 관심 있는 개발자, AI 시대의 개발 방식 변화에 궁금증을 느끼는 분들 |\n\n## 프로그램 일정 (Agenda)\n- **19:00 - 19:10**: 구름과 COMMIT 소개\n- **19:10 - 20:00**: AI 이후, 실리콘밸리 개발자는 어떻게 일하고 있는가 – 한기용 님\n- **20:00 - 20:15**: Q&A\n- **20:30 - 21:30**: 오픈 네트워킹 (피자 & 음료 제공 🍕🥤)\n\n## 연사 소개 (Speakers)\n### 한기용 UpZen 창업자\n\n![](https://tech.goorm.io/wp-content/uploads/2026/01/blog_2-1024x690.jpg)\n\n삼성전자에서 커리어를 시작하여 실리콘밸리에서 다양한 경험을 쌓았습니다. 현재 UpZen 창업자이며, 산호세 주립대학교 응용 데이터 과학 석사 과정 겸임 교수로 활동하고 있습니다. 유데미 Head of Data, 야후 엔지니어링 디렉터를 역임했습니다.\n\n## 신청 및 상세 정보\n- 참가 신청 마감: 1월 16일 금요일 17:00\n- 등록 방법: [COMMIT 신청하기](https://forms.gle/ZgrTjdDimz9yQAhM7)\n- 행사 관련 문의: [COMMIT 채팅 상담](https://goorm-seminar.channel.io/lounge)\n- 더 많은 정보: [구름 기술 블로그 COMMIT 페이지](https://tech.goorm.io/commit/)\n\n✅ **본 행사는 명함으로 출석 체크를 진행합니다. 명함을 꼭 지참해주세요.**\n\n",
-    "id": "bf47fe78-0b89-5ecd-9e45-368ac33e6efc"
-  },
-  {
-    "title": "Microsoft AI Community 밋업 '야~ 겨울이다'",
-    "link": "https://event-us.kr/aiplayground/event/118827",
-    "host": "AI 놀이터",
-    "date": "01. 02(금) ~ 01. 17(토)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 종로)",
-      "무료",
-      "AI"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://eventusstorage.blob.core.windows.net/evs/Image/aiplayground/118827/ProjectInfo/Cover/8d96b0660fc14ab690f06eb1460606d5.png?fit=640%2C360",
-    "content": "> **이벤트 개요**\n> Microsoft AI 커뮤니티에서 주최하는 겨울 밋업입니다. AI에 관심 있는 개발자, 연구자, 학생 등 누구나 참여하여 지식을 공유하고 네트워킹할 수 있습니다.\n\n## 행사 정보 (Key Information)\n| 구분 | 내용 |\n|---|---| \n| **일시** | 01월 18일(일) 13:00 ~ 18:00 |\n| **장소** | 서울 종로구 종로1길 50 Microsoft 13층 행사장 |\n| **비용** | 무료 |\n| **대상** | AI에 관심 있는 누구나 |\n\n## 프로그램 일정 (Agenda)\n- AI 관련 발표 및 토론\n- 네트워킹 세션\n\n## 연사 소개 (Speakers)\n정보 없음\n\n## 신청 및 상세 정보 (Registration)\n- 신청 기간: 12월 29일(월) 20:30 ~ 01월 15일(목) 18:00\n- 참가비: 무료\n- 신청 링크: [https://event-us.kr/aiplayground/event](https://event-us.kr/aiplayground/event)",
-    "id": "d5601eba-7ecc-5d4a-ae34-b0517f2f0406"
-  },
-  {
-    "title": "AWSKRUG Women In Cloud (온라인) ⚡️그래도 가고 싶다면 <해외취업 전략 - 캐나다>",
-    "link": "https://www.meetup.com/awskrug/events/312726488/",
-    "host": "AWSKRUG",
-    "date": "01. 10(토) ~ 01. 17(토)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "무료",
-      "커리어"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://secure.meetupstatic.com/photos/event/3/1/d/9/600_525552761.jpeg",
-    "content": "> **행사 개요**\n> AWSKRUG Women In Cloud는 AWS를 사용하는 여성 엔지니어들이 서로 지지하고 함께 성장할 수 있도록 만들어진 커뮤니티입니다. 이번 모임에서는 해외 개발자 커리어에 대한 실질적인 경험담을 공유합니다.\n\n## 행사 정보\n| 구분 | 내용 |\n|---|---| \n| **일시** | 2026년 1월 18일 (일) 오전 10:00 ~ 11:30 (KST) \\\\ 2026년 1월 17일 (토) 오후 5:00 ~ 6:30 (PST) |\n| **장소** | 온라인 |\n| **비용** | 3,000원 |\n| **대상** | 해외 개발자 커리어 전환을 고민하거나 준비하는 분들 |\n\n## 프로그램 일정\n- 발표 (30분)\n- Q&A (10분)\n- 네트워킹 (40분)\n\n## 연사 소개\n- 한가윤님 (Software Engineer) - [LinkedIn](https://www.linkedin.com/in/gayuna/)\n\n## 신청 및 상세 정보\n- 참가비 입금 후 이메일을 통해 접속 링크를 받으실 수 있습니다.\n- 입금처: 토스뱅크 1001-4422-2145 우지혜\n- 참가비 환불은 모임 2일 전까지만 가능합니다. 환불 정보와 함께 [awskrugwomenincloud@gmail.com](mailto:awskrugwomenincloud@gmail.com) 으로 메일을 보내주세요.\n- 슬랙 채널: [초대 링크](https://join.slack.com/t/awskrug/shared_invite/zt-3necqzzbp-LZAJ6i4HfhD51qxRC7_qfQ) 를 통해 가입하신 후 #women-in-cloud 채널에 참여해주세요!\n- 발표자 신청: [구글 폼](https://forms.gle/a17Y3jTaWXHBt98SA) 을 통해 신청해주시면, 일정 조율드리겠습니다! 소정의 발표 리워드를 드립니다.\n\n## 문의\n- [awskrugwomenincloud@gmail.com](mailto:awskrugwomenincloud@gmail.com)",
-    "id": "3a1f44ac-835d-5a78-a471-e059e3b4665b"
-  },
-  {
-    "title": "크래프톤 정글 SW AI Lab 12기",
-    "link": "https://jungle.krafton.com/schedule/swailab",
-    "host": "크래프톤 정글",
-    "date": "12. 29(월) ~ 01. 18(일)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인",
-      "무료",
-      "교육"
-    ],
-    "category": "Education",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://jungle.krafton.com/images/logo/1_Jungle/Jungle_by%20KRAFTON_Logo_G.png",
-    "content": "> **행사 개요**\n> 크래프톤 정글 SW AI Lab은 소프트웨어 및 인공지능 분야 개발자를 양성하는 교육 프로그램입니다. K-디지털 트레이닝으로 참여 시 교육비가 무료이며, 실무 중심의 교육을 통해 개발 역량을 강화할 수 있습니다.\n\n## 행사 정보 (Key Information)\n| 구분 | 내용 |\n|---|---| \n| **모집 기간 (12기)** | 25.12.29 (월) ~ 26.01.18 (일) |\n| **모집 기간 (13기)** | 26.06.08 (월) ~ 26.07.05 (일) |\n| **교육 기간 (12기)** | 26.03.03 (화) ~ 26.07.30 (목) |\n| **교육 기간 (13기)** | 26.08.24 (월) ~ 27.01.28 (목) |\n| **장소** | 크래프톤 정글 캠퍼스 (경기도 용인시 처인구 영문로 55) |\n| **비용** | 250만원 (K-디지털 트레이닝 참여 시 무료) |\n| **대상** | 정보 없음 |\n\n## 프로그램 일정 (Agenda)\n**SW-AI Lab 12기**\n- 학습자료 배부: 25.12.29 (월)\n- 입학시험 제출: 26.01.19 (월) ~ 26.01.25 (일)\n- 입학시험 합격자 발표: 26.01.26 (월)\n- 인터뷰 기간: 26.02.02 (월) ~ 26.02.05 (목)\n- 최종 합격자 발표: 26.02.09 (월)\n\n**SW-AI Lab 13기**\n- 학습자료 배부: 26.06.08 (월)\n- 입학시험 제출: 26.07.06 (월) ~ 26.07.12 (일)\n- 입학시험 합격자 발표: 26.07.13 (월)\n- 인터뷰 기간: 26.07.20 (월) ~ 26.07.23 (목)\n- 최종 합격자 발표: 26.07.27 (월)\n\n## 연사 소개 (Speakers)\n- 정보 없음\n\n## 신청 및 상세 정보 (Registration)\n- [프로그램 정보 더보기](https://jungle.krafton.com/courses/swailab)\n- SW-AI Lab13기 사전 알림 신청\n\n※ 세부 일정은 변동될 수 있습니다.",
-    "id": "16cb6955-4e74-5384-bd26-7e2940b6e3b5"
-  },
-  {
-    "title": "크래프톤 Game Lab 5기",
-    "link": "https://jungle.krafton.com/schedule/gamelab",
-    "host": "크래프톤 정글",
-    "date": "12. 29(월) ~ 01. 18(일)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인",
-      "무료",
-      "교육"
-    ],
-    "category": "Education",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://jungle.krafton.com/images/logo/1_Jungle/Jungle_by%20KRAFTON_Logo_G.png",
-    "content": "> **행사 개요**\n> 크래프톤 정글 Game Lab은 게임 개발자를 양성하는 교육 과정입니다. K-디지털 트레이닝으로 참여 시 비용 부담 없이 참여 가능합니다. 게임 개발에 관심 있는 분들의 많은 참여 바랍니다.\n\n## 행사 정보 (Key Information)\n| 구분 | 내용 |\n|---|---| \n| **모집 기간 (Game Lab 5기)** | 2025년 12월 29일 (월) ~ 2026년 01월 18일 (일) |\n| **교육 기간 (Game Lab 5기)** | 2026년 03월 09일 (월) ~ 2026년 08월 24일 (월) |\n| **모집 기간 (Game Lab 6기)** | 2026년 06월 08일 (월) ~ 2026년 07월 05일 (일) |\n| **교육 기간 (Game Lab 6기)** | 2026년 08월 31일 (월) ~ 2027년 02월 15일 (월) |\n| **장소** | 크래프톤 정글 캠퍼스 (경기도 용인시 처인구 영문로 55) |\n| **비용** | 300만원 (K-디지털 트레이닝 참여 시 무료, 정부 정책 변경 시 일부 자부담 발생 가능) |\n| **대상** | 정보 없음 |\n\n## 프로그램 일정 (Agenda)\n- **Game Lab 5기 모집 일정**\n  - 모집 마감: 2026년 01월 18일 (일)\n  - 학습자료 배부: 2026년 01월 19일 (월)\n  - 입학시험 제출: 2026년 01월 31일 (토)\n  - 입학시험 합격자 발표: 2026년 02월 05일 (목)\n  - 인터뷰 기간: 2026년 02월 09일 (월) ~ 2026년 02월 11일 (수)\n  - 최종 합격자 발표: 2026년 02월 13일 (금)\n  - 교육 기간: 2026년 03월 09일 (월) ~ 2026년 08월 24일 (월)\n- **Game Lab 6기 모집 일정**\n  - 모집 기간: 2026년 06월 08일 (월) ~ 2026년 07월 05일 (일)\n  - 학습자료 배부: 2026년 07월 06일 (월)\n  - 입학시험 제출: 2026년 07월 18일 (토)\n  - 인터뷰 기간: 2026년 07월 27일 (월) ~ 2026년 07월 29일 (수)\n  - 교육 기간: 2026년 08월 31일 (월) ~ 2027년 02월 15일 (월)\n  - Game Lab 6기 사전 알림 신청\n\n## 연사 소개 (Speakers)\n- 정보 없음\n\n## 신청 및 상세 정보 (Registration)\n- [프로그램 정보 더보기](https://jungle.krafton.com/courses/gamelab)\n- Game Lab 6기 사전 알림 신청\n\n**Note**: 세부 일정은 변동될 수 있습니다.",
-    "id": "ed75d662-09cb-52ab-8e87-efba00473733"
-  },
-  {
-    "title": "크래프톤 정글 Tech Lab 3기",
-    "link": "https://jungle.krafton.com/schedule/gametechlab",
-    "host": "크래프톤 정글",
-    "date": "12. 29(월) ~ 01. 18(일)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인",
-      "무료",
-      "교육"
-    ],
-    "category": "Education",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://jungle.krafton.com/images/logo/1_Jungle/Jungle_by%20KRAFTON_Logo_G.png",
-    "content": "> **행사 개요**\n> 크래프톤 정글 Game Tech Lab은 게임 개발자를 위한 교육 과정입니다. K-디지털 트레이닝으로 참여 시 무료로 참여 가능합니다.\n\n## 행사 정보\n| 구분 | 내용 |\n|---|---| \n| **일시** | 3기: 2026년 03월 09일 ~ 2026년 08월 24일 \\\\ 4기: 2026년 08월 31일 ~ 2027년 02월 15일 |\n| **장소** | 크래프톤 정글 캠퍼스 (경기도 용인시 처인구 영문로 55) |\n| **비용** | 300만원 (K-디지털 트레이닝 참여 시 무료) |\n| **대상** | 정보 없음 |\n\n## 프로그램 일정\n- **크래프톤 정글 Game Tech Lab 3기**\n    - 모집 기간: 2025년 12월 29일 (월) ~ 2026년 01월 18일 (일)\n    - 학습 자료 배부: 2026년 01월 19일 (월)\n    - 입학 시험 제출: 2026년 01월 31일 (토)\n    - 입학 시험 합격자 발표: 2026년 02월 05일 (목)\n    - 인터뷰 기간: 2026년 02월 09일 (월) ~ 2026년 02월 11일 (수)\n    - 최종 합격자 발표: 2026년 02월 13일 (금)\n    - 교육 기간: 2026년 03월 09일 (월) ~ 2026년 08월 24일 (월)\n- **크래프톤 정글 Game Tech Lab 4기**\n    - 모집 기간: 2026년 06월 08일 (월) ~ 2026년 07월 05일 (일)\n    - 학습 자료 배부: 2026년 07월 06일 (월)\n    - 입학 시험 제출: 2026년 07월 18일 (토)\n    - 인터뷰 기간: 2026년 07월 27일 (월) ~ 2026년 07월 29일 (수)\n    - 교육 기간: 2026년 08월 31일 (월) ~ 2027년 02월 15일 (월)\n\n## 연사 소개\n- 정보 없음\n\n## 신청 및 상세 정보\n- [프로그램 정보 더보기](https://jungle.krafton.com/courses/gametechlab)\n",
-    "id": "3a66cfce-cc25-5f08-abc6-756ed1262909"
-  },
-  {
-    "title": "AI 공동 연구자 챌린지 코리아 - 트랙 1",
-    "link": "https://aifactory.space/task/9235/overview",
-    "host": "과학기술정보통신부",
-    "date": "12. 10(수) ~ 01. 18(일)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "무료",
-      "대회"
-    ],
-    "category": "Competition",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://cdn.aifactory.space/images/20251208141752_SXXX.jpg",
-    "content": "> **행사 개요**\n> AI 공동 연구자 챌린지 코리아는 과학기술 연구 동반자로서 AI의 가능성을 탐색하고, 연구자와 AI 간의 협업을 촉진하여 도전적인 연구개발 문화를 조성하는 데 목표를 둡니다. Track 1은 AI를 활용한 과학기술 연구 수행 및 연구 보고서 작성을 중심으로 진행됩니다.\n\n## 행사 정보\n| 구분 | 내용 |\n|---|---| \n| **일시** | 2025년 12월 10일 - 2026년 4월 30일 |\n| **장소** | 온라인 (상세 정보는 공고문 참조) |\n| **비용** | 정보 없음 |\n| **대상** | AI 연구에 관심 있는 국내외 누구나 |\n\n## 프로그램 일정\n- 사전 설명회: 2025년 12월 10일 (수) 10:00~12:30\n- 참가신청 및 팀 빌딩 기간: 2025년 12월 10일 (수) 13:00 ~ 2026년 1월 31일 (토) 18:00\n- 제출 마감: 2026년 1월 31일 (토) 18:00\n- AI 활용 심사: 2026년 2월 중순\n- 대국민 리뷰: 2026년 2월 말\n- 심사위원단 심사: 2026년 3월 초\n- 결과 통보 및 시상: 2026년 4월\n\n## 연사 소개\n- 정보 없음\n\n## 신청 및 상세 정보\n- 참가 방법: 대회 홈페이지 ([https://aifactory.space/task/9237/overview](https://aifactory.space/task/9237/overview))를 통해 신청\n- 상세 정보: 공고문 ([https://drive.google.com/file/d/1F0aKv2q1bxdL95LoQwu_reMHsT4vSEsx/view?usp=drive_link](https://drive.google.com/file/d/1F0aKv2q1bxdL95LoQwu_reMHsT4vSEsx/view?usp=drive_link)) 및 ([https://drive.google.com/file/d/1NTkUVh3KV5n0H6s7vEiiTtTxTK2i7O3f/view?usp=drive_link](https://drive.google.com/file/d/1NTkUVh3KV5n0H6s7vEiiTtTxTK2i7O3f/view?usp=drive_link)) 참조\n",
-    "id": "a1d73e3c-147e-5e6e-94d9-180d8fed6f2c"
-  },
-  {
-    "title": "2026 AI 공동 연구자 챌린지 코리아 - 트랙 2",
-    "link": "https://aifactory.space/task/9237/overview",
-    "host": "과학기술정보통신부",
-    "date": "12. 10(수) ~ 01. 18(일)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "무료",
-      "대회"
-    ],
-    "category": "Competition",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://cdn.aifactory.space/images/20251224112636_tvZM.jpg",
-    "content": "> **행사 개요**\n> AI 공동 연구자 챌린지 코리아는 과학기술 연구 분야에서 AI의 가능성을 탐색하고, 연구자와 AI 간의 협업을 촉진하여 도전적인 연구 개발 문화를 조성하는 데 목적이 있습니다. Track 2는 과학기술 AI Agent 개발을 주제로 진행됩니다.\n\n## 행사 정보\n| 구분 | 내용 |\n|---|---| \n| **일시** | 2025년 12월 10일 - 2026년 04월 30일 |\n| **장소** | 정보 없음 |\n| **비용** | 정보 없음 |\n| **대상** | 본 대회에 관심 있는 국내외 누구나 |\n\n## 프로그램 일정\n- 사전 설명회: 2025년 12월 10일 (수) 10:00 ~ 12:30\n- 참가신청 및 팀빌딩 기간: 2025년 12월 10일 (수) 13:00 ~ 2026년 1월 2일 (금) 18:00\n- 사전제안서 제출: 2025년 12월 10일 (수) 13:00 ~ 2026년 1월 2일 (금) 18:00\n- AI Agent 개발: 2026년 1월 19일 (월) 09:00 ~ 2026년 4월 3일 (금) 18:00 (사전심사 통과팀 대상)\n- 본 심사: 2026년 4월\n- 결과통보 및 시상: 2026년 4월\n\n## 연사 소개\n- 정보 없음\n\n## 신청 및 상세 정보\n- 참가 신청: 모든 팀 구성원이 ‘참가하기’ 버튼을 눌러 참가 접수\n- 팀 빌딩: 2인 이상의 경우, 참가 접수 후 나타나는 ‘팀’ 탭에서 팀 빌딩 진행\n- 제출물 제출: 참가 접수 후 노출되는 ‘제출' 탭을 통해 제출물 업로드\n- 공고문 다운로드 (KR): [https://drive.google.com/file/d/1F0aKv2q1bxdL95LoQwu_reMHsT4vSEsx/view?usp=drive_link](https://drive.google.com/file/d/1F0aKv2q1bxdL95LoQwu_reMHsT4vSEsx/view?usp=drive_link)\n- Notice Download (EN): [https://drive.google.com/file/d/1NTkUVh3KV5n0H6s7vEiiTtTxTK2i7O3f/view?usp=drive_link](https://drive.google.com/file/d/1NTkUVh3KV5n0H6s7vEiiTtTxTK2i7O3f/view?usp=drive_link)\n- 미성년자 참가접수서식: [https://drive.google.com/file/d/129nHtNMzKOvYeShN8Fkb-Fi5E4gi8FoW/view?usp=drive_link](https://drive.google.com/file/d/129nHtNMzKOvYeShN8Fkb-Fi5E4gi8FoW/view?usp=drive_link)\n- 제출물 양식 및 참고자료 다운로드: [https://drive.google.com/drive/folders/1zoakxwcLq053Lp230-6ugT5WompPq2UF?usp=sharing](https://drive.google.com/drive/folders/1zoakxwcLq053Lp230-6ugT5WompPq2UF?usp=sharing)",
-    "id": "cbe52c84-55c6-5cde-86d1-07b0c0f741ac"
-  },
-  {
-    "title": "카카오 MCP Player 10",
-    "link": "https://b.kakao.com/views/PlayMCP/MCP_Player_10",
-    "host": "카카오",
-    "date": "12. 19(금) ~ 01. 18(일)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "무료",
-      "대회"
-    ],
-    "category": "Competition",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://t1.kakaocdn.net/brandtool/mcp-player10/img_og.png",
-    "content": "> **이벤트 개요**\n> 카카오 MCP Player 10 공모전은 종료되었습니다. 다음에 더 좋은 이벤트로 찾아뵙겠습니다.\n\n## 행사 정보 (Key Information)\n| 구분 | 내용 |\n|---|---|\n| **일시** | 정보 없음 |\n| **장소** | 정보 없음 |\n| **비용** | 정보 없음 |\n| **대상** | 정보 없음 |\n\n## 프로그램 일정 (Agenda)\n정보 없음\n\n## 연사 소개 (Speakers)\n정보 없음\n\n## 신청 및 상세 정보 (Registration)\n- [PlayMCP 바로가기](https://playmcp.kakao.com/)",
-    "id": "ea8b906c-fce3-5037-8a20-fc9eef27255f"
-  },
-  {
-    "title": "KB IT’s Your Life 7기 모집",
-    "link": "https://inthiswork.com/archives/285573",
-    "host": "국민은행",
-    "date": "12. 22(월) ~ 01. 19(월)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인",
-      "무료",
-      "교육"
-    ],
-    "category": "Education",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://i0.wp.com/inthiswork.com/wp-content/uploads/2025/12/JPG-screencapture-12345-240.jpg?fit=900%2C600&ssl=1",
-    "content": "> **행사 개요**\n> KB IT’s Your Life 7기 모집에 대한 안내입니다. IT 분야에 관심 있는 분들에게 유익한 기회가 될 것입니다.\n\n## 행사 정보\n| 구분 | 내용 |\n|---|---| \n| **일시** | 정보 없음 |\n| **장소** | 정보 없음 |\n| **비용** | 정보 없음 |\n| **대상** | 정보 없음 |\n\n## 프로그램 일정\n- 정보 없음\n\n## 연사 소개\n- 정보 없음\n\n## 신청 및 상세 정보\n- [지원하러 가기](https://inthiswork.com/kb12172025)\n\n**Note**: 기업 사정으로 조기 마감되거나 내용이 변경될 수 있습니다.",
-    "id": "258d0257-5923-577b-b08c-51a650f17e9b"
-  },
-  {
-    "title": "OpenAI 콕스웨이브 해커톤: 멀티 에이전트 워크플로우",
-    "link": "https://luma.com/23tmqe8f",
-    "host": "OpenAI, Coxwave",
-    "date": "12. 25(목) ~ 01. 19(월)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인",
-      "무료",
-      "대회"
-    ],
-    "category": "Competition",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://og.luma.com/cdn-cgi/image/format=auto,fit=cover,dpr=1,anim=false,background=white,quality=75,width=800,height=419/api/event-one?calendar_avatar=https%3A%2F%2Fcdn.lu.ma%2Favatars-default%2Fcommunity_avatar_17.png&calendar_name&color0=%23ffffff&color1=%231f1f1f&color2=%231366d6&host_avatar=https%3A%2F%2Fcdn.lu.ma%2Favatars-default%2Favatar_43.png&host_name=Thomas%20Jeng&img=https%3A%2F%2Fimages.lumacdn.com%2Fevent-covers%2Fai%2Fa5696cdc-902e-4401-a852-0edfc41d2f54.png&name=OpenAI%20Coxwave%20Hackathon%3A%20Multi-Agent%20Workflows",
-    "content": "> **행사 개요**\n> OpenAI와 콕스웨이브가 공동 주최하는 해커톤으로, 멀티 에이전트 워크플로우를 활용한 기업용 AI 에이전트 솔루션 개발을 목표로 합니다. OpenAI의 최신 기술을 경험하고, 국내 AI 생태계 개발자들과 교류할 수 있는 기회입니다.\n\n## 행사 정보\n| 구분 | 내용 |\n|---|---| \n| **일시** | 2026년 1월 20일 (화) 10:30~21:30 |\n| **장소** | 공유오피스 드리움 (서울 강남구 테헤란로 138 성홍타워 3층) |\n| **비용** | 정보 없음 |\n| **대상** | AI에 관심 있는 개발자로 구성된 2인~4인 팀 (AI 스타트업/기업 AI 부서 개발자, 창업자 우대) |\n\n## 프로그램 일정\n- 10:00: 체크인\n- 10:30: 오프닝 & OpenAI 기술 세션\n- 11:30: Hacking 시작 (점심 제공)\n- 18:30: 결과물 제출 및 예선 심사 (저녁 제공)\n- 20:00: Top 5 팀 최종 발표\n- 21:00: 시상식 & 단체 사진\n- 21:30: 클로징 & 네트워킹\n\n## 연사 소개\n- 정보 없음\n\n## 신청 및 상세 정보\n- 해커톤 신청 기간: 2025년 12월 10일(수) ~ 12월 28일(일)\n- 최종 선발 안내: 2026년 1월 9일(금)\n- 총 상금: OpenAI API 크레딧 $50,000\n- 참여 혜택:\n  - OpenAI API 크레딧 $100 및 기념품\n  - OpenAI 최신 기술 교육 세션 & 엔지니어 멘토링\n  - 점심 & 저녁 식사 및 무제한 간식",
-    "id": "4a495b81-ca19-578c-9820-9869d10dd178"
-  },
-  {
-    "title": "Sonatype Nexus repository를 중심으로 본 Hugging Face  오픈소스 AI 모델 취약점과 NPM 공격사례",
-    "link": "https://event-us.kr/grometric/event/117958",
-    "host": "그로메트릭",
-    "date": "12. 05(금) ~ 01. 20(화)",
+    "title": "바이브 코딩의 한계, 컨텍스트·프롬프트를 넘어 SDD로: Spec-Kit 실전 가이드",
+    "link": "https://www.genon.ai/resources/events/genonair-260129",
+    "host": "서울특별시",
+    "date": "01. 20(화) ~ 01. 29(목)",
     "start_date": null,
     "end_date": null,
     "tags": [
@@ -314,351 +54,28 @@
     "category": "Other",
     "status": "recruiting",
     "source": "github",
-    "description": null,
-    "thumbnail": "https://eventusstorage.blob.core.windows.net/evs/Image/grometric/117958/ProjectInfo/Cover/1fa4ed7e5d074ffaabfbc65a7b34cfce.png?fit=640%2C360",
-    "content": null,
-    "id": "84ab6ce8-74fa-5199-8725-5bc4996b09f4"
-  },
-  {
-    "title": "AWSKRUG #Beginner 모임 - AWS Network 기초 이론과 Hands-on Lab",
-    "link": "https://www.meetup.com/awskrug/events/312677101/",
-    "host": "AWSKRUG",
-    "date": "01. 05(월) ~ 01. 20(화)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "무료",
-      "클라우드"
+    "description": "## 바이브 코딩을 \"더\" 잘하는 방법 — AI 코딩 Spec-Kit 활용 가이드\n\nAI에게 코드를 맡겼는데 대화가 길어질수록 로직이 꼬여서 답답했던 적 없으신가요? 😅 프롬프트 가이드라인이 부족한 바이브 코딩은 프로젝트 규모가 커질수록 한계에 부딪히기 마련입니다. 이번 웨비나에서는 이러한 한계를 돌파하기 위해 **GitHub가 공개한 도구, 'Spec-Kit'** 의 활용법부터 실전 적용까지 상세히 다룹니다.\n\n### 📍 이런 분들은 이번 웨비나를 놓치지 마세요!\n\n*   AI 코딩 중 대화가 길어질수록 로직이 엉켜 답답하다.\n*   프롬프트 작성에 대한 명확한 가이드라인이 없어 매번 같은 명령을 반복하는 게 번거롭다.\n*   프로젝트 규모가 커져도 설계 의도가 유지되는 안정적인 코딩을 하고 싶다.\n*   개발 지식이 부족해도 전문가 수준의 신뢰도 높은 서비스를 구현해보고 싶다.\n\n### 📝 이번 웨비나에서 다루는 내용\n\n1.  바이브 코딩의 한계\n2.  GitHub Spec Kit의 핵심 개념과 도입 배경\n3.  SDD(명세 기반 개발) 워크플로우\n4.  [실전 활용 노하우]: 비개발자도 함께 따라 할 수 있는 가이드\n\n> **💡 Spec-Kit 기반 코딩의 강점:** AI가 내 설계 의도를 명확하게 이해할 수 있도록 하는 명세 기반 개발(SDD) 도구의 하나로, 단순히 코드 생성을 넘어 개발을 고도화할 수 있습니다.\n\n💡 **제논은 기업의 문제를 정의하고 AI로 실질적인 해답을 찾는 전문가 그룹입니다.**\nGitHub를 비롯한 오픈소스 커뮤니티의 혁신적인 시도를 한발 앞서 분석하고 실무적 인사이트를 공유하는 이번 웨비나가, AI 생태계의 일원이 함께 성장하는 지식의 장이 되길 희망합니다.\n\n### 🗓️ 일정 안내\n\n*   **일시**: 2026년 1월 29일(목) | 17:00 ~ 17:30 (30분)\n*   **진행**: 제논 R&D파트 김현근 파트장\n*   **장소**: 온라인 / 제논 유튜브 live (접속링크 별도 안내)\n*   **특별 혜택**: 사전등록 하신 분들께는 특별한 혜택을 드립니다! (사전등록 마감)\n\n**🔥 라이브 본방 사수 이벤트:** 웨비나 시청 중 화면 캡처 후 구글 폼으로 인증해 주세요! 추첨을 통해 **10분께 기프티콘** 을 선물로 드립니다.\n\n[지난 테크 웨비나 시리즈 다시보기](https://www.youtube.com/playlist?list=PLblQZqPIiNb8voukDWdb48bHZsvS57yyj)",
+    "thumbnail": "https://framerusercontent.com/images/UJ2xjcn04CjWGJdooNQMNAiEyx8.png?width=1280&height=720",
+    "content": "## 바이브 코딩을 \"더\" 잘하는 방법 — AI 코딩 Spec-Kit 활용 가이드\n\nAI에게 코드를 맡겼는데 대화가 길어질수록 로직이 꼬여서 답답했던 적 없으신가요? 😅 프롬프트 가이드라인이 부족한 바이브 코딩은 프로젝트 규모가 커질수록 한계에 부딪히기 마련입니다. 이번 웨비나에서는 이러한 한계를 돌파하기 위해 **GitHub가 공개한 도구, 'Spec-Kit'** 의 활용법부터 실전 적용까지 상세히 다룹니다.\n\n### 📍 이런 분들은 이번 웨비나를 놓치지 마세요!\n\n*   AI 코딩 중 대화가 길어질수록 로직이 엉켜 답답하다.\n*   프롬프트 작성에 대한 명확한 가이드라인이 없어 매번 같은 명령을 반복하는 게 번거롭다.\n*   프로젝트 규모가 커져도 설계 의도가 유지되는 안정적인 코딩을 하고 싶다.\n*   개발 지식이 부족해도 전문가 수준의 신뢰도 높은 서비스를 구현해보고 싶다.\n\n### 📝 이번 웨비나에서 다루는 내용\n\n1.  바이브 코딩의 한계\n2.  GitHub Spec Kit의 핵심 개념과 도입 배경\n3.  SDD(명세 기반 개발) 워크플로우\n4.  [실전 활용 노하우]: 비개발자도 함께 따라 할 수 있는 가이드\n\n> **💡 Spec-Kit 기반 코딩의 강점:** AI가 내 설계 의도를 명확하게 이해할 수 있도록 하는 명세 기반 개발(SDD) 도구의 하나로, 단순히 코드 생성을 넘어 개발을 고도화할 수 있습니다.\n\n💡 **제논은 기업의 문제를 정의하고 AI로 실질적인 해답을 찾는 전문가 그룹입니다.**\nGitHub를 비롯한 오픈소스 커뮤니티의 혁신적인 시도를 한발 앞서 분석하고 실무적 인사이트를 공유하는 이번 웨비나가, AI 생태계의 일원이 함께 성장하는 지식의 장이 되길 희망합니다.\n\n### 🗓️ 일정 안내\n\n*   **일시**: 2026년 1월 29일(목) | 17:00 ~ 17:30 (30분)\n*   **진행**: 제논 R&D파트 김현근 파트장\n*   **장소**: 온라인 / 제논 유튜브 live (접속링크 별도 안내)\n*   **특별 혜택**: 사전등록 하신 분들께는 특별한 혜택을 드립니다! (사전등록 마감)\n\n**🔥 라이브 본방 사수 이벤트:** 웨비나 시청 중 화면 캡처 후 구글 폼으로 인증해 주세요! 추첨을 통해 **10분께 기프티콘** 을 선물로 드립니다.\n\n[지난 테크 웨비나 시리즈 다시보기](https://www.youtube.com/playlist?list=PLblQZqPIiNb8voukDWdb48bHZsvS57yyj)",
+    "summary": "AI 코딩 시 대화가 길어질수록 로직이 엉키는 '바이브 코딩'의 한계를 극복하는 웨비나입니다. GitHub의 'Spec-Kit'과 명세 기반 개발(SDD) 워크플로우를 통해 AI가 설계 의도를 명확히 이해하고 안정적인 코드를 생성하도록 돕는 방법을 제시합니다. 개발 지식이 부족한 분들도 전문가 수준의 서비스를 구현할 수 있는 실전 가이드를 제공합니다.",
+    "target_audience": [
+      "AI 코딩 중 대화가 길어질수록 로직이 엉켜 답답한 사람",
+      "프롬프트 작성에 대한 명확한 가이드라인이 없어 매번 같은 명령을 반복하는 게 번거로운 사람",
+      "프로젝트 규모가 커져도 설계 의도가 유지되는 안정적인 코딩을 하고 싶은 사람",
+      "개발 지식이 부족해도 전문가 수준의 신뢰도 높은 서비스를 구현해보고 싶은 사람"
     ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://secure.meetupstatic.com/photos/event/9/0/7/6/600_532056982.jpeg",
-    "content": null,
-    "id": "692abcf9-9f89-5fbb-bd50-c91bdb8468cf"
-  },
-  {
-    "title": "AWS Community Builders Day 2026",
-    "link": "https://event-us.kr/awskrug/event/118695",
-    "host": "AWS",
-    "date": "12. 29(월) ~ 01. 21(수)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "유료",
-      "기술일반"
+    "fee": "무료",
+    "schedule": [
+      "바이브 코딩의 한계",
+      "GitHub Spec Kit의 핵심 개념과 도입 배경",
+      "SDD(명세 기반 개발) 워크플로우",
+      "[실전 활용 노하우]: 비개발자도 함께 따라 할 수 있는 가이드"
     ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://eventusstorage.blob.core.windows.net/evs/Image/awskrug/118695/ProjectInfo/Cover/237b019f85dc498698c665bd284f269a.jpg?fit=640%2C360",
-    "content": null,
-    "id": "2bdf10df-0403-589e-bb18-db1cb41eff4c"
-  },
-  {
-    "title": "바이브 코딩 AI 프로젝트 실전 특강",
-    "link": "https://event-us.kr/hanbitn/event/118798",
-    "host": "한빛+",
-    "date": "01. 05(월) ~ 01. 21(수) 23:00",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "유료",
-      "AI"
+    "benefits": [
+      "사전등록 혜택 (웨비나 종료 후 등록 이메일로 전달)",
+      "라이브 본방 사수 이벤트: 웨비나 시청 중 화면 캡처 후 구글 폼으로 인증 시 추첨을 통해 10명에게 기프티콘 증정"
     ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://eventusstorage.blob.core.windows.net/evs/Image/hanbitn/118798/ProjectInfo/Cover/836f841ab6ba40028113d559bfa88cd5.png?fit=640%2C360",
-    "content": null,
-    "id": "e6cecd5d-3412-5769-ad6c-8bc9c6d4f491"
-  },
-  {
-    "title": "C# 개발자 모임: Dot4 밋업",
-    "link": "https://onoffmix.com/event/336832",
-    "host": "C# 개발자 모임",
-    "date": "01. 13(화) ~ 01. 21(수) 23:00",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "무료",
-      "기술일반"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://static.onoffmix.com/afv2/thumbnail/2026/01/09/v303f74ac5ca6573b3031d65fc78692c40.png",
-    "content": null,
-    "id": "aa02200f-8767-5845-8492-7c70e065bc3b"
-  },
-  {
-    "title": "스위프 앱 3기 데모데이 & 네트워킹 행사",
-    "link": "https://tally.so/r/dW0E5V",
-    "host": "스위프",
-    "date": "01. 13(화) ~ 01. 22(목)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 선릉)",
-      "유료",
-      "모임"
-    ],
-    "category": "Community",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://storage.tally.so/d22111dc-7fdb-4abc-8f1d-7fbfb966fb45/seuwipeu_tally_keobeo.png",
-    "content": null,
-    "id": "5fdae076-df1f-570b-ab35-da856a618827"
-  },
-  {
-    "title": "AWSKRUG - AUSG Public BIGCHAT",
-    "link": "https://www.meetup.com/awskrug/events/312827814",
-    "host": "AWSKRUG AUSG",
-    "date": "01. 11(일) ~ 01. 22(목)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인",
-      "유료",
-      "클라우드"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://secure.meetupstatic.com/photos/event/d/a/6/0/600_532195904.jpeg",
-    "content": null,
-    "id": "bdae7332-24df-5969-86cb-719c3d1e96c9"
-  },
-  {
-    "title": "2026 AI시대 인간지능 컨퍼런스",
-    "link": "https://smartstore.naver.com/lolomall/products/12906921285?NaPm=ct%3D1je6pvt9c%7Cci%3Dshopn%7Ctr%3Dmktlnk%7Chk%3D63e74e6a3628b36d2b8304f6046daea0b03a45cf%7Ctrx%3Dundefined",
-    "host": "여행가J",
-    "date": "12. 08(월) ~ 01. 23(금)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "무료",
-      "AI"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": null,
-    "content": null,
-    "id": "6fa32f62-7c51-5d88-aef0-cd26145bd2ba"
-  },
-  {
-    "title": "Flutter Seoul 오픈스테이지 (대구편)",
-    "link": "https://event-us.kr/flutterseoul/event/118042",
-    "host": "FlutterSeoul",
-    "date": "12. 08(월) ~ 01. 23(금)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(대구 동구)",
-      "무료",
-      "대회"
-    ],
-    "category": "Competition",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://eventusstorage.blob.core.windows.net/evs/Image/flutterseoul/118042/ProjectInfo/Cover/a6008652ab474d288ed695f7e16cd30d.jpg?fit=640%2C360",
-    "content": null,
-    "id": "2b8af7d4-c445-5c08-be2c-95295de0759d"
-  },
-  {
-    "title": "AI Builders Meetup: Skillthon",
-    "link": "https://docs.google.com/forms/d/e/1FAIpQLSe7FLZH_lr8VfnDuhLXXlpHEFIHV-QFoA1kFEdpuD6HI-6I2g/viewform",
-    "host": "Team Attention",
-    "date": "01. 10(토) ~ 01. 23(금)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "무료",
-      "대회"
-    ],
-    "category": "Competition",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://lh4.googleusercontent.com/jMby1ItQOwms85FM4ZU77B5aeGNGBlQPozymPzMJ9ml4TTa6jv8tEI59c3IFRAN_TcrLAYVtCEof3v8=w1200-h630-p",
-    "content": null,
-    "id": "d287aa65-40f9-58a3-b0b7-1f300e6f791d"
-  },
-  {
-    "title": "DRIFT 26",
-    "link": "https://event-us.kr/teendev/event/119348",
-    "host": "Teendev",
-    "date": "01. 12(월) ~ 01. 23(금) 18:00",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 마포)",
-      "유료",
-      "모임"
-    ],
-    "category": "Community",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://eventusstorage.blob.core.windows.net/evs/Image/teendev/119348/ProjectInfo/Cover/fbaf5eabce9f4d1c80fc4a38fa5f2e3c.png?fit=640%2C360",
-    "content": null,
-    "id": "6ee80f5e-d327-57a2-9c27-5d6b9992e124"
-  },
-  {
-    "title": "제 23회 BOAZ 빅데이터 컨퍼런스",
-    "link": "https://event-us.kr/boaz/event/119509",
-    "host": "BOAZ",
-    "date": "01. 16(금) ~ 01. 23(금) 23:30",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 중구)",
-      "무료",
-      "기술일반"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://eventusstorage.blob.core.windows.net/evs/Image/boaz/119509/ProjectInfo/Cover/9260e6514f124f2fbb5351daeddc6fcd.png?fit=640%2C360",
-    "content": null,
-    "id": "237455fc-3b02-5e9e-87b8-64c5f431472a"
-  },
-  {
-    "title": "오픈소스 기여모임 10기",
-    "link": "https://docs.google.com/forms/d/e/1FAIpQLScWdrUYOnb8l4UHLRSu7YUceiMip_ZheTYb9cFNbdTobS0C6A/viewform",
-    "host": "오픈소스 기여모임",
-    "date": "01. 10(토) ~ 01. 25(일)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "유료",
-      "오픈소스"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://lh3.googleusercontent.com/t_1ZhFXyEEWxwBtyC_yBXv0lRTFAXLI3MjvJ7MznNR4y3eDTE4W8hf7Pg2R_frsIPWTgQiuNnjzqZm0=w1200-h630-p",
-    "content": null,
-    "id": "288b7315-f533-577d-90e8-9c541c7ddd3e"
-  },
-  {
-    "title": "IT 연합동아리 Cloud Club 9기 모집",
-    "link": "https://docs.google.com/forms/d/e/1FAIpQLSffxOpp39h9Qc7wOfMlMebiMW6F7PhF7zrcwyenY62Ylo_SxQ/viewform",
-    "host": "Cloud Club",
-    "date": "01. 12(월) ~ 01. 25(일)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "오프라인 무료",
-      "모임"
-    ],
-    "category": "Community",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": null,
-    "content": null,
-    "id": "b3d0415c-ea8b-5e30-bb2a-47040f966690"
-  },
-  {
-    "title": "OWASP Seoul Chapter 1월 세미나: AI 보안의 현재 — 실제 사례로 보는 위협과 방어",
-    "link": "https://www.meetup.com/owasp-seoul/events/312560748",
-    "host": "OWASP Seoul Chapter",
-    "date": "01. 02(금) ~ 01. 26(월)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "무료",
-      "보안"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://secure.meetupstatic.com/photos/event/9/d/3/5/600_531940245.jpeg",
-    "content": null,
-    "id": "ae956f3b-80b4-5d63-927f-8dda100c3cd0"
-  },
-  {
-    "title": "AWSKRUG - AWS 테크에반젤리스트와 함께 레벨업! (온라인) - Amazon Bedrock과 RAG 이론 및 실습",
-    "link": "https://www.meetup.com/awskrug/events/312711596/",
-    "host": "AWSKRUG",
-    "date": "01. 05(월) ~ 01. 26(월)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "온라인",
-      "무료",
-      "클라우드"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://secure.meetupstatic.com/photos/event/1/9/c/6/600_532086598.jpeg",
-    "content": null,
-    "id": "dc487d3e-ad4b-5a56-9485-de56f5a5b397"
-  },
-  {
-    "title": "AUSG Public BIGCHAT",
-    "link": "https://www.meetup.com/awskrug/events/312827814",
-    "host": "AWSKRUG",
-    "date": "01. 05(월) ~ 01. 26(월)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "무료",
-      "AI"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://secure.meetupstatic.com/photos/event/d/a/6/0/600_532195904.jpeg",
-    "content": null,
-    "id": "948e1e73-07d4-5b29-8164-c216746640df"
-  },
-  {
-    "title": "AWSKRUG #AIEngineering 소모임 - Frontier Agent의 모든 것!",
-    "link": "https://www.meetup.com/awskrug/events/312892561/",
-    "host": "AWSKRUG",
-    "date": "01. 16(금) ~ 01. 28(수)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인(서울 강남)",
-      "유료",
-      "AI",
-      "프론트엔드"
-    ],
-    "category": "Other",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://secure.meetupstatic.com/photos/event/3/9/2/600_532260914.jpeg",
-    "content": null,
-    "id": "dd4c5238-6c64-5b76-a055-b3de88ceef46"
+    "id": "1cf0c351-00d0-5132-ada0-e9ddf0a30f63"
   },
   {
     "title": "2026 두나무 개발직군 대규모 채용",
@@ -675,9 +92,25 @@
     "category": "Other",
     "status": "recruiting",
     "source": "github",
-    "description": null,
+    "description": "채용 캠페인이 마감되었습니다. 지원자분들의 많은 관심과 성원에 감사드립니다.\n\n- 도전은 _즐겁게_\n- 기술은 _깊게_\n- 배움은 _함께_\n- 성장은 _끝없이_\n\n## 두나무가 함께할 성장\n\n당신의 경력 위에 새로운 기술적 도전을 더해보세요.\n\n두나무 개발팀은 다양한 핵심 기술 영역에서 혁신을 만들어가고 있습니다:\n\n*   이상거래탐지시스템 (FDS) 개발\n*   인증/메시징 플랫폼 개발\n*   검색서비스/콘텐츠 관리 시스템 개발\n*   인공지능 변환 모델, 글로벌 평가 지표 1위\n*   일 1,000조 원 규모 디지털 자산 체결엔진 고도화\n*   증권플러스 NXT 통합시세 지원 및 SOR 거래 주문 기능\n*   증권플러스 머신러닝 알고리즘 기반 ‘뉴스룸' 개발\n*   코인 모으기 기능\n*   마켓 인사이트 기능\n*   업비트 실험실\n*   디지털 자산 투자 인덱스 지표 제공 기능\n\n## 두나무 개발팀이 일하는 방식\n\n금융·블록체인·데이터 인프라를 혁신합니다.\n\n*   **도전은 즐겁게,** 새로운 가능성을 설계하다\n*   **기술은 깊게,** 혁신의 기회를 구조로 정의하다\n*   **성장은 끝없이,** 서비스의 심장을 설계하다\n*   **배움은 함께,** 동료의 수준이 나의 성장 속도다\n\n## 기술 중심 문화를 통해 리더로 성장할 수 있었어요\n\n두나무 개발팀은 개발자들이 리더로 성장할 수 있는 기술 중심 문화를 제공합니다.\n\n### 우수한 개발 인프라\n\n안정성과 속도를 모두 잡는 인프라 설계의 주체가 되며, 개발에만 집중할 수 있는 환경을 제공합니다. 클라우드, 쿠버네티스, 코틀린 등 새로운 기술에 개방적인 팀입니다. 개발자를 믿고 시스템이 그 신뢰를 보증합니다.\n\n### 수준 높은 동료\n\n스스로 방향을 제시하고 책임질 수 있으며, 도전하는 사람에게는 끝없이 열려 있는 팀입니다. 열정이 실력으로 증명되는 수준 높은 동료들과 함께 성장합니다. 기여하고 싶다면, 그만큼의 무대가 주어집니다.\n\n### 일한 만큼 성과를 인정받는 곳\n\n기술적 결정이 비즈니스 임팩트를 만들고, 기여한 만큼 성장과 인정을 받을 수 있습니다.\n\n### 대규모 트래픽 경험\n\n실제 수백만 명의 유저 트래픽을 경험하며, 스케일의 한계를 기술로 돌파하고 트래픽 급증에도 시스템이 견디도록 직접 설계할 수 있습니다. 당신의 코드가 수백만 명의 화면 위에서 동시에 실행됩니다.",
     "thumbnail": "https://careers.dunamu.com/open_graph_image.png",
-    "content": null,
+    "content": "채용 캠페인이 마감되었습니다. 지원자분들의 많은 관심과 성원에 감사드립니다.\n\n- 도전은 _즐겁게_\n- 기술은 _깊게_\n- 배움은 _함께_\n- 성장은 _끝없이_\n\n## 두나무가 함께할 성장\n\n당신의 경력 위에 새로운 기술적 도전을 더해보세요.\n\n두나무 개발팀은 다양한 핵심 기술 영역에서 혁신을 만들어가고 있습니다:\n\n*   이상거래탐지시스템 (FDS) 개발\n*   인증/메시징 플랫폼 개발\n*   검색서비스/콘텐츠 관리 시스템 개발\n*   인공지능 변환 모델, 글로벌 평가 지표 1위\n*   일 1,000조 원 규모 디지털 자산 체결엔진 고도화\n*   증권플러스 NXT 통합시세 지원 및 SOR 거래 주문 기능\n*   증권플러스 머신러닝 알고리즘 기반 ‘뉴스룸' 개발\n*   코인 모으기 기능\n*   마켓 인사이트 기능\n*   업비트 실험실\n*   디지털 자산 투자 인덱스 지표 제공 기능\n\n## 두나무 개발팀이 일하는 방식\n\n금융·블록체인·데이터 인프라를 혁신합니다.\n\n*   **도전은 즐겁게,** 새로운 가능성을 설계하다\n*   **기술은 깊게,** 혁신의 기회를 구조로 정의하다\n*   **성장은 끝없이,** 서비스의 심장을 설계하다\n*   **배움은 함께,** 동료의 수준이 나의 성장 속도다\n\n## 기술 중심 문화를 통해 리더로 성장할 수 있었어요\n\n두나무 개발팀은 개발자들이 리더로 성장할 수 있는 기술 중심 문화를 제공합니다.\n\n### 우수한 개발 인프라\n\n안정성과 속도를 모두 잡는 인프라 설계의 주체가 되며, 개발에만 집중할 수 있는 환경을 제공합니다. 클라우드, 쿠버네티스, 코틀린 등 새로운 기술에 개방적인 팀입니다. 개발자를 믿고 시스템이 그 신뢰를 보증합니다.\n\n### 수준 높은 동료\n\n스스로 방향을 제시하고 책임질 수 있으며, 도전하는 사람에게는 끝없이 열려 있는 팀입니다. 열정이 실력으로 증명되는 수준 높은 동료들과 함께 성장합니다. 기여하고 싶다면, 그만큼의 무대가 주어집니다.\n\n### 일한 만큼 성과를 인정받는 곳\n\n기술적 결정이 비즈니스 임팩트를 만들고, 기여한 만큼 성장과 인정을 받을 수 있습니다.\n\n### 대규모 트래픽 경험\n\n실제 수백만 명의 유저 트래픽을 경험하며, 스케일의 한계를 기술로 돌파하고 트래픽 급증에도 시스템이 견디도록 직접 설계할 수 있습니다. 당신의 코드가 수백만 명의 화면 위에서 동시에 실행됩니다.",
+    "summary": "2026년 두나무 개발직군 대규모 채용 캠페인은 현재 마감되었습니다. 본 캠페인은 도전, 기술, 배움, 성장을 핵심 가치로 삼아 금융, 블록체인, 데이터 인프라 혁신을 이끌 인재를 찾았습니다. 지원자분들의 많은 관심과 성원에 감사드립니다.",
+    "target_audience": [
+      "경력 개발자",
+      "기술적 도전을 추구하는 개발자",
+      "리더로 성장하고자 하는 개발자"
+    ],
+    "fee": "Free",
+    "schedule": [],
+    "benefits": [
+      "우수한 개발 인프라 경험",
+      "수준 높은 동료와의 협업",
+      "성과에 대한 인정 및 보상",
+      "대규모 트래픽 처리 경험",
+      "리더로 성장할 기회",
+      "새로운 기술적 도전"
+    ],
     "id": "aaf601f4-aa4a-5e7f-9b95-44e08c7d3dab"
   },
   {
@@ -695,9 +128,26 @@
     "category": "Competition",
     "status": "recruiting",
     "source": "github",
-    "description": null,
+    "description": "## 이벤트 정보\n\n제공된 원본 콘텐츠는 이벤트 상세 정보가 아닌 Google Forms 로그인 페이지입니다. 따라서 본 문서에서는 이벤트에 대한 구체적인 소개, 연사 정보, 세션 내용, FAQ 등의 상세 정보를 확인할 수 없습니다. 이벤트 참여를 위해서는 해당 로그인 절차를 완료해야 합니다.",
     "thumbnail": null,
-    "content": null,
+    "content": "## 이벤트 정보\n\n제공된 원본 콘텐츠는 이벤트 상세 정보가 아닌 Google Forms 로그인 페이지입니다. 따라서 본 문서에서는 이벤트에 대한 구체적인 소개, 연사 정보, 세션 내용, FAQ 등의 상세 정보를 확인할 수 없습니다. 이벤트 참여를 위해서는 해당 로그인 절차를 완료해야 합니다.",
+    "summary": "매경미디어와 앤스로픽이 주최하는 'News to Action' AI 해커톤은 참가자들이 뉴스 콘텐츠를 활용하여 혁신적인 AI 솔루션을 개발하는 기회를 제공합니다. AI 기술을 통해 뉴스 소비를 넘어 실제 가치를 창출할 아이디어를 발굴하고 구현하는 데 초점을 맞춥니다.",
+    "target_audience": [
+      "개발자",
+      "학생",
+      "AI/데이터 과학자",
+      "기획자",
+      "디자이너",
+      "AI 기술 및 뉴스 콘텐츠 활용에 관심 있는 누구나"
+    ],
+    "fee": "무료",
+    "schedule": [],
+    "benefits": [
+      "네트워킹 기회",
+      "AI 기술 학습 및 실습",
+      "아이디어 구현 기회",
+      "수상 시 상금 또는 상품"
+    ],
     "id": "ab180845-74fe-5beb-8a8e-54bff3a68eb0"
   },
   {
@@ -715,10 +165,99 @@
     "category": "Community",
     "status": "recruiting",
     "source": "github",
-    "description": null,
+    "description": "한이음드림업에서 2026년 ICT 한이음 드림업 사업에 참여할 신규 멘토를 모집합니다. ICT 분야의 미래 인재 양성에 기여하고 싶은 전문가분들의 많은 참여를 기다립니다.\n\n### 멘토 모집 정보\n\n자세한 사업 소개 및 멘토 신청은 아래 링크를 통해 확인하실 수 있습니다.\n\n*   [사업 소개](https://www.fkii.org/upload/imgs/2026/20260101/Downroad.pdf)\n*   [멘토 신청](https://www.hanium.or.kr/membership/member/auth.do)\n\n![2026년 ICT 한이음 드림업 신규 멘토 모집 안내 이미지](https://file.okky.kr/images/1768267042588.png)",
     "thumbnail": "https://file.okky.kr/images/1768267042588.png",
-    "content": null,
+    "content": "한이음드림업에서 2026년 ICT 한이음 드림업 사업에 참여할 신규 멘토를 모집합니다. ICT 분야의 미래 인재 양성에 기여하고 싶은 전문가분들의 많은 참여를 기다립니다.\n\n### 멘토 모집 정보\n\n자세한 사업 소개 및 멘토 신청은 아래 링크를 통해 확인하실 수 있습니다.\n\n*   [사업 소개](https://www.fkii.org/upload/imgs/2026/20260101/Downroad.pdf)\n*   [멘토 신청](https://www.hanium.or.kr/membership/member/auth.do)\n\n![2026년 ICT 한이음 드림업 신규 멘토 모집 안내 이미지](https://file.okky.kr/images/1768267042588.png)",
+    "summary": "2026년 ICT 한이음 드림업 사업을 위한 신규 멘토를 모집합니다. ICT 분야의 미래 인재 양성에 기여하고 싶은 전문가들의 많은 참여를 바랍니다. 사업 소개와 멘토 신청은 제공된 링크를 통해 확인하실 수 있습니다.",
+    "target_audience": [
+      "ICT 분야 전문가",
+      "미래 인재 양성에 관심 있는 분"
+    ],
+    "fee": "무료",
+    "schedule": [
+      "2026년 ICT 한이음 드림업 멘토 활동"
+    ],
+    "benefits": [
+      "ICT 인재 양성 기여",
+      "네트워킹 기회",
+      "전문성 발휘"
+    ],
     "id": "3d9515ba-98e5-5928-8bf7-fd1fbb274f12"
+  },
+  {
+    "title": "성장과 상금은 누구의 것? 인프런 3주 '서바이벌' 챌린지 : All or Nothing!",
+    "link": "https://inf.run/a4R1Q",
+    "host": "인프런",
+    "date": "01. 21(수) ~ 01. 31(토)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인",
+      "무료",
+      "모임"
+    ],
+    "category": "Community",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://cdn.inflearn.com/public/files/courses/340457/cover/01kg4fyr1ej2x30resf7cw3722.gif",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "6ce36cc0-e784-51b0-9869-78ed91f8752e"
+  },
+  {
+    "title": "FOSS for All 1월 밋업",
+    "link": "http://ticketa.co/event/foss-for-all-1weol-miseob-ajhehljc/l/r2GVtxyk",
+    "host": "FOSS for All",
+    "date": "01. 24(토) ~ 01. 31(토)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(서울 강남)",
+      "무료",
+      "모임"
+    ],
+    "category": "Community",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://vlizxsubseudvtswwsjd.supabase.co/storage/v1/object/public/event-images/ajhehljc/7fbe263e-ac7f-46f6-acc3-7a1a70ef0609.webp",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "68b00429-097d-5f42-bb8a-d3ef0fe2a839"
+  },
+  {
+    "title": "Upstage AI Ambassador",
+    "link": "https://edu.upstage.ai/course/ambassador-program-2?utm_campaign=AI+Ambassador+2%EA%B8%B0",
+    "host": "업스테이지",
+    "date": "01. 24(토) ~ 02. 01(일)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인",
+      "무료",
+      "AI"
+    ],
+    "category": "Other",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://lwfiles.mycourse.app/67da44344e1521b37de22d54-public/594a807df1b3ba0c25c768e71badb858.png",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "3f96dcbe-b7e2-5690-b191-31950819ab90"
   },
   {
     "title": "2026 GDGoC KR HACKATHON: ONE WAVE",
@@ -738,7 +277,112 @@
     "description": null,
     "thumbnail": "https://www.notion.so/images/meta/default.png",
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "8a670ca9-dfce-5f0f-85f8-1f82928ada57"
+  },
+  {
+    "title": "2주 만에 끝내는 이력서 완성 코드",
+    "link": "https://event.wanted.co.kr/career_kickoff_u10_1",
+    "host": "원티드",
+    "date": "01. 19(월) ~ 02. 02(월)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "온라인",
+      "무료",
+      "커리어"
+    ],
+    "category": "Other",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": null,
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "93493c28-bb23-5e4c-aac7-e7a925c406ad"
+  },
+  {
+    "title": "AWSKRUG 프론트엔드 #frontend 소모임",
+    "link": "https://www.meetup.com/awskrug/events/312987455/",
+    "host": "AWSKRUG",
+    "date": "01. 27(화) ~ 02. 04(수)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(서울 강남)",
+      "유료",
+      "프론트엔드"
+    ],
+    "category": "Other",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://secure.meetupstatic.com/photos/event/5/c/9/9/600_532403705.jpeg",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "cdbadf79-96ac-54d7-a540-a452709f83bb"
+  },
+  {
+    "title": "AWSKRUG 게임테크 #gametech 소모임",
+    "link": "https://www.meetup.com/awskrug/events/313046924/",
+    "host": "AWSKRUG",
+    "date": "01. 27(화) ~ 02. 04(수)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(서울 강남)",
+      "유료",
+      "기술일반"
+    ],
+    "category": "Other",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://secure.meetupstatic.com/photos/event/b/5/2/f/600_532426383.jpeg",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "15191bc4-7ba1-5bd2-bb1b-13e9e7935060"
+  },
+  {
+    "title": "AI 에이전트 기반 워크플로 + 데이터 기반 DevOps 가치 증명",
+    "link": "https://insight.infograb.net/event/detail/2f0a508f-9223-80cc-9e4b-d8d83ebfcd51/",
+    "host": "인포그랩",
+    "date": "01. 29(목) ~ 02. 06(금)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "온라인",
+      "무료",
+      "기술일반"
+    ],
+    "category": "Other",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://insight.infograb.net/img/event/thumbnail/event_2f0a508f-9223-80cc-9e4b-d8d83ebfcd51_1769646256413_21.png",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "50ab6bdb-aff4-57fe-afce-f75a424ddb4a"
   },
   {
     "title": "제 14회 정보보호&데이터보안 컨퍼런스",
@@ -758,6 +402,11 @@
     "description": null,
     "thumbnail": "https://www.dailysecu.com/image/logo/snslogotrans_20250610104120.jpg",
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "e0bd09d2-e406-5a86-bff3-55a35adcdfb9"
   },
   {
@@ -778,6 +427,11 @@
     "description": null,
     "thumbnail": null,
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "6efe4d2f-f321-5258-a752-eb8e741a148f"
   },
   {
@@ -798,7 +452,37 @@
     "description": null,
     "thumbnail": null,
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "f5d788fb-2253-59bc-9776-9137539730ba"
+  },
+  {
+    "title": "[COMMIT WORKSHOP] 코딩은 몰라도 업무 자동화는 하고 싶어 참가 신청서",
+    "link": "https://docs.google.com/forms/d/e/1FAIpQLScI-sik-Q0Ne6A0daj_gchoiaVJAf5Tk7r3A5oGXpfn90Nu4w/formResponse",
+    "host": "구름",
+    "date": "01. 29(목) ~ 02. 06(금)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(경기 판교)",
+      "무료",
+      "AI"
+    ],
+    "category": "Other",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": null,
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "ffdc7df9-3ad6-5e5d-8b32-80c2f4a844cc"
   },
   {
     "title": "2026년도 AI·SW마에스트로 제17기 연수생 모집 - 서울 센터",
@@ -818,27 +502,12 @@
     "description": null,
     "thumbnail": "https://swmaestro.ai/static/sw/renewal/images/common/logo_200.png",
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "1fbe77fa-c46f-5dff-baf7-8b45f389e487"
-  },
-  {
-    "title": "2026년도 AI·SW마에스트로 제17기 연수생 모집 - 부산 센터",
-    "link": "https://swmaestro.ai/sw/main/notifyMentee.do?menuNo=200091",
-    "host": "AI·SW마에스트로",
-    "date": "02. 13(금) ~ 03. 12(목)",
-    "start_date": null,
-    "end_date": null,
-    "tags": [
-      "오프라인",
-      "무료",
-      "교육"
-    ],
-    "category": "Education",
-    "status": "recruiting",
-    "source": "github",
-    "description": null,
-    "thumbnail": "https://swmaestro.ai/static/sw/renewal/images/common/logo_200.png",
-    "content": null,
-    "id": "88c19730-f970-5ff8-ab2d-c13dd0056b31"
   },
   {
     "title": "AWSKRUG #container 🐳 re:Invent reCap: 컨테이너 서비스",
@@ -858,7 +527,163 @@
     "description": null,
     "thumbnail": "https://secure.meetupstatic.com/photos/event/a/3/e/5/600_532121957.jpeg",
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "0e313676-05aa-5ef3-848e-36187c4bf75a"
+  },
+  {
+    "title": "피싱·스캠 예방을 위한 서비스 개발 경진대회",
+    "link": "https://dacon.io/competitions/official/236666/overview/description",
+    "host": "데이터유니버스",
+    "date": "01. 27(화) ~ 02. 11(수)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "온라인",
+      "무료",
+      "대회",
+      "AI"
+    ],
+    "category": "Competition",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://dacon.s3.ap-northeast-2.amazonaws.com/competition/236666/meta_cpt.jpeg",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "2ffd1fb2-893c-5bb3-8896-bb51b6792226"
+  },
+  {
+    "title": "AWSKRUG 인천 지역 소모임 2월 11일 - 첫 인천 소모임",
+    "link": "https://www.meetup.com/awskrug/events/313058396/?eventOrigin=group_events_list",
+    "host": "AWSKRUG",
+    "date": "01. 27(화) ~ 02. 11(수)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(인천 연수)",
+      "무료",
+      "클라우드"
+    ],
+    "category": "Other",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://secure.meetupstatic.com/photos/event/7/5/6/600_532441878.jpeg",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "d1ff4efb-6715-5689-beea-99af706c4001"
+  },
+  {
+    "title": "Global AgentCamp 2026 서울",
+    "link": "https://event-us.kr/globalaikr/event/119691",
+    "host": "GlobalAI Korea",
+    "date": "01. 29(목) ~ 02. 19(목)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(서울 종로)",
+      "무료",
+      "교육"
+    ],
+    "category": "Education",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://eventusstorage.blob.core.windows.net/evs/Image/globalaikr/119691/ProjectInfo/Cover/0a38b120fab1431db905838bc2faa180.png?fit=640%2C360",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "c18d59fb-7d5e-5ce1-a6c1-4046c5ff4230"
+  },
+  {
+    "title": "2026년도 AI·SW마에스트로 멘토 모집",
+    "link": "https://event.wanted.co.kr/swmaestro17_mentor",
+    "host": "AI·SW마에스트로",
+    "date": "01. 20(화) ~ 02. 20(금) 17:00",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(서울 부산)",
+      "무료",
+      "교육"
+    ],
+    "category": "Education",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://static.wanted.co.kr/events/thumbnail/jwXXNGy1ApIUb1f5zdjKm/F2g2hklZ.jpg",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "83293372-834b-5645-966b-aba0704d7fc4"
+  },
+  {
+    "title": "Seoul MongoDB User Group Meetup #2",
+    "link": "https://www.meetup.com/mongodb-usergroup-seoul/events/313060611",
+    "host": "Seoul MongoDB User Group",
+    "date": "01. 29(목) ~ 02. 24(화)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(서울 부산)",
+      "무료",
+      "교육"
+    ],
+    "category": "Education",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://secure.meetupstatic.com/photos/event/b/c/a/c/600_532488300.jpeg",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "2070c9fb-7d6a-5db0-887e-be615e31d7e5"
+  },
+  {
+    "title": "2026년도 AI·SW마에스트로 제17기 연수생 모집 - 부산 센터",
+    "link": "https://swmaestro.ai/sw/main/notifyMentee.do?menuNo=200091",
+    "host": "AI·SW마에스트로",
+    "date": "02. 13(금) ~ 03. 12(목)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인",
+      "무료",
+      "교육"
+    ],
+    "category": "Education",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://swmaestro.ai/static/sw/renewal/images/common/logo_200.png",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "88c19730-f970-5ff8-ab2d-c13dd0056b31"
   },
   {
     "title": "HyphenCon '26 - 성공하는 스타트업의 CTO되기",
@@ -876,9 +701,39 @@
     "status": "recruiting",
     "source": "github",
     "description": null,
-    "thumbnail": "/image.png",
+    "thumbnail": "https://cto-conf.hyphen.it.com/image.png",
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "b4d5d255-f671-5b0b-8d07-02246c0399f8"
+  },
+  {
+    "title": "국내 최대 규모의 인공지능 전문 전시회, AI EXPO KOREA 2026",
+    "link": "https://onoffmix.com/event/336585",
+    "host": "AI EXPO",
+    "date": "01. 27(화) ~ 05. 08(금)",
+    "start_date": null,
+    "end_date": null,
+    "tags": [
+      "오프라인(서울 코엑스)",
+      "유료",
+      "AI"
+    ],
+    "category": "Other",
+    "status": "recruiting",
+    "source": "github",
+    "description": null,
+    "thumbnail": "https://static.onoffmix.com/afv2/thumbnail/2026/01/05/v3ce94f5b74fa602e7e3e1558045fdf90f.png",
+    "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
+    "id": "aa2309a9-9273-5de0-b90e-137a8976b005"
   },
   {
     "title": "HIGHFIVE 2026",
@@ -898,6 +753,11 @@
     "description": null,
     "thumbnail": "https://static.wanted.co.kr/events/thumbnail/6CZPsGkAZ5JlklXdZVdFjo/F2cFhVmU.png",
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "41752abc-832f-554b-87f2-bbf9568ad09e"
   },
   {
@@ -918,6 +778,11 @@
     "description": null,
     "thumbnail": "https://cdn.imweb.me/upload/S2022092356cf056b359f9/184515eaac4f8.png",
     "content": null,
+    "summary": null,
+    "target_audience": [],
+    "fee": null,
+    "schedule": [],
+    "benefits": [],
     "id": "d8c31aa8-6a62-5882-b23f-4393d7c6fbcd"
   }
 ]

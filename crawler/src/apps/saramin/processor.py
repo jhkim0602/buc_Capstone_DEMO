@@ -43,138 +43,108 @@ def scrape_url_content(url: str):
 
 def process_job_with_gemini(job_title: str, company: str, raw_markdown: str):
     """
-    Uses Gemini to summarize the job posting and extract tech tags.
-    Returns: { "content_markdown": str, "tags": List[str] }
+    Uses Gemini to summarize the job posting and extract structured data.
+    Returns: JSON Object with fields
     """
     if not GEMINI_API_KEY:
         logger.warning("⚠️ GEMINI_API_KEY is missing.")
-        return {
-            "content_markdown": "## 안내\n\nAPI 키가 설정되지 않아 상세 내용을 불러올 수 없습니다.",
-            "tags": []
-        }
+        return None
 
     genai.configure(api_key=GEMINI_API_KEY)
-    
-    # Switching to Flash Lite for potentially better free tier availability
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    # Using 2.0-flash as initially intended or 1.5 depending on availability, defaulting to stable fast model
+    model = genai.GenerativeModel("gemini-2.0-flash") 
 
-    # Limit chars to avoid token limits (Saramin details can be long)
-    truncated_md = raw_markdown[:20000]
+    truncated_md = raw_markdown[:30000]
 
     prompt = f"""
-    You are an expert IT Recruiter. Your task is to analyze a raw job posting and transform it into a structured, professional technical document for developers, and extract key technology tags.
-
+    You are an expert IT Recruiter. Analyze the following Job Posting and extract structured data.
+    
     Job Title: {job_title}
     Company: {company}
     
-    Raw Content (Markdown):
+    Raw Content:
     {truncated_md}
     
     Task:
-    1. **Summarize & Structure**: Rewrite the content into a clean, minimalist Markdown format.
-    2. **Extract Tags**: Identify specific programming languages, frameworks, tools, and cloud services mentioned or implied (e.g., 'React', 'Python', 'AWS', 'Docker').
-    
-    Guidelines:
-    - **Language**: Korean (한국어).
-    - **Tone**: Professional, Clean, Minimalist (Like official technical documentation).
-    - **STRICTLY NO EMOJIS**: Do NOT use emojis in headers, lists, or text (e.g., no 🚀, 🛠, 🎁).
-    - **Formatting**:
-        - Use **Tables** for 'Tech Stack' allowing easy comparison.
-        - Use **Blockquotes** for 'Company Introduction'.
-        - Use **Bold** for emphasis on key skills.
+    Extract the following fields into a pure JSON object (Language: Korean):
+    1. **summary**: A 2-3 sentence professional summary of the position.
+    2. **responsibilities**: List of main tasks (Major duties).
+    3. **qualifications**: List of mandatory requirements (Skills, Experience).
+    4. **preferred**: List of preferred qualifications (Nice-to-haves).
+    5. **benefits**: List of company benefits and perks.
+    6. **tags**: List of technical skills, languages, frameworks, and tools (e.g. 'React', 'Python', 'AWS').
 
-    Required Markdown Structure:
-    
-    > **Company Introduction**
-    > [Brief introduction]
-
-    ## 주요 업무 (Responsibilities)
-    - [List of main tasks as bullet points]
-    
-    ## 자격 요건 (Qualifications)
-    - [List of requirements as bullet points]
-    
-    ## 우대 사항 (Preferred Qualifications)
-    - [List of preferred skills as bullet points]
-    
-    ## 기술 스택 (Tech Stack)
-    | Category | Stacks |
-    |----------|--------|
-    | Languages | [List] |
-    | Frameworks| [List] |
-    | Tools     | [List] |
-    
-    ## 혜택 및 복지 (Benefits)
-    - [List benefits]
-    
-    ## 기타 정보
-    - [Any other relevant info]
-
-    Output Format (JSON):
+    Output JSON Format:
     {{
-        "content_markdown": "Full structured markdown string...",
-        "tags": ["Tag1", "Tag2", "Tag3"]
+      "summary": "String...",
+      "responsibilities": ["Task 1", "Task 2"],
+      "qualifications": ["Req 1", "Req 2"],
+      "preferred": ["Pref 1", "Pref 2"],
+      "benefits": ["Benefit 1", "Benefit 2"],
+      "tags": ["Tag1", "Tag2"]
     }}
     """
 
-    max_retries = 3 
-    
+    max_retries = 3
     for attempt in range(max_retries):
         try:
             response = model.generate_content(prompt, generation_config={"response_mime_type": "application/json"})
-            result = json.loads(response.text)
-            return result
+            data = json.loads(response.text)
+            
+            # Safely handle if AI returns a list [ {...} ] instead of { ... }
+            if isinstance(data, list):
+                if len(data) > 0 and isinstance(data[0], dict):
+                    return data[0]
+                return {} # Invalid format
+            
+            return data
         except Exception as e:
             logger.error(f"❌ Gemini attempt {attempt+1} failed: {e}")
-            time.sleep(2)
+            time.sleep(5) # Increased retry wait
             
-    # FALLBACK (Simple Guide Message)
-    logger.warning("⚠️ AI verification failed after retries.")
-    return {
-        "content_markdown": "## ⚠️ 안내\n\n상세 내용을 분석하는 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.",
-        "tags": []
-    }
+    return None
 
 def deep_crawl_job(job):
     """
     Orchestrates scraping and processing for a single job.
-    Returns the updated job object or None if failed.
     """
     logger.info(f"🕵️ Deep Crawling: {job.company} - {job.title}")
     
     # 1. Scrape (Firecrawl)
-    # Saramin often has content in iframe. The link provided in list is usually the main page.
-    # The main page usually contains the iframe or is the detail page itself.
-    # Firecrawl is quite good at handling this context usually.
-    # However, saramin URLs often redirect.
-    # Let's try scraping the `job.link` directly.
     raw_md = scrape_url_content(job.link)
     
     if not raw_md or len(raw_md) < 50:
         logger.warning(f"   ⚠️ Content too short or failed for {job.id}")
-        return job # Return original job without update if failed
+        return job
     
-    # Proactive rate limiting - increased to 5s to help with quota
-    time.sleep(5) 
+    # Ratelimit - Increased to 10s to avoid 429 Resource Exhausted
+    time.sleep(10) 
 
     # 2. Process (Gemini)
     result = process_job_with_gemini(job.title, job.company, raw_md)
     
-    if result:
-        job.content = result.get("content_markdown", "")
+    if result and isinstance(result, dict):
+        # Populate new fields
+        job.summary = result.get("summary", "")
+        job.responsibilities = result.get("responsibilities", [])
+        job.qualifications = result.get("qualifications", [])
+        job.preferred = result.get("preferred", [])
+        job.benefits = result.get("benefits", [])
+        
+        # Tags merge
         extracted_tags = result.get("tags", [])
-        
-        # Merge tags: We might already have tags from the list view (if any) or previous fallback
-        # But actually list view tags are generic (like 'Back-end'). Gemini tags are specific.
-        # Let's prioritize Gemini tags but keep unique existing ones if valid.
-        
-        # Simple merge and dedupe
         current_tags = set(job.tags)
         for t in extracted_tags:
             current_tags.add(t)
-        
         job.tags = list(current_tags)
         
-        logger.info(f"   ✅ Processed: {len(job.content)} chars, {len(job.tags)} tags")
+        # Legacy Content Field 
+        # For compatibility, if summary exists, maybe prepend it or just keep raw
+        if job.summary:
+            job.content = f"## Summary\n{job.summary}\n\n" + raw_md[:3000]
+        else:
+            job.content = raw_md[:5000]
+        
+        logger.info(f"   ✅ Processed: {job.title} (R:{len(job.responsibilities)}, Q:{len(job.qualifications)})")
     
     return job
