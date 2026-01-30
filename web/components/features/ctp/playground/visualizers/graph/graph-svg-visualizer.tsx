@@ -129,10 +129,12 @@ export function GraphSvgVisualizer({
       }
     });
 
-    const nodesList = Array.from(nodeIds).map((id) => ({
+    const nodesList: VisualItem[] = Array.from(nodeIds).map((id) => ({
       id,
       value: id,
       label: id === (rootId ?? "root") ? "root" : id,
+      status: undefined,
+      isHighlighted: false,
     }));
 
     return { derivedNodes: nodesList, derivedEdges: edgesList };
@@ -673,13 +675,19 @@ export function GraphSvgVisualizer({
       const key = `${su}->${sv}`;
       if (edgeKeys.has(key)) {
         if (cls) classMap.set(key, cls);
-        if (label) labelMap.set(key, mergeEdgeLabel(labelMap.get(key), label));
+        if (label) {
+          const merged = mergeEdgeLabel(labelMap.get(key), label);
+          if (merged) labelMap.set(key, merged);
+        }
         return key;
       }
       const reverse = `${sv}->${su}`;
       if (edgeKeys.has(reverse)) {
         if (cls) classMap.set(reverse, cls);
-        if (label) labelMap.set(reverse, mergeEdgeLabel(labelMap.get(reverse), label));
+        if (label) {
+          const merged = mergeEdgeLabel(labelMap.get(reverse), label);
+          if (merged) labelMap.set(reverse, merged);
+        }
         return reverse;
       }
       return null;
@@ -687,10 +695,11 @@ export function GraphSvgVisualizer({
 
     events.forEach((event) => {
       const type = event?.type;
-      if (!type) return;
+      if (!event || typeof event !== "object") return;
+
       const labelParts: string[] = [];
-      if (event.w !== undefined) labelParts.push(`w=${event.w}`);
-      if (event.dist !== undefined) labelParts.push(`d=${event.dist}`);
+      if (event.w !== undefined && event.w !== null) labelParts.push(`w=${event.w}`);
+      if (event.dist !== undefined && event.dist !== null) labelParts.push(`d=${event.dist}`);
       const label = labelParts.length > 0 ? labelParts.join(" ") : undefined;
       if (type === "edge_active") setEdge(event.u, event.v, "active", label);
       if (type === "edge_consider") setEdge(event.u, event.v, "consider", label);

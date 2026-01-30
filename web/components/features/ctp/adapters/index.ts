@@ -8,8 +8,6 @@ import { BaseLinkedListAdapter } from './linear/linked-list/base-ll-adapter';
 import { DoublyLinkedListAdapter } from './linear/linked-list/doubly-ll-adapter';
 import { GraphAdapter } from './non-linear/graph-adapter';
 import { HeapAdapter } from './non-linear/heap-adapter';
-import { TrieAdapter } from './non-linear/trie-adapter';
-import { UnionFindAdapter } from './non-linear/union-find-adapter';
 import { MergeSortAdapter } from './sorting/merge-sort-adapter';
 import { HeapSortAdapter } from './sorting/heap-sort-adapter';
 
@@ -21,8 +19,6 @@ export type AdapterType =
     | 'hash-table'
     | 'graph'
     | 'heap'
-    | 'trie'
-    | 'union-find'
     | 'linked-list'
     | 'doubly-linked-list'
     | 'circular-linked-list'
@@ -46,10 +42,6 @@ export class AdapterFactory {
                 return new GraphAdapter();
             case 'heap':
                 return new HeapAdapter();
-            case 'trie':
-                return new TrieAdapter();
-            case 'union-find':
-                return new UnionFindAdapter();
             case 'linked-list':
             case 'circular-linked-list': // Base handles circular logic via Graph traversal naturally
                 return new BaseLinkedListAdapter();

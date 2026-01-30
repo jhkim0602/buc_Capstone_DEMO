@@ -6,8 +6,6 @@ import HashTableContent from "@/components/features/ctp/contents/categories/line
 import TreeContent from "@/components/features/ctp/contents/categories/non-linear/concepts/tree";
 import HeapContent from "@/components/features/ctp/contents/categories/non-linear/concepts/heap";
 import GraphContent from "@/components/features/ctp/contents/categories/non-linear/concepts/graph";
-import TrieContent from "@/components/features/ctp/contents/categories/non-linear/concepts/trie";
-import UnionFindContent from "@/components/features/ctp/contents/categories/non-linear/concepts/union-find";
 import SortingContent from "@/components/features/ctp/contents/categories/algorithms/concepts/sorting";
 import BinarySearchContent from "@/components/features/ctp/contents/categories/algorithms/concepts/binary-search";
 import DfsContent from "@/components/features/ctp/contents/categories/algorithms/concepts/dfs";
@@ -32,8 +30,6 @@ export const CTP_CONTENT_REGISTRY: Record<string, ContentComponent | undefined> 
   "non-linear-ds/tree": TreeContent,
   "non-linear-ds/heap": HeapContent,
   "non-linear-ds/graph": GraphContent,
-  "non-linear-ds/trie": TrieContent,
-  "non-linear-ds/union-find": UnionFindContent,
 
   // Algorithms
   "algorithms/sorting": SortingContent,

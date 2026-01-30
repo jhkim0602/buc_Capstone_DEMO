@@ -121,29 +121,6 @@ export const CTP_DATA: CTPCategory[] = [
         ]
       },
       {
-        id: "trie",
-        title: "트라이 (Trie)",
-        description: "문자열 접두사 검색, 자동 완성",
-        difficulty: "Hard",
-        subConcepts: [
-          { id: "trie-basics", title: "트라이 기본 (Trie Basics)" },
-          { id: "prefix-search", title: "접두사 탐색 (Prefix Search)" },
-          { id: "trie-apps", title: "트라이 응용" }
-        ]
-      },
-      {
-        id: "union-find",
-        title: "분리 집합 (Union-Find)",
-        description: "서로소 집합, 사이클 판별",
-        difficulty: "Medium",
-        subConcepts: [
-          { id: "ds-basics", title: "분리 집합 기본 (DS Basics)" },
-          { id: "union-rank", title: "Union by Rank" },
-          { id: "path-compression", title: "Path Compression" },
-          { id: "ds-apps", title: "응용 문제" }
-        ]
-      },
-      {
         id: "graph",
         title: "그래프 (Graph)",
         description: "인접 행렬/리스트, 사이클 탐지",
