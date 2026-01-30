@@ -72,20 +72,20 @@ export function WeeklyPopular({ blogs }: WeeklyPopularProps) {
                     </div>
                     {/* 블로그 로고 */}
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                      <div className="relative w-10 h-10 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                         {getLogoUrl(blog.author) ? (
                           <Image
                             src={getLogoUrl(blog.author)!}
                             alt={blog.author}
-                            width={40}
-                            height={40}
+                            fill
+                            className="object-contain p-1"
                           />
                         ) : (
                           <Image
                             src="/placeholder-logo.svg"
                             alt={blog.author}
-                            width={40}
-                            height={40}
+                            fill
+                            className="object-contain p-1"
                           />
                         )}
                       </div>

@@ -1,4 +1,7 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
+import ReactMarkdown from "react-markdown";
 import { BookOpen, Lightbulb, HelpCircle, ArrowDownCircle } from "lucide-react";
 
 interface CTPIntroProps {
@@ -16,7 +19,7 @@ interface CTPIntroProps {
 
 export function CTPIntro({ category, title, description, tags = [], story }: CTPIntroProps) {
   return (
-    <section id="intro" className="space-y-6 border-b border-border/40 pb-8">
+    <section id="intro" data-toc="main" data-toc-level="1" className="space-y-6 border-b border-border/40 pb-8">
       {/* Header Area */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-sm text-primary font-mono opacity-80">
@@ -24,7 +27,7 @@ export function CTPIntro({ category, title, description, tags = [], story }: CTP
           <span className="opacity-50">/</span>
           <span className="uppercase tracking-wider">{category}</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight">{title}</h1>
+        <h1 className="text-4xl md:text-5xl font-black tracking-[-0.02em]">{title}</h1>
       </div>
 
       {tags.length > 0 && (
@@ -46,54 +49,64 @@ export function CTPIntro({ category, title, description, tags = [], story }: CTP
         <div className="space-y-8 mt-6">
           {/* 1. Problem / Background */}
           {story.problem && (
-            <div className="relative pl-6 border-l-4 border-red-200 dark:border-red-900/50">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-red-600 dark:text-red-400 mb-2">
+            <div
+              id="intro-problem"
+              data-toc="sub"
+              data-toc-level="2"
+              data-toc-title="왜 필요할까?"
+              className="relative pl-6 border-l-4 border-red-200 dark:border-red-900/50"
+            >
+              <h3 className="flex items-center gap-2 text-lg font-bold tracking-[-0.02em] text-red-600 dark:text-red-400 mb-2">
                 <HelpCircle className="w-5 h-5" />
                 왜 필요할까? (Problem)
               </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                {story.problem}
-              </p>
+              <div className="text-lg text-muted-foreground leading-relaxed prose dark:prose-invert max-w-none prose-p:my-2">
+                <ReactMarkdown>{story.problem}</ReactMarkdown>
+              </div>
             </div>
           )}
 
           {/* 2. Definition */}
           {story.definition && (
-            <div className="bg-muted/30 rounded-xl p-6 border border-border/50">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-primary mb-3">
+            <div
+              id="intro-definition"
+              data-toc="sub"
+              data-toc-level="2"
+              data-toc-title="핵심 정의"
+              className="bg-muted/30 rounded-xl p-6 border border-border/50"
+            >
+              <h3 className="flex items-center gap-1.5 text-base font-bold tracking-[-0.02em] text-primary mb-2">
                 <BookOpen className="w-5 h-5" />
                 핵심 정의 (Definition)
               </h3>
-              <p className="text-xl font-medium leading-relaxed font-serif text-foreground/90">
-                "{story.definition}"
-              </p>
+              <div className="text-xl font-medium leading-[1.6] tracking-[-0.01em] font-serif text-foreground/90 prose dark:prose-invert max-w-none prose-p:my-1.5 prose-li:my-1 prose-ul:my-2 prose-ol:my-2">
+                <ReactMarkdown>{story.definition}</ReactMarkdown>
+              </div>
             </div>
           )}
 
           {/* 3. Analogy */}
           {story.analogy && (
-            <div className="relative bg-amber-50 dark:bg-amber-950/20 rounded-xl p-6 border border-amber-100 dark:border-amber-900/30">
+            <div
+              id="intro-analogy"
+              data-toc="sub"
+              data-toc-level="2"
+              data-toc-title="쉽게 이해하기"
+              className="relative bg-amber-50 dark:bg-amber-950/20 rounded-xl p-6 border border-amber-100 dark:border-amber-900/30"
+            >
               <div className="absolute -top-3 -left-3 bg-amber-100 dark:bg-amber-900 rounded-full p-2 border-4 border-background">
                 <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400 fill-current" />
               </div>
-              <h3 className="ml-6 text-lg font-bold text-amber-700 dark:text-amber-400 mb-2">
+              <h3 className="ml-6 text-lg font-bold tracking-[-0.02em] text-amber-700 dark:text-amber-400 mb-2">
                 쉽게 이해하기 (Analogy)
               </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {story.analogy}
-              </p>
+              <div className="text-lg text-muted-foreground leading-relaxed prose dark:prose-invert max-w-none">
+                <ReactMarkdown>{story.analogy}</ReactMarkdown>
+              </div>
             </div>
           )}
 
-          {/* 4. Playground Connection */}
-          {story.playgroundLimit && (
-             <div className="flex items-start gap-3 pt-4 text-muted-foreground">
-                <ArrowDownCircle className="w-5 h-5 mt-1 animate-bounce text-primary" />
-                <p className="font-medium text-primary">
-                   {story.playgroundLimit}
-                </p>
-             </div>
-          )}
+
         </div>
       ) : (
         // Fallback for modules without story

@@ -96,12 +96,9 @@ export function TechBlogListLayout({
       <div className="mb-6 w-full overflow-hidden">
         <TagFilterBar
           value={tagCategory}
-          options={TAG_FILTER_OPTIONS} // Pass the imported options
+          options={TAG_FILTER_OPTIONS}
           selectedSubTags={selectedSubTags}
-          // Construct availableTags from all options since we don't have DB stats yet
-          availableTags={TAG_FILTER_OPTIONS.flatMap((opt) =>
-            opt.tags.map((t) => ({ tag: t, count: 0 }))
-          )}
+          availableTags={[]}
           onChange={(val) => onTagCategoryChange(val as TagCategory)}
           onSubTagChange={onSubTagChange}
         />

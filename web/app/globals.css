@@ -3,8 +3,13 @@
 @tailwind utilities;
 
 body {
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
+  font-family:
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
 }
 
 @layer utilities {
@@ -190,4 +195,15 @@ body {
 
 .ProseMirror img.ProseMirror-selectednode {
   outline: 2px solid hsl(var(--primary));
+}
+
+/* Monaco Editor Execution Highlight */
+.line-execution-highlight {
+  background-color: rgba(34, 197, 94, 0.2) !important;
+  border-left: 2px solid #22c55e;
+}
+
+.dark .line-execution-highlight {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+  border-left: 2px solid #4ade80;
 }

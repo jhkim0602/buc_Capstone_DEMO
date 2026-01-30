@@ -1,6 +1,6 @@
 
 import { VisualStep } from "@/components/features/ctp/store/use-ctp-store";
-import { LinkedListNode } from "@/components/features/ctp/playground/visualizers/linked-list-visualizer";
+import { LinkedListNode } from "@/components/features/ctp/playground/visualizers/linked-list/legacy/linked-list-visualizer";
 
 // Internal Memory Representation
 interface SimNode {
@@ -34,9 +34,6 @@ export class LinkedListSimulator {
         this.nodes = new Map();
         this.scope = {};
         this.nodeCounter = 0;
-
-        // Initial Step
-        this.addStep("시뮬레이션을 시작합니다. 메모리 공간이 초기화되었습니다.");
     }
 
     private exportState(): LinkedListNode[] {
@@ -123,11 +120,11 @@ export class LinkedListSimulator {
         });
 
         if (this.steps.length <= 1 && code.trim().length > 0) {
-             // Only Init step exists, but code was not empty -> meaning nothing matched regex
-             const lines = code.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'));
-             if (lines.length > 0) {
-                 this.addStep("⚠️ 경고: 실행 가능한 명령어를 찾지 못했습니다. 문법을 확인해주세요.");
-             }
+            // Only Init step exists, but code was not empty -> meaning nothing matched regex
+            const lines = code.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'));
+            if (lines.length > 0) {
+                this.addStep("⚠️ 경고: 실행 가능한 명령어를 찾지 못했습니다. 문법을 확인해주세요.");
+            }
         }
 
         return this.steps;
@@ -176,11 +173,11 @@ export class LinkedListSimulator {
 
                     // Double Link Check
                     if (this.type === 'doubly' && targetId) {
-                         const targetNode = this.nodes.get(targetId);
-                         if (targetNode) {
-                             targetNode.prevId = hostId;
+                        const targetNode = this.nodes.get(targetId);
+                        if (targetNode) {
+                            targetNode.prevId = hostId;
                             //  this.addStep(`(자동) ${targetVar}의 이전(Prev)도 ${hostVar}로 연결됩니다.`, lineNum);
-                         }
+                        }
                     }
                 }
             }
@@ -195,34 +192,70 @@ export class LinkedListSimulator {
 
             const hostId = this.scope[hostVar]; // handle deep chain? only var supported
             if (hostId) {
-                 const newNodeId = `node-${++this.nodeCounter}`;
-                 this.nodes.set(newNodeId, { id: newNodeId, val, nextId: null, prevId: null });
+                const newNodeId = `node-${++this.nodeCounter}`;
+                this.nodes.set(newNodeId, { id: newNodeId, val, nextId: null, prevId: null });
 
-                 const hostNode = this.nodes.get(hostId);
-                 if (hostNode) {
-                     hostNode.nextId = newNodeId;
-                     if(this.type === 'doubly') {
-                         this.nodes.get(newNodeId)!.prevId = hostId;
-                     }
-                 }
-                 this.addStep(`${hostVar} 뒤에 새 노드(${val})를 생성하여 연결합니다.`, lineNum);
+                const hostNode = this.nodes.get(hostId);
+                if (hostNode) {
+                    hostNode.nextId = newNodeId;
+                    if (this.type === 'doubly') {
+                        this.nodes.get(newNodeId)!.prevId = hostId;
+                    }
+                }
+                this.addStep(`${hostVar} 뒤에 새 노드(${val})를 생성하여 연결합니다.`, lineNum);
             }
             return;
         }
 
-        // 4. Pointer Movement: curr = curr.next
-        if (line.replace(/\s/g, '') === 'curr=curr.next') {
-            const currId = this.scope['curr'];
-            if (currId) {
-                const currNode = this.nodes.get(currId);
-                if (currNode && currNode.nextId) {
-                    this.scope['curr'] = currNode.nextId;
-                    const nextVal = this.nodes.get(currNode.nextId)?.val;
-                    this.addStep(`curr 포인터를 다음 노드(${nextVal})(으)로 이동합니다.`, lineNum);
+        // 4. Pointer Movement: var = var.next OR var = var.next.next
+        // Regex: lhs = rhs.next(.next)?( with optional comment)
+        const moveMatch = line.match(/^(\w+)\s*=\s*(\w+)\.next(\.next)?/);
+        if (moveMatch) {
+            const lhs = moveMatch[1];
+            const rhs = moveMatch[2];
+            const isDoubleJump = !!moveMatch[3]; // has .next.next
+
+            // Basic Movement: var = prev.next
+            // Usually lhs == rhs (e.g. curr = curr.next), but slow = fast.next is also possible
+
+            const currentId = this.scope[rhs];
+            if (currentId) {
+                const currentNode = this.nodes.get(currentId);
+
+                // 1st Step
+                if (currentNode && currentNode.nextId) {
+                    let nextId: string | null = currentNode.nextId;
+                    let desc = `${lhs}를 ${rhs}의 다음 노드`;
+
+                    // Handle Double Jump
+                    if (isDoubleJump) {
+                        const step1Node = this.nodes.get(nextId);
+                        if (step1Node && step1Node.nextId) {
+                            nextId = step1Node.nextId;
+                            desc += `의 다음 노드(2칸 점프)`;
+                        } else {
+                            // Hit Null in middle
+                            nextId = null;
+                            desc += `의 다음으로 이동하려 했으나 중간에 끊겼습니다 (None)`;
+                        }
+                    } else {
+                        desc += `(으)로 이동합니다.`;
+                    }
+
+                    this.scope[lhs] = nextId;
+
+                    const nextVal = nextId ? this.nodes.get(nextId)?.val : 'None';
+                    this.addStep(`${desc} -> ${nextVal}`, lineNum);
+
                 } else {
-                    this.scope['curr'] = null;
-                     this.addStep(`curr 포인터를 이동하려 했으나, 더 이상 노드가 없습니다 (None).`, lineNum);
+                    // Current is valid but has no next
+                    this.scope[lhs] = null;
+                    this.addStep(`${lhs}를 이동하려 했으나, ${rhs} 뒤에 노드가 없습니다 (None).`, lineNum);
                 }
+            } else {
+                // RHS is null
+                this.scope[lhs] = null;
+                this.addStep(`${lhs}를 ${rhs}(None)에서 이동할 수 없습니다. 결과는 None입니다.`, lineNum);
             }
             return;
         }
@@ -245,27 +278,37 @@ export class LinkedListSimulator {
 
         // 6. Deep Link (head.next.next = ...) - A bit cheat for 'Simple' engine
         // Regex support for head.next = ... is done. head.next.next is rarer in basic tutorial but let's support it via specialized block if needed.
-        if (line.includes('.next.next')) {
-            // Simplified fallback
-            this.addStep(`다음의 다음 노드 연결을 변경합니다. (복잡한 구문은 단순히 시각화합니다)`, lineNum);
-            // In a real engine we'd traverse. For now, assuming the user follows the tutorial pattern
-            // if specific lines match the config tutorial...
-             if (line.includes('head.next.next = Node(30)')) {
-                 // Hack for the specific 'singly' tutorial line
-                  const hostId = this.scope['head'];
-                  if(hostId) {
-                      const h = this.nodes.get(hostId);
-                      if(h && h.nextId) {
-                          const n2 = this.nodes.get(h.nextId);
-                          if(n2) {
-                              const newNodeId = `node-${++this.nodeCounter}`;
-                              this.nodes.set(newNodeId, { id: newNodeId, val: 30, nextId: null, prevId: null });
-                              n2.nextId = newNodeId;
-                              this.addStep("두 번째 노드 뒤에 새 노드(30)를 연결합니다.", lineNum);
-                          }
-                      }
-                  }
-             }
+        // 6. Deep Link (head.next.next = Node(...))
+        // Regex: var.next.next = Node(val)
+        const deepNextCreateMatch = line.match(/^(\w+)\.next\.next\s*=\s*Node\((\w+)\)/);
+        if (deepNextCreateMatch) {
+            const hostVar = deepNextCreateMatch[1];
+            const val = deepNextCreateMatch[2];
+
+            const hostId = this.scope[hostVar];
+            if (hostId) {
+                const hNode = this.nodes.get(hostId);
+                // Traverse one step
+                if (hNode && hNode.nextId) {
+                    const nextNode = this.nodes.get(hNode.nextId);
+                    if (nextNode) {
+                        // Append to nextNode
+                        const newNodeId = `node-${++this.nodeCounter}`;
+                        this.nodes.set(newNodeId, { id: newNodeId, val, nextId: null, prevId: null });
+
+                        nextNode.nextId = newNodeId;
+                        if (this.type === 'doubly') {
+                            this.nodes.get(newNodeId)!.prevId = hNode.nextId;
+                        }
+                        this.addStep(`${hostVar}.next.next에 새 노드(${val})를 연결합니다.`, lineNum);
+                    } else {
+                        this.addStep(`오류: ${hostVar}.next가 존재하지 않아 .next.next를 설정할 수 없습니다.`, lineNum);
+                    }
+                } else {
+                    this.addStep(`오류: ${hostVar}.next가 존재하지 않아 .next.next를 설정할 수 없습니다.`, lineNum);
+                }
+            }
+            return;
         }
 
         // 7. Generic Fallback

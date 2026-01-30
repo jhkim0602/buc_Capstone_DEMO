@@ -1,15 +1,11 @@
+
 import { useCallback } from "react";
-import { useCTPStore } from "@/components/features/ctp/store/use-ctp-store";
-import { LinkedListSimulator } from "../../common/linked-list-simulator";
+import { useSkulptEngine } from "@/hooks/use-skulpt-engine";
+
 
 export function useTwoPointersSim() {
-    const { setSteps } = useCTPStore();
+    // [Refactor] Use 'linked-list' adapter (Standard Traversal)
+    const { run } = useSkulptEngine({ adapterType: 'linked-list' });
 
-    const runSimulation = useCallback((code: string) => {
-        const simulator = new LinkedListSimulator('singly');
-        const steps = simulator.parseAndRun(code);
-        setSteps(steps);
-    }, [setSteps]);
-
-    return { runSimulation };
+    return { runSimulation: run };
 }

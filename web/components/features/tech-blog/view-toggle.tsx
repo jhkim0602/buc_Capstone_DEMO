@@ -50,15 +50,7 @@ export function ViewToggle({
             <span className="hidden sm:inline">목록</span>
           </Button>
         </div>
-        <a
-          href="https://github.com/jhkim0602/Graduation-work_DEMO"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700"
-          title="GitHub"
-        >
-          <Github className="h-4 w-4 text-slate-700 dark:text-slate-300" />
-        </a>
+
       </div>
     </div>
   );

@@ -1,40 +1,54 @@
+import { CTPModuleConfig } from "@/components/features/ctp/common/types";
 import { PracticeProblem } from "../../../../../../shared/ctp-practice";
 import { ComplexityData } from "../../../../../../shared/ctp-complexity";
 
-export const ARRAY_1D_CONFIG = {
+export const ARRAY_1D_CONFIG: CTPModuleConfig = {
   title: "1D Array (배열)",
   description: "데이터를 순서대로 나란히 저장하는 가장 기초적인 자료구조입니다.",
   tags: ["기초", "순차 저장", "인덱스"],
 
   // 1. Story Mode Content
   story: {
-    problem: `만약 100명의 학생 점수를 저장해야 한다면 변수 100개를 만들어야 할까요?\nscore1, score2, ..., score100 처럼요?\n\n이러면 관리하기도 힘들고, 반복문으로 처리할 수도 없습니다.\n"점수들"을 하나의 이름으로 묶어서 관리할 수 있는 방법이 필요합니다.`,
-    definition: "같은 타입의 데이터들을 메모리 상에 '연속적으로' 나열하고, 번호(Index)를 붙여 관리하는 자료구조",
-    analogy: "마치 '계란판'과 같습니다. 칸마다 번호가 매겨져 있고, 한 줄로 나란히 이어져 있죠. 3번째 계란을 꺼내려면 '3번 칸'으로 바로 손을 뻗으면 됩니다.",
-    playgroundLimit: "아래 에디터에서 arr[2] = 99 처럼 특정 칸의 값을 직접 바꿔보세요!"
+    problem: `만약 100명의 학생 점수를 저장해야 한다면 변수 100개를 만들어야 할까요?
+score1, score2, ..., score100 처럼요?
+
+이러면 관리하기도 힘들고, 반복문으로 처리할 수도 없습니다.
+"점수들"을 하나의 이름으로 묶어서 관리할 수 있는 방법이 필요합니다.
+
+**면접 질문 빈출도**: 높음 (High)
+실무에서도 가장 많이 쓰이는 기본 구조이므로 확실한 이해가 필요합니다.`,
+    definition: `같은 타입의 데이터들을 메모리 상에 **연속적으로** 나열하고, 번호(Index)를 붙여 관리하는 자료구조입니다.
+
+**불변식 (Invariants)**
+- 유효 인덱스는 항상 0..N-1 범위입니다.
+- 인접한 원소는 메모리에서도 인접합니다(연속 배치).
+
+**LinkedList와 비교**
+- 장점: 인덱스만 알면 압도적으로 빠른 조회 속도(O(1)), 메모리 낭비 없음.
+- 단점: 크기를 미리 정해야 하며, 중간 삽입/삭제가 비효율적임.`,
+    analogy: `마치 '계란판'과 같습니다. 칸마다 번호가 매겨져 있고, 한 줄로 나란히 이어져 있죠. 3번째 계란을 꺼내려면 '3번 칸'으로 바로 손을 뻗으면 됩니다.
+
+**실생활 예시**
+- **Pixel Buffer**: 모니터 화면의 픽셀들은 거대한 1차원 배열입니다.
+- **Lookup Table**: 구구단 표처럼 미리 계산된 값을 저장해두고 바로 찾아봅니다.
+- **String**: 문자열도 사실 문자들이 모인 1차원 배열입니다.`,
+    playgroundLimit: "아래 에디터에서 arr[2] = 99 처럼 특정 칸의 값을 직접 바꿔보세요!",
+    playgroundDescription: `이번 단계에서 무엇을 볼까?
+- 인덱스로 즉시 접근되는 흐름(O(1))
+- 배열 전체 순회로 합/평균을 구하는 과정
+- 값 수정이 다른 원소에 영향을 주지 않는 이유
+
+**실습 요약**
+- 인덱스 접근/수정이 O(1)임을 확인
+- 중간 삽입/삭제가 느린 이유 이해`
   },
 
   features: [
     { title: "즉시 접근 (Random Access)", description: "몇 번째 칸이든 상관없이 똑같이 빠르게(O(1)) 접근할 수 있습니다. 이미 주소를 알고 있기 때문이죠." },
     { title: "연속된 메모리 (Cache Friendly)", description: "데이터가 붙어있어서 컴퓨터가 읽을 때 한꺼번에 미리 읽어올 수 있어 처리 속도가 매우 빠릅니다." },
     { title: "크기 고정 (Fixed Size)", description: "계란판의 크기를 마음대로 늘릴 수 없듯이, 배열도 한 번 만들면 크기를 바꾸기 어렵습니다." },
+    { title: "성능상 주의점 (Performance Trap)", description: "배열의 맨 앞, 혹은 중간에 데이터를 끼워넣지 마세요. 뒤에 있는 친구들이 모두 한 칸씩 밀려나야 해서 매우 느려집니다 (O(N))." }
   ],
-
-  deepDive: {
-      interviewProbablity: "High",
-      realWorldUseCases: [
-          "Pixel Buffer: 모니터 화면의 픽셀들은 거대한 1차원 배열입니다.",
-          "Lookup Table: 구구단 표처럼 미리 계산된 값을 저장해두고 바로 찾아봅니다.",
-          "String: 문자열도 사실 문자들이 모인 1차원 배열입니다."
-      ],
-      performanceTrap: "배열의 맨 앞, 혹은 중간에 데이터를 끼워넣지 마세요. 뒤에 있는 친구들이 모두 한 칸씩 밀려나야 해서 매우 느려집니다 (O(N))."
-  },
-
-  comparison: {
-      vs: "LinkedList",
-      pros: ["압도적인 조회 속도 (인덱스만 알면 됨)", "메모리 낭비 없음 (데이터만 딱 저장)"],
-      cons: ["크기를 미리 정해야 함", "중간에 끼워넣거나 삭제하기 불편함"]
-  },
 
   complexity: {
     access: "O(1)",
@@ -79,28 +93,53 @@ arr.append(60)
   ],
 
   initialCode: {
-    python: `# Python 배열 기초 실습
-arr = [10, 20, 30]
+    python: `# === USER CODE START ===
+# 1D Array: 시험 점수 관리 (Basic)
+# 5명의 학생 점수를 담고 있는 배열입니다.
+scores = [90, 85, 78, 92, 88]
 
-# 1. 1번 칸의 값을 읽어보세요
-val = arr[1]
+# 1. 특정 학생 점수 확인 (Access)
+print(f"3번째 학생 점수: {scores[2]}")  # 0부터 시작하므로 2번 인덱스
 
-# 2. 1번 칸의 값을 99로 바꿔보세요
-arr[1] = 99
+# 2. 점수 수정 (Update)
+# 4번째 학생이 재시험을 봐서 점수가 올랐습니다.
+scores[3] = 100
 
-# 3. 새로운 값을 맨 뒤에 추가해보세요
-arr.append(40)
+# 3. 전체 평균 구하기 (Iteration)
+total = 0
+for s in scores:
+    total += s
 
-# 4. 맨 뒤의 값을 삭제해보세요
-arr.pop()`,
+print(f"총점: {total}")
+# === USER CODE END ===`,
   },
 
-  commandReference: {
-     python: [
-         { label: '초기화', code: 'arr = [1, 2]' },
-         { label: '읽기', code: 'arr[i]' },
-         { label: '쓰기', code: 'arr[i] = v' },
-         { label: '추가', code: 'arr.append(v)' }
-     ]
-  }
+  guide: [
+    {
+      title: "버퍼 연산 (Buffer Ops)",
+      items: [
+        {
+          label: "패킷 접근 (Access)",
+          code: "pkt = buffer[0]",
+          description: "인덱스를 통해 대기열의 패킷에 즉시 접근합니다. 시간 복잡도: O(1)",
+          tags: ["O(1)", "Fetch"],
+          isEditable: true
+        },
+        {
+          label: "처리 완료 (Clear)",
+          code: "buffer[0] = -1",
+          description: "데이터를 물리적으로 삭제하지 않고, 논리적 값(-1)으로 덮어써서 빈 공간임을 표시합니다.",
+          tags: ["Logical Delete"],
+          isEditable: true
+        },
+        {
+          label: "빈 공간 탐색",
+          code: "if buffer[i] == -1:",
+          description: "삽입할 공간을 찾기 위해 배열을 순회합니다. 최악의 경우 O(N)입니다.",
+          tags: ["Linear Search", "O(N)"],
+          isEditable: true
+        }
+      ]
+    }
+  ]
 };

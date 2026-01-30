@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function fixNickname() {
-  const userId = "025fb6cc-8c82-4c8a-bb71-34e08e09e817";
+  const userId = "26a5e13f-9dad-478f-9012-043c15169136";
 
   try {
     // 1. Get User Email

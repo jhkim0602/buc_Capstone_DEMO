@@ -1,8 +1,41 @@
 import { ComponentType } from "react";
 
+// [NEW] Guidebook Interfaces
+export interface GuideItem {
+  label: string;
+  code: string;
+  description?: string;
+  tags?: string[]; // e.g. ["Read-Only", "Pattern"]
+  isEditable?: boolean;
+}
+
+export interface GuideSection {
+  title: string;
+  items: GuideItem[];
+}
+
+export interface CTPImplementationExample {
+  language: 'python';
+  description?: string;
+  code: string;
+}
+
+export interface CTPPracticeProblem {
+  id: number;
+  title: string;
+  tier: string;
+  description: string;
+  link?: string;
+}
+
 export interface CTPModuleConfig {
   title: string;
   description: string;
+  mode?: 'code' | 'interactive'; // Default: 'code'
+  interactive?: {
+    components: ('push' | 'pop' | 'peek' | 'reset' | 'pushFront' | 'pushRear' | 'popFront' | 'popRear')[];
+    maxSize?: number;
+  };
   tags?: string[];
   features?: { title: string; description: string }[];
   complexity?: {
@@ -11,21 +44,44 @@ export interface CTPModuleConfig {
     insertion: string;
     deletion: string;
   };
-  practiceProblems?: any[]; // Replace with specific type if available
-  implementation?: any[];   // Replace with specific type if available
-  initialCode?: Record<string, string>;
-  commandReference?: Record<string, { label: string; code: string }[]>;
+  complexityNames?: {
+    access?: string;
+    search?: string;
+    insertion?: string;
+    deletion?: string;
+  };
+  practiceProblems?: CTPPracticeProblem[];
+  implementation?: CTPImplementationExample[];
+  initialCode?: {
+    python: string;
+  };
+ 
+  showStatePanel?: boolean;
+  statePanelMode?: "summary" | "full";
+
+  // [NEW] Interactive Guide
+  guide?: GuideSection[];
+
   story?: {
-    problem: string;      // "왜 이것이 필요한가?" (배경/문제 제기)
-    definition: string;   // "교과서적 핵심 정의" (형식적 정의)
-    analogy: string;      // "이것은 마치..." (일상 생활 비유)
-    playgroundLimit?: string; // "아래에서 무엇을 해볼까요?" (Playground 실습 가이드)
+    problem: string;
+    definition: string;
+    analogy: string;
+    playgroundLimit?: string;
+    playgroundDescription?: string;
   };
 }
 
 export interface CTPModule {
   config: CTPModuleConfig;
-  useSim: () => { runSimulation: (code: string) => void };
+  useSim: () => {
+    runSimulation: (code: string) => void;
+    interactive?: {
+      visualData: any;
+      edges?: { source: string; target: string; label?: string }[];
+      logs?: string[];
+      handlers: Record<string, () => void>;
+    };
+  };
   Visualizer: ComponentType<any>;
 }
 
@@ -33,7 +89,23 @@ export type CTPModuleRegistry = Record<string, CTPModule>;
 
 export interface VisualItem {
   id: string | number;
-  value: string | number;
+  value: string | number | null;
   isHighlighted?: boolean;
   label?: string; // Optional label (e.g., index or variable name)
+  isGhost?: boolean; // For capacity visualization etc.
+  status?: 'active' | 'comparing' | 'pop' | 'success' | 'visited' | 'found'; // [NEW] For detailed algorithm states
+}
+
+
+export type LinearItem = VisualItem;
+export type GridItem = VisualItem;
+
+export interface LinkedListNode {
+  id: string | number;
+  value: any;
+  nextId?: string | number | null;
+  prevId?: string | number | null;
+  label?: string; // e.g. "Head", "Curr"
+  isHighlighted?: boolean;
+  isNull?: boolean;
 }

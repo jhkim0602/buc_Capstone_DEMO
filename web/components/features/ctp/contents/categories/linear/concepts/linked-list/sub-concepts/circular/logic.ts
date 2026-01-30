@@ -1,15 +1,11 @@
+
 import { useCallback } from "react";
-import { useCTPStore } from "@/components/features/ctp/store/use-ctp-store";
-import { LinkedListSimulator } from "../../common/linked-list-simulator";
+import { useSkulptEngine } from "@/hooks/use-skulpt-engine";
+
 
 export function useCircularLinkedListSim() {
-    const { setSteps } = useCTPStore();
+    // [Refactor] Use 'circular-linked-list' adapter
+    const { run } = useSkulptEngine({ adapterType: 'circular-linked-list' });
 
-    const runSimulation = useCallback((code: string) => {
-        const simulator = new LinkedListSimulator('circular');
-        const steps = simulator.parseAndRun(code);
-        setSteps(steps);
-    }, [setSteps]);
-
-    return { runSimulation };
+    return { runSimulation: run };
 }

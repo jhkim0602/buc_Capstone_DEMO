@@ -29,7 +29,7 @@ export function Header({
             className="hover:opacity-80 transition-opacity"
           >
             <h1 className="text-2xl font-black text-blue-600 dark:text-blue-400">
-              StackLoad
+              디벗
             </h1>
           </button>
 
@@ -53,7 +53,7 @@ export function Header({
               className="hover:opacity-80 transition-opacity"
             >
               <h1 className="text-xl font-black text-blue-600 dark:text-blue-400">
-                StackLoadd
+                디벗
               </h1>
             </button>
             <div className="flex items-center gap-2">

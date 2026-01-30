@@ -3,9 +3,10 @@
 import { CTPRightSidebar } from "./ctp-right-sidebar";
 import { CTPSidebar } from "./ctp-sidebar";
 import { CTPSubSidebar } from "./ctp-sub-sidebar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PanelLeftOpen } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface CTPWikiLayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,14 @@ interface CTPWikiLayoutProps {
 
 export function CTPWikiLayout({ children }: CTPWikiLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Scroll to top on route change (simulates page refresh behavior)
+  // This now covers both Path changes (/a -> /b) and Query changes (/a?view=1 -> /a?view=2)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [pathname, searchParams]);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">

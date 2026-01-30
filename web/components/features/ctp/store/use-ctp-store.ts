@@ -10,6 +10,9 @@ export interface VisualStep {
   data: any | VisualItem[] | VisualItem[][]; // snapshot of data structure state
   highlightedIndices?: number[]; // indices to highlight
   activeLine?: number; // code line number associated with this step
+  stdout?: string[]; // accumulated console output
+  events?: any[]; // tracer events (optional)
+  variables?: any; // raw globals snapshot for state panels
 }
 
 interface CTPState {
@@ -32,6 +35,7 @@ interface CTPState {
   reset: () => void;
   nextStep: () => void;
   prevStep: () => void;
+  addStep: (step: VisualStep) => void;
 }
 
 export const useCTPStore = create<CTPState>((set, get) => ({
@@ -55,7 +59,7 @@ export const useCTPStore = create<CTPState>((set, get) => ({
   setPlayState: (playState) => set({ playState }),
   setPlaybackSpeed: (playbackSpeed) => set({ playbackSpeed }),
 
-  reset: () => set({ currentStepIndex: 0, playState: 'idle' }),
+  reset: () => set({ steps: [], currentStepIndex: -1, playState: 'idle' }),
 
   nextStep: () => {
     const { currentStepIndex, steps } = get();
@@ -72,4 +76,10 @@ export const useCTPStore = create<CTPState>((set, get) => ({
       set({ currentStepIndex: currentStepIndex - 1 });
     }
   },
+
+  // Streaming Support for Skulpt
+  addStep: (step) => {
+    const { steps } = get();
+    set({ steps: [...steps, step] });
+  }
 }));

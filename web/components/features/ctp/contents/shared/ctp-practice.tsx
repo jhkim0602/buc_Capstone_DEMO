@@ -1,22 +1,17 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import type { CTPPracticeProblem } from "../../common/types";
 
-export interface PracticeProblem {
-  id: number;
-  title: string;
-  tier: string; // e.g., "Bronze III"
-  description: string;
-  link?: string;
-}
+export type PracticeProblem = CTPPracticeProblem;
 
 interface CTPPracticeProps {
-  problems: PracticeProblem[];
+  problems: CTPPracticeProblem[];
 }
 
 export function CTPPractice({ problems }: CTPPracticeProps) {
   return (
-    <section id="practice" className="space-y-4">
+    <section id="practice" data-toc="main" data-toc-level="1" className="space-y-4">
       <h2 className="text-2xl font-bold tracking-tight">추천 문제 (Baekjoon)</h2>
       <div className="grid gap-3">
         {problems.map((prob) => {
