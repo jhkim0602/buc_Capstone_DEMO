@@ -7,7 +7,9 @@ export type InterviewSetupStep =
   | 'resume'     // Step 3: Resume Input
   | 'resume-check' // Step 4: Resume Verification
   | 'final-check' // Step 5: Final Check
-  | 'complete';  // Step 6: Completion
+  | 'personality-selection' // Step 6: Select Personality
+  | 'mode-selection' // Step 7: Select Mode
+  | 'complete';  // Step 8: Completion
 
 export interface JobData {
   role: string;
@@ -40,30 +42,57 @@ export interface ResumeData {
       };
     };
     education: {
-        school: string;
-        major: string;
-        period: string;
-        degree?: string;
+      school: string;
+      major: string;
+      period: string;
+      degree?: string;
     }[];
     experience: {
-        company: string;
-        position: string;
-        period: string;
-        description: string;
+      company: string;
+      position: string;
+      period: string;
+      description: string;
     }[];
     skills: {
-        name: string;
-        category?: string; // e.g., 'Language', 'Frontend', 'Backend'
-        level?: 'Basic' | 'Intermediate' | 'Advanced';
+      name: string;
+      category?: string; // e.g., 'Language', 'Frontend', 'Backend'
+      level?: 'Basic' | 'Intermediate' | 'Advanced';
     }[];
     projects: {
-        name: string;
-        period: string;
-        description: string; // Situation & Action
-        techStack?: string[];
-        achievements?: string[]; // Result (Numerical)
+      name: string;
+      period: string;
+      description: string; // Situation & Action
+      techStack?: string[];
+      achievements?: string[]; // Result (Numerical)
     }[];
   };
+}
+
+export interface AnalysisResult {
+  overallScore: number;
+  passProbability: number;
+  evaluation: {
+    jobFit: number;
+    logic: number;
+    communication: number;
+    attitude: number;
+  };
+  sentimentTimeline: number[];
+  habits: {
+    habit: string;
+    count: number;
+    severity: "low" | "medium" | "high";
+  }[];
+  feedback: {
+    strengths: string[];
+    improvements: string[];
+  };
+  bestPractices: {
+    question: string;
+    userAnswer: string;
+    refinedAnswer: string;
+    reason: string;
+  }[];
 }
 
 interface InterviewSetupState {
@@ -77,6 +106,13 @@ interface InterviewSetupState {
   // Resume Data
   resumeData: ResumeData | null;
 
+  // Interviewer Personality
+  interviewerPersonality: string;
+
+  // Chat and Result
+  chatHistory: { role: 'user' | 'model', parts: string }[];
+  analysisResult: AnalysisResult | null;
+
   // Actions
   setStep: (step: InterviewSetupStep) => void;
   setTarget: (url: string, category: string) => void;
@@ -84,6 +120,9 @@ interface InterviewSetupState {
   updateJobData: (data: Partial<JobData>) => void;
   setResumeData: (data: ResumeData) => void;
   updateResumeData: (data: Partial<ResumeData>) => void;
+  setInterviewerPersonality: (personality: string) => void;
+  setChatHistory: (history: { role: 'user' | 'model', parts: string }[]) => void;
+  setAnalysisResult: (result: AnalysisResult) => void;
   completeSetup: () => void;
   reset: () => void;
 }
@@ -96,6 +135,9 @@ export const useInterviewSetupStore = create<InterviewSetupState>()(
       targetJobCategory: '',
       jobData: null,
       resumeData: null,
+      interviewerPersonality: 'professional',
+      chatHistory: [],
+      analysisResult: null,
 
       setStep: (step) => set({ currentStep: step }),
       setTarget: (url, category) => set({ targetUrl: url, targetJobCategory: category }),
@@ -107,15 +149,21 @@ export const useInterviewSetupStore = create<InterviewSetupState>()(
       setResumeData: (data) => set({ resumeData: data }),
       updateResumeData: (updates) =>
         set((state) => ({
-            resumeData: state.resumeData ? { ...state.resumeData, ...updates } : null
+          resumeData: state.resumeData ? { ...state.resumeData, ...updates } : null
         })),
+      setInterviewerPersonality: (personality) => set({ interviewerPersonality: personality }),
+      setChatHistory: (history) => set({ chatHistory: history }),
+      setAnalysisResult: (result) => set({ analysisResult: result }),
       completeSetup: () => set({ currentStep: 'complete' }),
       reset: () => set({
         currentStep: 'target',
         targetUrl: '',
         targetJobCategory: '',
         jobData: null,
-        resumeData: null
+        resumeData: null,
+        interviewerPersonality: 'professional',
+        chatHistory: [],
+        analysisResult: null
       }),
     }),
     {
@@ -128,10 +176,13 @@ export const useInterviewSetupStore = create<InterviewSetupState>()(
         jobData: state.jobData,
         resumeData: state.resumeData
           ? {
-              ...state.resumeData,
-              file: undefined // Cannot persist File object
-            }
-          : null
+            ...state.resumeData,
+            file: undefined // Cannot persist File object
+          }
+          : null,
+        interviewerPersonality: state.interviewerPersonality,
+        chatHistory: state.chatHistory,
+        analysisResult: state.analysisResult
       }),
     }
   )
