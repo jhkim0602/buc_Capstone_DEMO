@@ -1,13 +1,10 @@
 import time
-import os
 import json
 from firecrawl import FirecrawlApp
 import google.generativeai as genai
 from loguru import logger
-from src.shared.config import GEMINI_API_KEY
+from src.common.config.settings import FIRECRAWL_API_KEY, GEMINI_API_KEY
 
-# Initialize Firecrawl
-FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
 
 def get_firecrawl_client():
     if not FIRECRAWL_API_KEY:

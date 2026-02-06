@@ -1,23 +1,32 @@
-import os
-import asyncio
+import importlib
 from loguru import logger
 from firecrawl import FirecrawlApp
 from src.shared.job_models import JobAnalysisResult
+from src.common.config.settings import FIRECRAWL_API_KEY
 
-# Import JD Analyzer
-# Note: Based on project structure, we need to make sure we can import from ai/src
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../ai/src")))
-from open_llm_vtuber.agent.rag.jd_analyzer import JDAnalyzer
+from pathlib import Path
 
-# Initialize Firecrawl
-FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
+AI_SRC_DIR = Path(__file__).resolve().parents[4] / "ai" / "src"
 
 def get_firecrawl_client():
     if not FIRECRAWL_API_KEY:
         logger.warning("⚠️ FIRECRAWL_API_KEY is missing.")
         return None
     return FirecrawlApp(api_key=FIRECRAWL_API_KEY)
+
+
+def _get_jd_analyzer_class():
+    if AI_SRC_DIR.exists() and str(AI_SRC_DIR) not in sys.path:
+        sys.path.append(str(AI_SRC_DIR))
+
+    try:
+        module = importlib.import_module("open_llm_vtuber.agent.rag.jd_analyzer")
+        return module.JDAnalyzer
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            f"JDAnalyzer module not found. Expected import path under: {AI_SRC_DIR}"
+        ) from e
 
 async def analyze_jd_by_url(url: str) -> JobAnalysisResult:
     """
@@ -54,6 +63,7 @@ async def analyze_jd_by_url(url: str) -> JobAnalysisResult:
         raise e
 
     # 2. AI Analysis
+    JDAnalyzer = _get_jd_analyzer_class()
     analyzer = JDAnalyzer(model_name="gemini-2.0-flash-exp")
     
     try:

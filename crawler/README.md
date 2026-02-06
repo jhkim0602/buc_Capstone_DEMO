@@ -1,60 +1,69 @@
 # StackLoad Crawler
 
-StackLoad 프로젝트의 데이터 수집을 담당하는 크롤러 모듈입니다.
-Python 기반으로 작성되었으며, Saramin 채용 공고 크롤링 및 기술 블로그 RSS 수집 기능을 포함합니다.
+StackLoad 프로젝트의 데이터 수집 모듈입니다.
+현재 구조는 **크롤러별 독립 실행**으로 완전히 정리되어 있습니다.
 
-## 🚀 시작하기
+## 빠른 시작 (uv)
 
-### 1. 환경 설정
-
-**가상환경 생성 및 활성화**
+1. `crawler/` 디렉토리에서 의존성 동기화
 
 ```bash
-# 가상환경 생성 (.venv)
-python -m venv .venv
-
-# 활성화 (Mac/Linux)
-source .venv/bin/activate
-
-# 활성화 (Windows)
-.venv\Scripts\activate
+uv sync
 ```
 
-**의존성 설치**
-
-```bash
-pip install -r requirements.txt
-```
-
-**환경 변수 설정**
-
-`.env.example` 파일을 복사하여 `.env` 파일을 생성하고 필요한 값을 입력하세요.
+2. 환경 변수 파일 준비
 
 ```bash
 cp .env.example .env
 ```
 
-### 2. 실행 방법
+### 선택 환경 변수 (출력 경로/테이블)
 
-#### Saramin 독립형 크롤러 실행
-
-기존 루트 디렉토리에 있던 독립형 스크립트는 이제 `scripts` 폴더에서 실행할 수 있습니다.
+`src/common/config/settings.py`에서 아래 값을 단일 로딩합니다.
 
 ```bash
-# 프로젝트 루트(crawler/)에서 실행
-python scripts/saramin_standalone.py
+# web/public/data 기본 경로를 바꾸고 싶을 때
+WEB_DATA_DIR=
+DEV_EVENT_JSON_PATH=
+SARAMIN_JOBS_JSON_PATH=
+
+# Supabase 테이블명 커스텀
+SUPABASE_BLOGS_TABLE=blogs
 ```
 
-#### 메인 크롤러 앱 실행
+## 독립 실행 명령
 
-(크롤러 앱의 진입점이 있다면 여기에 추가 설명, 현재 구조상 `src/main.py` 등이 있다면)
+모든 명령은 `crawler/` 루트에서 실행합니다.
+
+### 1) Tech Blog RSS
+
 ```bash
-python src/main.py
+uv run python -m src.apps.tech_blog.cli
 ```
 
-## 📁 디렉토리 구조
+### 2) Saramin 채용공고
 
-- `src/`: 크롤러 핵심 로직 소스 코드
-- `scripts/`: 독립적으로 실행 가능한 유틸리티 스크립트 모음
-    - `saramin_standalone.py`: 사람인 채용 공고 크롤링 스크립트
-- `.env`: 환경 변수 설정 파일 (git ignored)
+```bash
+uv run python -m src.apps.saramin.cli --limit 20
+```
+
+### 3) Dev Event
+
+```bash
+uv run python -m src.apps.dev_event.cli --limit 10
+```
+
+### 4) Job Post
+
+```bash
+# 원문 텍스트 추출
+uv run python -m src.apps.job_post.cli crawl-text "<job_url>"
+
+# Firecrawl + AI 분석
+uv run python -m src.apps.job_post.cli analyze "<job_url>"
+```
+
+## 리팩토링 문서
+
+- 리팩토링 계획: `docs/refactoring-plan.md`
+- 경로 매핑/정리 현황: `docs/migration-map.md`
