@@ -47,25 +47,6 @@ export const CIRCULAR_LL_CONFIG: CTPModuleConfig = {
     { title: "성능상 주의점 (Performance Trap)", description: "순회 코드를 짤 때 `do-while` 문을 쓰거나, `head` 도착 여부를 체크하지 않으면 프로그램이 멈추지 않습니다." }
   ],
 
-<<<<<<< HEAD
-=======
-  deepDive: {
-    interviewProbablity: "Low",
-    realWorldUseCases: [
-      "CPU 스케줄링 (Round Robin): 프로세스 A -> B -> C -> A -> ...",
-      "멀티플레이어 게임 턴 관리: 플레이어 1 -> 2 -> 3 -> 1 ...",
-      "스트리밍 버퍼: 링 버퍼(Ring Buffer) 구현 시 사용됩니다."
-    ],
-    performanceTrap: "순회 코드를 짤 때 `do-while` 문을 쓰거나, `head` 도착 여부를 체크하지 않으면 프로그램이 멈추지 않습니다."
-  },
-
-  comparison: {
-    vs: "Singly Linked List",
-    pros: ["마지막에서 처음으로 이동 가능", "무한 반복 구현 용이"],
-    cons: ["종료 조건 구현이 까다로움", "무한 루프 버그 위험"]
-  },
-
->>>>>>> origin/feature/interview
   complexity: {
     access: "O(N)",
     search: "O(N)",
@@ -111,12 +92,8 @@ for _ in range(10):
   ],
 
   initialCode: {
-<<<<<<< HEAD
     python: `# === USER CODE START ===
 # Circular Linked List: 라운드 로빈 스케줄러 (Scheduler)
-=======
-    python: `# Circular Linked List: 라운드 로빈 스케줄러 (Scheduler)
->>>>>>> origin/feature/interview
 # 프로세스들에게 CPU 시간을 공평하게 분배하는 알고리즘 시뮬레이션입니다.
 # Process ID: 100 -> 101 -> 102 -> 100 (Loop)
 
@@ -142,16 +119,10 @@ current_proc = p1
 for time_slice in range(1, 7):
     # Execute Process
     print(f"Time {time_slice}: Running PID {current_proc.val}")
-<<<<<<< HEAD
 
     # Context Switch (Next Process)
     current_proc = current_proc.next
 # === USER CODE END ===`,
-=======
-    
-    # Context Switch (Next Process)
-    current_proc = current_proc.next`,
->>>>>>> origin/feature/interview
   },
 
   guide: [

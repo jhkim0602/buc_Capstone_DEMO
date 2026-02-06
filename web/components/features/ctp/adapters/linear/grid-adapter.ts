@@ -23,7 +23,6 @@ export class GridAdapter extends BaseAdapter {
 
         if (!gridData || !Array.isArray(gridData)) return [];
 
-<<<<<<< HEAD
         const toCell = (val: any) => {
             if (!Array.isArray(val) || val.length < 2) return null;
             const r = val[0];
@@ -75,15 +74,6 @@ export class GridAdapter extends BaseAdapter {
                     isHighlighted: !status && visited ? true : undefined,
                 };
             });
-=======
-        return gridData.map((row: any[], rIdx: number) => {
-            if (!Array.isArray(row)) return [];
-            return row.map((val: any, cIdx: number) => ({
-                id: `cell-${rIdx}-${cIdx}`,
-                value: this.cleanValue(val),
-                label: `${rIdx},${cIdx}`
-            }));
->>>>>>> origin/feature/interview
         });
     }
 }

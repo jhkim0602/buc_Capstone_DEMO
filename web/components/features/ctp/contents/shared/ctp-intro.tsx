@@ -79,11 +79,7 @@ export function CTPIntro({ category, title, description, tags = [], story }: CTP
                 <BookOpen className="w-5 h-5" />
                 핵심 정의 (Definition)
               </h3>
-<<<<<<< HEAD
               <div className="text-xl font-medium leading-[1.6] tracking-[-0.01em] font-serif text-foreground/90 prose dark:prose-invert max-w-none prose-p:my-1.5 prose-li:my-1 prose-ul:my-2 prose-ol:my-2">
-=======
-              <div className="text-xl font-medium leading-relaxed font-serif text-foreground/90 prose dark:prose-invert max-w-none">
->>>>>>> origin/feature/interview
                 <ReactMarkdown>{story.definition}</ReactMarkdown>
               </div>
             </div>

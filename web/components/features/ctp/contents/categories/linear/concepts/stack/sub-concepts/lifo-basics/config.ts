@@ -15,15 +15,11 @@ export const STACK_LIFO_CONFIG: CTPModuleConfig = {
         problem: `컴퓨터의 '되돌리기(Ctrl+Z)' 기능이나, 웹 브라우저의 '뒤로 가기' 버튼은 어떤 순서로 동작할까요?
 우리가 가장 최근에 한 작업을 먼저 취소하고, 그다음 최근 작업을 취소합니다. 즉, 시간의 역순으로 데이터에 접근해야 합니다.`,
         definition: `스택(Stack)은 '쌓다'라는 의미로, 데이터를 차곡차곡 쌓아 올리는 자료구조입니다.
-<<<<<<< HEAD
 가장 중요한 특징은 **LIFO (Last-In, First-Out)**, 즉 '나중에 들어온 것이 먼저 나간다'는 원칙입니다.
 
 **불변식**
 - 가장 최근에 넣은 데이터가 항상 Top에 있다.
 - Pop은 항상 Top에서만 일어난다.`,
-=======
-가장 중요한 특징은 **LIFO (Last-In, First-Out)**, 즉 '나중에 들어온 것이 먼저 나간다'는 원칙입니다.`,
->>>>>>> origin/feature/interview
         analogy: `**프링글스 통**이나 **설거지 접시 더미**를 상상해보세요.
 1. 접시를 닦아서 쌓을 때는 맨 위에 둡니다. (Push)
 2. 접시를 꺼내서 쓸 때는 맨 위의 것부터 꺼냅니다. (Pop)
@@ -32,7 +28,6 @@ export const STACK_LIFO_CONFIG: CTPModuleConfig = {
 1. **Push**: 버튼을 눌러 데이터를 스택에 넣습니다. (최대 7개)
 2. **Pop**: 맨 위의 데이터를 꺼냅니다.
 3. **Overflow**: 꽉 찼을 때 Push를 하면 어떻게 되나요?
-<<<<<<< HEAD
 4. **Underflow**: 비어있을 때 Pop을 하면 어떻게 되나요?
 
 **실습 요약**
@@ -55,11 +50,6 @@ export const STACK_LIFO_CONFIG: CTPModuleConfig = {
         }
     ],
 
-=======
-4. **Underflow**: 비어있을 때 Pop을 하면 어떻게 되나요?`
-    },
-
->>>>>>> origin/feature/interview
     complexity: {
         access: "O(n)",
         search: "O(n)",

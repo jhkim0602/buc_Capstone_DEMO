@@ -9,11 +9,7 @@ import { VisualItem } from "../common/types";
 
 interface CTPInteractivePlaygroundProps {
     config: {
-<<<<<<< HEAD
         components: ('push' | 'pop' | 'peek' | 'reset' | 'pushFront' | 'pushRear' | 'popFront' | 'popRear')[];
-=======
-        components: ('push' | 'pop' | 'peek')[];
->>>>>>> origin/feature/interview
         maxSize?: number;
     };
 }

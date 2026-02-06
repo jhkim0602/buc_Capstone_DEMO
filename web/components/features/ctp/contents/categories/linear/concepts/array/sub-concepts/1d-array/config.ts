@@ -9,7 +9,6 @@ export const ARRAY_1D_CONFIG: CTPModuleConfig = {
 
   // 1. Story Mode Content
   story: {
-<<<<<<< HEAD
     problem: `만약 100명의 학생 점수를 저장해야 한다면 변수 100개를 만들어야 할까요?
 score1, score2, ..., score100 처럼요?
 
@@ -42,13 +41,6 @@ score1, score2, ..., score100 처럼요?
 **실습 요약**
 - 인덱스 접근/수정이 O(1)임을 확인
 - 중간 삽입/삭제가 느린 이유 이해`
-=======
-    problem: `만약 100명의 학생 점수를 저장해야 한다면 변수 100개를 만들어야 할까요?\nscore1, score2, ..., score100 처럼요?\n\n이러면 관리하기도 힘들고, 반복문으로 처리할 수도 없습니다.\n"점수들"을 하나의 이름으로 묶어서 관리할 수 있는 방법이 필요합니다.`,
-    definition: "같은 타입의 데이터들을 메모리 상에 '연속적으로' 나열하고, 번호(Index)를 붙여 관리하는 자료구조",
-    analogy: "마치 '계란판'과 같습니다. 칸마다 번호가 매겨져 있고, 한 줄로 나란히 이어져 있죠. 3번째 계란을 꺼내려면 '3번 칸'으로 바로 손을 뻗으면 됩니다.",
-    playgroundLimit: "아래 에디터에서 arr[2] = 99 처럼 특정 칸의 값을 직접 바꿔보세요!",
-    playgroundDescription: "100명의 학생 점수를 관리해야 한다고 상상해보세요. 변수 100개를 만드는 대신, 배열 하나로 관리하는 것이 훨씬 효율적입니다. 이 코드는 인덱스를 통해 즉시 학생의 점수를 찾고 수정하는 배열의 강력함을 보여줍니다."
->>>>>>> origin/feature/interview
   },
 
   features: [
@@ -58,25 +50,6 @@ score1, score2, ..., score100 처럼요?
     { title: "성능상 주의점 (Performance Trap)", description: "배열의 맨 앞, 혹은 중간에 데이터를 끼워넣지 마세요. 뒤에 있는 친구들이 모두 한 칸씩 밀려나야 해서 매우 느려집니다 (O(N))." }
   ],
 
-<<<<<<< HEAD
-=======
-  deepDive: {
-    interviewProbablity: "High",
-    realWorldUseCases: [
-      "Pixel Buffer: 모니터 화면의 픽셀들은 거대한 1차원 배열입니다.",
-      "Lookup Table: 구구단 표처럼 미리 계산된 값을 저장해두고 바로 찾아봅니다.",
-      "String: 문자열도 사실 문자들이 모인 1차원 배열입니다."
-    ],
-    performanceTrap: "배열의 맨 앞, 혹은 중간에 데이터를 끼워넣지 마세요. 뒤에 있는 친구들이 모두 한 칸씩 밀려나야 해서 매우 느려집니다 (O(N))."
-  },
-
-  comparison: {
-    vs: "LinkedList",
-    pros: ["압도적인 조회 속도 (인덱스만 알면 됨)", "메모리 낭비 없음 (데이터만 딱 저장)"],
-    cons: ["크기를 미리 정해야 함", "중간에 끼워넣거나 삭제하기 불편함"]
-  },
-
->>>>>>> origin/feature/interview
   complexity: {
     access: "O(1)",
     search: "O(N)",
@@ -120,12 +93,8 @@ arr.append(60)
   ],
 
   initialCode: {
-<<<<<<< HEAD
     python: `# === USER CODE START ===
 # 1D Array: 시험 점수 관리 (Basic)
-=======
-    python: `# 1D Array: 시험 점수 관리 (Basic)
->>>>>>> origin/feature/interview
 # 5명의 학생 점수를 담고 있는 배열입니다.
 scores = [90, 85, 78, 92, 88]
 
@@ -140,14 +109,9 @@ scores[3] = 100
 total = 0
 for s in scores:
     total += s
-<<<<<<< HEAD
 
 print(f"총점: {total}")
 # === USER CODE END ===`,
-=======
-    
-print(f"총점: {total}")`,
->>>>>>> origin/feature/interview
   },
 
   guide: [

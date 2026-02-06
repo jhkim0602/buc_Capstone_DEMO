@@ -48,25 +48,6 @@ export const ARRAY_2D_CONFIG: CTPModuleConfig = {
     { title: "성능상 주의점 (Performance Trap)", description: "`for j in cols: for i in rows:` 처럼 세로로 순회하면 '캐시 미스(Cache Miss)'가 발생해 속도가 2~3배 느려질 수 있습니다. 항상 '행 우선'으로 순회하세요!" }
   ],
 
-<<<<<<< HEAD
-=======
-  deepDive: {
-    interviewProbablity: "Very High",
-    realWorldUseCases: [
-      "이미지 처리: 사진은 픽셀들의 2차원 배열입니다. (R, G, B까지 하면 3차원)",
-      "게임 맵: 체스판, 지뢰찾기, RPG 게임의 타일 맵은 모두 2차원 배열입니다.",
-      "그래프 표현: 정점들 간의 연결 관계를 '인접 행렬(Adjacency Matrix)'로 표현합니다."
-    ],
-    performanceTrap: "`for j in cols: for i in rows:` 처럼 세로로 순회하면 '캐시 미스(Cache Miss)'가 발생해 속도가 2~3배 느려질 수 있습니다. 항상 '행 우선'으로 순회하세요!"
-  },
-
-  comparison: {
-    vs: "Graph List (인접 리스트)",
-    pros: ["두 점이 연결되었는지 O(1)에 확인 가능", "구현이 매우 직관적이고 쉬움"],
-    cons: ["희소 행렬(대부분이 0인 경우)일 때 메모리 낭비가 매우 심함 (N^2)"]
-  },
-
->>>>>>> origin/feature/interview
   complexity: {
     access: "O(1)",
     search: "O(N×M)",
@@ -127,12 +108,8 @@ for i in range(4):
   ],
 
   initialCode: {
-<<<<<<< HEAD
     python: `# === USER CODE START ===
 # 2D Array: 3x3 숫자 격자 (Simple Grid)
-=======
-    python: `# 2D Array: 3x3 숫자 격자 (Simple Grid)
->>>>>>> origin/feature/interview
 # 1부터 9까지의 숫자가 담긴 2차원 배열입니다.
 grid = [
     [1, 2, 3],
@@ -151,22 +128,14 @@ cols = len(grid[0])
 for r in range(rows):
     for c in range(cols):
         grid[r][c] += 10
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> origin/feature/interview
 # 3. '5'가 어디 있는지 찾기 (Search)
 target = 15 # 5 + 10이 되었으므로
 for r in range(rows):
     for c in range(cols):
         if grid[r][c] == target:
-<<<<<<< HEAD
             print(f"찾았다!: {r}행 {c}열")
 # === USER CODE END ===`,
-=======
-            print(f"찾았다!: {r}행 {c}열")`,
->>>>>>> origin/feature/interview
   },
 
   guide: [

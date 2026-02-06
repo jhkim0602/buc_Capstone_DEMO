@@ -10,11 +10,8 @@ interface CodeEditorProps {
   onChange?: (value: string | undefined) => void;
   readOnly?: boolean;
   activeLine?: number; // 1-based line number to highlight
-<<<<<<< HEAD
   hiddenLinePatterns?: RegExp[];
   hideFromMarker?: string;
-=======
->>>>>>> origin/feature/interview
 }
 
 export function CodeEditor({
@@ -22,16 +19,13 @@ export function CodeEditor({
   value,
   onChange,
   readOnly = false,
-<<<<<<< HEAD
   activeLine,
   hiddenLinePatterns = [],
   hideFromMarker
-=======
-  activeLine
->>>>>>> origin/feature/interview
 }: CodeEditorProps) {
   const { theme } = useTheme();
-  const editorRef = useRef<any>(null);
+  type MonacoEditorInstance = Parameters<OnMount>[0];
+  const editorRef = useRef<MonacoEditorInstance | null>(null);
   const decorationsRef = useRef<string[]>([]); // Store current decoration IDs
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
@@ -76,7 +70,6 @@ export function CodeEditor({
     }
   }, [activeLine]);
 
-<<<<<<< HEAD
   // Hidden Lines Effect (for visualization/output helpers)
   useEffect(() => {
     const editor = editorRef.current;
@@ -84,19 +77,19 @@ export function CodeEditor({
     const model = editor.getModel();
     if (!model) return;
 
-    const text = model.getValue();
-    const lines = text.split("\n");
+    const text: string = model.getValue();
+    const lines: string[] = text.split("\n");
     const ranges: { startLineNumber: number; startColumn: number; endLineNumber: number; endColumn: number }[] = [];
 
     let hideFromIndex: number | null = null;
     if (hideFromMarker) {
-      const idx = lines.findIndex((line) => line.includes(hideFromMarker));
+      const idx = lines.findIndex((line: string) => line.includes(hideFromMarker));
       if (idx >= 0) hideFromIndex = idx;
     }
 
     const matchesPattern = (line: string) => hiddenLinePatterns.some((re) => re.test(line));
 
-    lines.forEach((line, idx) => {
+    lines.forEach((line: string, idx: number) => {
       if (hideFromIndex !== null && idx >= hideFromIndex) {
         return;
       }
@@ -119,11 +112,13 @@ export function CodeEditor({
       });
     }
 
-    editor.setHiddenAreas(ranges);
+    // Monaco type definitions can differ by version; guard optional API at runtime.
+    const setHiddenAreas = (editor as any).setHiddenAreas as
+      | ((areas: typeof ranges) => void)
+      | undefined;
+    setHiddenAreas?.(ranges);
   }, [value, hiddenLinePatterns, hideFromMarker]);
 
-=======
->>>>>>> origin/feature/interview
   return (
     <div className="h-full w-full min-h-[300px] rounded-md overflow-hidden border border-border/50">
       <Editor

@@ -48,25 +48,6 @@ Cycle Detection 문제는 단골 출제 문제입니다. (Floyd's Algorithm)`,
     { title: "성능상 주의점 (Performance Trap)", description: "Fast 포인터가 `next.next`로 이동하므로, `NULL` 체크를 꼼꼼히 안 하면 런타임 에러(NPE)가 터지기 쉽습니다." }
   ],
 
-<<<<<<< HEAD
-=======
-  deepDive: {
-    interviewProbablity: "High",
-    realWorldUseCases: [
-      "무한 루프 방지: 시스템 프로세스가 교착 상태나 루프에 빠졌는지 감지할 때 유용합니다.",
-      "네트워크 패킷 분석: 순환되는 경로가 있는지 탐지합니다.",
-      "중간값 찾기: 데이터 스트림에서 빠르게 중간 위치를 찾아야 할 때 사용합니다."
-    ],
-    performanceTrap: "Fast 포인터가 `next.next`로 이동하므로, `NULL` 체크를 꼼꼼히 안 하면 런타임 에러(NPE)가 터지기 쉽습니다."
-  },
-
-  comparison: {
-    vs: "Naive Iteration",
-    pros: ["한 번의 순회(One Pass)로 해결 가능", "추가 메모리(O(N)) 불필요 (공간복잡도 O(1))"],
-    cons: ["직관적이지 않음 (Why it works?)"]
-  },
-
->>>>>>> origin/feature/interview
   complexity: {
     access: "N/A",
     search: "O(N)",
@@ -115,12 +96,8 @@ Cycle Detection 문제는 단골 출제 문제입니다. (Floyd's Algorithm)`,
   ],
 
   initialCode: {
-<<<<<<< HEAD
     python: `# === USER CODE START ===
 # Cycle Detection: Floyd's Algorithm
-=======
-    python: `# Cycle Detection: Floyd's Algorithm
->>>>>>> origin/feature/interview
 # 리스트 내의 순환 반복(Cycle) 존재 여부를 탐지합니다.
 
 # 1. 선형 리스트 생성 (1~8)
@@ -152,20 +129,12 @@ while fast and fast.next:
     slow = slow.next
     fast = fast.next.next
     step += 1
-<<<<<<< HEAD
 
     # 포인터 일치 = 사이클 발견
     if slow == fast:
         print(f"Cycle Detected at Step {step} (Meet at Node {slow.val})")
         break
 # === USER CODE END ===`,
-=======
-    
-    # 포인터 일치 = 사이클 발견
-    if slow == fast:
-        print(f"Cycle Detected at Step {step} (Meet at Node {slow.val})")
-        break`,
->>>>>>> origin/feature/interview
   },
 
   guide: [
