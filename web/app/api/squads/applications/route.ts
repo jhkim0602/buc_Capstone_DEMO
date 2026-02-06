@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 
 // Helper to serialize BigInt or strict Date handling if needed (Prisma dates are fine for JSON mostly)

@@ -1,4 +1,6 @@
 import { fetchRecruitJobById } from "@/lib/server/recruit";
+
+export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { JobDetailHeader } from "@/components/features/career/job-detail-header";
 import { JobDetailContent } from "@/components/features/career/job-detail-content";

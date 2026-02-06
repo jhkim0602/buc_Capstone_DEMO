@@ -1,6 +1,7 @@
 import { DataAdapter } from './base-adapter';
 import { ArrayAdapter } from './linear/array-adapter';
 import { GridAdapter } from './linear/grid-adapter';
+<<<<<<< HEAD
 import { QueueAdapter } from './linear/queue-adapter';
 import { DequeAdapter } from './linear/deque-adapter';
 import { HashAdapter } from './linear/hash-adapter';
@@ -24,6 +25,12 @@ export type AdapterType =
     | 'circular-linked-list'
     | 'merge-sort'
     | 'heap-sort';
+=======
+import { BaseLinkedListAdapter } from './linear/linked-list/base-ll-adapter';
+import { DoublyLinkedListAdapter } from './linear/linked-list/doubly-ll-adapter';
+
+export type AdapterType = 'array' | 'grid' | 'linked-list' | 'doubly-linked-list' | 'circular-linked-list';
+>>>>>>> origin/feature/interview
 
 export class AdapterFactory {
     static getAdapter(type: AdapterType): DataAdapter {
@@ -32,6 +39,7 @@ export class AdapterFactory {
                 return new ArrayAdapter();
             case 'grid':
                 return new GridAdapter();
+<<<<<<< HEAD
             case 'queue':
                 return new QueueAdapter();
             case 'deque':
@@ -42,15 +50,20 @@ export class AdapterFactory {
                 return new GraphAdapter();
             case 'heap':
                 return new HeapAdapter();
+=======
+>>>>>>> origin/feature/interview
             case 'linked-list':
             case 'circular-linked-list': // Base handles circular logic via Graph traversal naturally
                 return new BaseLinkedListAdapter();
             case 'doubly-linked-list':
                 return new DoublyLinkedListAdapter();
+<<<<<<< HEAD
             case 'merge-sort':
                 return new MergeSortAdapter();
             case 'heap-sort':
                 return new HeapSortAdapter();
+=======
+>>>>>>> origin/feature/interview
             default:
                 console.warn(`No specific adapter found for ${type}, defaulting to Array`);
                 return new ArrayAdapter();

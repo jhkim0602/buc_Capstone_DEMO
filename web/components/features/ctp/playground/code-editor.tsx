@@ -10,8 +10,11 @@ interface CodeEditorProps {
   onChange?: (value: string | undefined) => void;
   readOnly?: boolean;
   activeLine?: number; // 1-based line number to highlight
+<<<<<<< HEAD
   hiddenLinePatterns?: RegExp[];
   hideFromMarker?: string;
+=======
+>>>>>>> origin/feature/interview
 }
 
 export function CodeEditor({
@@ -19,9 +22,13 @@ export function CodeEditor({
   value,
   onChange,
   readOnly = false,
+<<<<<<< HEAD
   activeLine,
   hiddenLinePatterns = [],
   hideFromMarker
+=======
+  activeLine
+>>>>>>> origin/feature/interview
 }: CodeEditorProps) {
   const { theme } = useTheme();
   const editorRef = useRef<any>(null);
@@ -69,6 +76,7 @@ export function CodeEditor({
     }
   }, [activeLine]);
 
+<<<<<<< HEAD
   // Hidden Lines Effect (for visualization/output helpers)
   useEffect(() => {
     const editor = editorRef.current;
@@ -114,6 +122,8 @@ export function CodeEditor({
     editor.setHiddenAreas(ranges);
   }, [value, hiddenLinePatterns, hideFromMarker]);
 
+=======
+>>>>>>> origin/feature/interview
   return (
     <div className="h-full w-full min-h-[300px] rounded-md overflow-hidden border border-border/50">
       <Editor

@@ -45,6 +45,25 @@ LRU Cache 구현 문제에서 자주 등장합니다.`,
     { title: "성능상 주의점 (Performance Trap)", description: "구현이 복잡해서 버그가 나기 쉽습니다. 특히 노드 삽입/삭제 시 `next`와 `prev` 링크 4개를 모두 정확히 연결해야 합니다." }
   ],
 
+<<<<<<< HEAD
+=======
+  deepDive: {
+    interviewProbablity: "High",
+    realWorldUseCases: [
+      "웹 브라우저 방문 기록: 뒤로 가기 / 앞으로 가기",
+      "LRU Cache: 가장 최근에 쓴 데이터를 맨 앞으로, 오래된 걸 맨 뒤로 옮길 때 양방향 이동이 필수입니다.",
+      "텍스트 에디터: 커서 이동이 자유로워야 하므로 이중 연결 리스트를 많이 씁니다."
+    ],
+    performanceTrap: "구현이 복잡해서 버그가 나기 쉽습니다. 특히 노드 삽입/삭제 시 `next`와 `prev` 링크 4개를 모두 정확히 연결해야 합니다."
+  },
+
+  comparison: {
+    vs: "Singly Linked List",
+    pros: ["뒤로 가기 가능", "삭제 시 이전 노드 탐색 불필요"],
+    cons: ["메모리 사용량 증가", "구현 복잡도 증가"]
+  },
+
+>>>>>>> origin/feature/interview
   complexity: {
     access: "O(N)",
     search: "O(N)",
@@ -81,8 +100,12 @@ n2.prev = n1  # 서로 연결`
   ],
 
   initialCode: {
+<<<<<<< HEAD
     python: `# === USER CODE START ===
 # Doubly Linked List: 양방향 이동 (Bidirectional)
+=======
+    python: `# Doubly Linked List: 양방향 이동 (Bidirectional)
+>>>>>>> origin/feature/interview
 # 앞뒤로 이동할 수 있는 리스트를 만듭니다.
 
 class Node:
@@ -117,8 +140,12 @@ while curr:
 print("--- 역방향 ---")
 while curr:
     print(curr.val)
+<<<<<<< HEAD
     curr = curr.prev
 # === USER CODE END ===`,
+=======
+    curr = curr.prev`,
+>>>>>>> origin/feature/interview
   },
 
   guide: [

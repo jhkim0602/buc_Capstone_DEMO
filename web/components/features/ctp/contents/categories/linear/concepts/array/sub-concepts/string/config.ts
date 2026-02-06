@@ -36,6 +36,25 @@ StringBuilder가 왜 필요한지, String Pool이 무엇인지 묻는 질문이 
     { title: "성능상 주의점 (Performance Trap)", description: "반복문 안에서 `+=` 연산자로 문자열 합치기 금지! 반드시 `list.append()` 후 `join()` 하거나 `StringBuilder`를 쓰세요." }
   ],
 
+<<<<<<< HEAD
+=======
+  deepDive: {
+    interviewProbablity: "Medium",
+    realWorldUseCases: [
+      "보안(Security): DB 비밀번호나 네트워크 소켓 경로는 절대 변하면 안 되므로 불변 문자열을 씁니다.",
+      "HashMap Key: 불변이므로 해시값(HashCode)이 변하지 않아 캐싱해두고 빠르게 찾을 수 있습니다.",
+      "대규모 로그 처리: 수많은 'INFO' 로그 문자열은 Pool 덕분에 메모리를 거의 차지하지 않습니다."
+    ],
+    performanceTrap: "반복문 안에서 `+=` 연산자로 문자열 합치기 금지! 반드시 `list.append()` 후 `join()` 하거나 `StringBuilder`를 쓰세요."
+  },
+
+  comparison: {
+    vs: "Mutable String (C언어 char[])",
+    pros: ["공유해도 값이 바뀔 걱정이 없음 (Side-effect Free)", "해시 키로 사용하기 적합"],
+    cons: ["단순 수정 연산 시 오버헤드 큼 (전체 복사 발생)"]
+  },
+
+>>>>>>> origin/feature/interview
   complexity: {
     access: "O(1)",
     search: "O(N)",
@@ -86,8 +105,12 @@ for i in range(100):
   ],
 
   initialCode: {
+<<<<<<< HEAD
     python: `# === USER CODE START ===
 # Python String Interning (Internal Mechanism)
+=======
+    python: `# Python String Interning (Internal Mechanism)
+>>>>>>> origin/feature/interview
 # Python의 불변 문자열(Immutable String) 처리 메커니즘을 시각화합니다.
 
 # 1. Compile-time Interning (String Pool)
@@ -97,7 +120,11 @@ str_b = "Computer" # Points to existing "Computer"
 
 # 주소 비교 (Identity Check)
 # 결과: True (동일 레퍼런스)
+<<<<<<< HEAD
 print(f"Pool Match: {str_a is str_b}")
+=======
+print(f"Pool Match: {str_a is str_b}") 
+>>>>>>> origin/feature/interview
 
 # 2. Runtime Allocation (Heap)
 # 연산으로 생성된 문자열은 내용이 같아도 새로운 주소를 할당받습니다.
@@ -110,8 +137,12 @@ print(f"Heap Match: {str_a is str_c}")
 import sys
 str_c = sys.intern(str_c)
 # 결과: True (Pool Address로 오버라이드 됨)
+<<<<<<< HEAD
 print(f"Intern Match: {str_a is str_c}")
 # === USER CODE END ===`,
+=======
+print(f"Intern Match: {str_a is str_c}")`,
+>>>>>>> origin/feature/interview
   },
 
   guide: [

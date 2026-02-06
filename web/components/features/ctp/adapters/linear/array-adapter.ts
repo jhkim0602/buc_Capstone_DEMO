@@ -22,6 +22,7 @@ export class ArrayAdapter extends BaseAdapter {
 
         if (!Array.isArray(startList)) return [];
 
+<<<<<<< HEAD
         const toIndex = (val: any) => (Number.isInteger(val) ? val : null);
         const toIndexList = (val: any) => {
             if (!Array.isArray(val)) return [] as number[];
@@ -66,6 +67,13 @@ export class ArrayAdapter extends BaseAdapter {
                 isHighlighted: !status && highlightIndices.includes(idx) ? true : undefined,
             };
         });
+=======
+        return startList.map((val: any, idx: number) => ({
+            id: `item-${idx}`,
+            value: this.cleanValue(val),
+            label: idx.toString()
+        }));
+>>>>>>> origin/feature/interview
     }
 
     // Static helper for direct usage if needed

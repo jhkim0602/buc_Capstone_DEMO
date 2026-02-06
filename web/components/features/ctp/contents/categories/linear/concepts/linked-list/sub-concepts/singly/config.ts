@@ -47,6 +47,25 @@ Array와의 차이점, Reverse(뒤집기), Cycle Detection 등 꼬리 질의가 
     { title: "성능상 주의점 (Performance Trap)", description: "`get(i)` 연산이 O(N)이라는 걸 잊지 마세요. 반복문에서 `list.get(i)`를 호출하면 전체 성능은 O(N^2)으로 곤두박질 칩니다." }
   ],
 
+<<<<<<< HEAD
+=======
+  deepDive: {
+    interviewProbablity: "Very High",
+    realWorldUseCases: [
+      "Undo/Redo 기능: 이전 상태로 돌아가는 스택 구현에 쓰입니다.",
+      "음악 플레이어 재생목록: 다음 곡, 이전 곡으로 넘어갑니다.",
+      "OS 파일 시스템: 파일 조각들이 디스크 여기저기 흩어져 연결되어 있습니다."
+    ],
+    performanceTrap: "`get(i)` 연산이 O(N)이라는 걸 잊지 마세요. 반복문에서 `list.get(i)`를 호출하면 전체 성능은 O(N^2)으로 곤두박질 칩니다."
+  },
+
+  comparison: {
+    vs: "Array",
+    pros: ["중간 삽입/삭제가 매우 빠름 (O(1))", "메모리 크기 제한 없음"],
+    cons: ["인덱스 접근 불가능 (O(N))", "다음 주소를 저장할 추가 메모리 필요 (Overhead)"]
+  },
+
+>>>>>>> origin/feature/interview
   complexity: {
     access: "O(N)",
     search: "O(N)",
@@ -103,8 +122,12 @@ class LinkedList:
   ],
 
   initialCode: {
+<<<<<<< HEAD
     python: `# === USER CODE START ===
 # Singly Linked List: 기차 놀이 (Basic)
+=======
+    python: `# Singly Linked List: 기차 놀이 (Basic)
+>>>>>>> origin/feature/interview
 # 노드를 하나씩 연결하여 리스트를 만듭니다.
 
 class Node:
@@ -126,8 +149,12 @@ head.next.next = Node(30)
 curr = head
 while curr:
     print(f"현재 칸: {curr.val}")
+<<<<<<< HEAD
     curr = curr.next
 # === USER CODE END ===`,
+=======
+    curr = curr.next`,
+>>>>>>> origin/feature/interview
   },
 
   guide: [

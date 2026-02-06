@@ -6,8 +6,12 @@ export const STACK_MONOTONIC_CONFIG: CTPModuleConfig = {
     tags: ["Monotonicity", "Next Greater Element", "O(N)"],
     mode: "code",
     initialCode: {
+<<<<<<< HEAD
         python: `# === USER CODE START ===
 # 오큰수 (Next Greater Element) 구하기
+=======
+        python: `# 오큰수 (Next Greater Element) 구하기
+>>>>>>> origin/feature/interview
 nums = [9, 5, 2, 7, 3, 8]
 n = len(nums)
 result = [-1] * n
@@ -28,8 +32,12 @@ for i in range(n):
     # print(f"Push: {i}번 인덱스 대기")
 
 print(f"Result: {result}")
+<<<<<<< HEAD
 
 # === USER CODE END ===`
+=======
+`
+>>>>>>> origin/feature/interview
     },
     story: {
         problem: `### 왜 필요할까? (Problem)
@@ -45,11 +53,15 @@ print(f"Result: {result}")
 Monotonic Stack (단조 스택)은 스택 내부의 원소들이 항상 **오름차순** 또는 **내림차순**을 유지하도록 관리하는 기술입니다.
 
 *   **인덱스 저장**: 값 자체가 아닌 **인덱스**를 스택에 저장하는 것이 일반적입니다.(위치를 알아야 정답 배열에 기록할 수 있기 때문)
+<<<<<<< HEAD
 *   **Pop 조건**: 스택의 질서를 깨는 새로운 값이 등장하면, 질서를 맞출 때까지 기존 원소들을 제거(Pop)합니다.
 
 **불변식**
 - 스택 내부는 항상 단조성(오름/내림)을 유지한다.
 - 각 원소는 최대 한 번 push/pop 된다.`,
+=======
+*   **Pop 조건**: 스택의 질서를 깨는 새로운 값이 등장하면, 질서를 맞출 때까지 기존 원소들을 제거(Pop)합니다.`,
+>>>>>>> origin/feature/interview
         analogy: `### 쉽게 이해하기 (Analogy)
 "옥상 정원과 키 큰 빌딩"을 상상해 보세요.
 
@@ -67,6 +79,7 @@ Monotonic Stack (단조 스택)은 스택 내부의 원소들이 항상 **오름
 *   🟢 정답 (Green): 오큰수를 찾은 위치에 정답이 기록됩니다.
 
 숫자들이 스택에 쌓이다가, 더 큰 수를 만났을 때 **연쇄적으로 터져나가는(Pop)** 과정을 확인해보세요!
+<<<<<<< HEAD
   
 **실습 요약**
 - 스택에 인덱스만 저장하는 이유 확인
@@ -88,6 +101,10 @@ Monotonic Stack (단조 스택)은 스택 내부의 원소들이 항상 **오름
             description: "각 원소는 최대 한 번 push/pop 되므로 전체 시간 복잡도는 O(N)입니다."
         }
     ],
+=======
+`
+    },
+>>>>>>> origin/feature/interview
     complexity: {
         access: "O(N)",
         search: "O(N)",

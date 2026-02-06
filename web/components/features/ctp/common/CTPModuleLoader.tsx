@@ -1,6 +1,10 @@
 "use client";
 
+<<<<<<< HEAD
 import { useEffect, useMemo, useState } from "react";
+=======
+import { useEffect, useState } from "react";
+>>>>>>> origin/feature/interview
 import { ChevronDown, ChevronUp, Lightbulb, ArrowDownCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,6 +16,7 @@ import { CTPComplexity } from "../contents/shared/ctp-complexity";
 import { CTPPractice } from "../contents/shared/ctp-practice";
 import { CTPImplementation } from "../contents/shared/ctp-implementation";
 import { CTPPlayground } from "../playground/ctp-playground";
+<<<<<<< HEAD
 import { CTPSortingPlayground } from "../playground/ctp-sorting-playground";
 import { CTPMergeSortPlayground } from "../playground/ctp-merge-sort-playground";
 import { CTPHeapSortPlayground } from "../playground/ctp-heap-sort-playground";
@@ -20,6 +25,11 @@ import { CTPInteractiveModule } from "../playground/ctp-interactive-module";
 import { CTPInteractivePlayground } from "../playground/ctp-interactive-playground";
 import ReactMarkdown from "react-markdown";
 import { applyContentExpansion } from "../contents/shared/ctp-content-expansion";
+=======
+import { CTPGuidePanel } from "../contents/shared/ctp-guide-panel";
+import { CTPInteractivePlayground } from "../playground/ctp-interactive-playground";
+import ReactMarkdown from "react-markdown";
+>>>>>>> origin/feature/interview
 
 interface CTPModuleLoaderProps {
   module: CTPModule;
@@ -86,10 +96,17 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
       {/* 1. Overview */}
       <CTPIntro
         category={category || ""}
+<<<<<<< HEAD
         title={mergedConfig.title || "Untitled"}
         description={mergedConfig.description || ""}
         tags={mergedConfig.tags || []}
         story={mergedConfig.story}
+=======
+        title={config.title || "Untitled"}
+        description={config.description || ""}
+        tags={config.tags || []}
+        story={config.story}
+>>>>>>> origin/feature/interview
       />
 
       {/* 2. Features */}
@@ -100,6 +117,7 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
         <h2 className="text-2xl font-bold tracking-tight">시각화 학습하기</h2>
 
         {/* [NEW] Playground Limit (Story Connection) */}
+<<<<<<< HEAD
         {mergedConfig.story?.playgroundLimit && (
           <div className="flex items-start gap-3 py-2 text-muted-foreground">
             <ArrowDownCircle className="w-5 h-5 mt-1 animate-bounce text-primary" />
@@ -112,6 +130,20 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
           <div className="bg-muted/30 border-l-4 border-primary/50 p-4 mb-6 rounded-r-lg">
             <div className="text-muted-foreground leading-relaxed prose dark:prose-invert max-w-none prose-p:my-1 prose-li:my-0 prose-ul:my-2 prose-ol:my-2">
               <ReactMarkdown>{mergedConfig.story.playgroundDescription}</ReactMarkdown>
+=======
+        {config.story?.playgroundLimit && (
+          <div className="flex items-start gap-3 py-2 text-muted-foreground">
+            <ArrowDownCircle className="w-5 h-5 mt-1 animate-bounce text-primary" />
+            <p className="font-medium text-primary">
+              {config.story.playgroundLimit}
+            </p>
+          </div>
+        )}
+        {config.story?.playgroundDescription ? (
+          <div className="bg-muted/30 border-l-4 border-primary/50 p-4 mb-6 rounded-r-lg">
+            <div className="text-muted-foreground leading-relaxed prose dark:prose-invert max-w-none prose-p:my-1 prose-li:my-0 prose-ul:my-2 prose-ol:my-2">
+              <ReactMarkdown>{config.story.playgroundDescription}</ReactMarkdown>
+>>>>>>> origin/feature/interview
             </div>
           </div>
         ) : (
@@ -122,6 +154,7 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
 
         {/* [NEW] Interactive Guide Layout */}
         <div className="flex flex-col gap-6">
+<<<<<<< HEAD
           {mergedConfig.mode === 'interactive' && mergedConfig.interactive ? (
             <div className="w-full">
               {interactive ? (
@@ -139,11 +172,18 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
                   이 모듈은 아직 인터랙티브 시뮬레이션이 준비되지 않았습니다.
                 </div>
               )}
+=======
+          {config.mode === 'interactive' && config.interactive ? (
+            /* Interactive Mode: No Code Editor, Just Buttons */
+            <div className="w-full">
+              <CTPInteractivePlayground config={config.interactive} />
+>>>>>>> origin/feature/interview
             </div>
           ) : (
             /* Standard Mode: Visualizer + Code Editor */
             <>
               <div className="w-full">
+<<<<<<< HEAD
                 {isMergeSortModule ? (
                   <CTPMergeSortPlayground
                     initialCode={mergedConfig.initialCode?.python ?? ""}
@@ -219,6 +259,24 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
                   className="w-full"
                 >
                   <GuideToggleSection guide={mergedConfig.guide} />
+=======
+                <CTPPlayground
+                  initialCode={config.initialCode?.python ?? ""}
+                  onRun={runSimulation}
+                  visualizer={
+                    <Visualizer
+                      data={currentData}
+                      emptyMessage="코드를 실행하여 시각화를 시작해보세요!"
+                    />
+                  }
+                />
+              </div>
+
+              {/* Guide Panel (Bottom Toggle) */}
+              {config.guide && (
+                <div className="w-full">
+                  <GuideToggleSection guide={config.guide} />
+>>>>>>> origin/feature/interview
                 </div>
               )}
             </>
@@ -227,13 +285,60 @@ export function CTPModuleLoader({ module, category, activeKey }: CTPModuleLoader
       </section>
 
       {/* 4. Complexity */}
+<<<<<<< HEAD
       {mergedConfig.complexity && <CTPComplexity data={mergedConfig.complexity} names={mergedConfig.complexityNames} />}
+=======
+      {config.complexity && <CTPComplexity data={config.complexity} names={config.complexityNames} />}
+>>>>>>> origin/feature/interview
 
       {/* 5. Implementation Code */}
       {mergedConfig.implementation && <CTPImplementation examples={mergedConfig.implementation} />}
 
       {/* 6. Practice Problems */}
       {mergedConfig.practiceProblems && <CTPPractice problems={mergedConfig.practiceProblems} />}
+    </div>
+  );
+}
+
+function GuideToggleSection({ guide }: { guide: import("./types").GuideSection[] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border rounded-lg bg-card shadow-sm overflow-hidden">
+      <Button
+        variant="ghost"
+        className="w-full flex items-center justify-between p-4 h-auto hover:bg-muted/40 rounded-none from-muted/10 to-transparent bg-gradient-to-r"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 p-2 rounded-full">
+            <Lightbulb className="w-4 h-4 text-primary" />
+          </div>
+          <div className="text-left flex flex-col">
+            <span className="font-bold text-sm text-foreground/90">Playground Guide & Patterns</span>
+            <span className="text-xs text-muted-foreground font-normal">
+              {isOpen ? "가이드 접기" : "자주 쓰는 코드 패턴과 설명 보기"}
+            </span>
+          </div>
+        </div>
+        {isOpen ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+      </Button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="border-t"
+          >
+            <div className="p-1 bg-muted/5">
+              <CTPGuidePanel guide={guide} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

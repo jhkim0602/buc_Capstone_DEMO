@@ -5,11 +5,26 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 
+<<<<<<< HEAD
 type TocItem = {
   id: string;
   title: string;
   level: number;
 };
+=======
+// In a real implementation, we might parse headings from the content or accept them as props.
+// For this layout demo, we'll use a hardcoded list of sections typical for a DS concept page.
+const DEMO_SECTIONS = [
+  { id: "intro", title: "개요 (Introduction)" },
+  { id: "features", title: "주요 특징" },
+  { id: "visualization", title: "시각화 (Visualizer)" },
+  { id: "complexity", title: "시간 복잡도" },
+  { id: "implementation", title: "구현 코드" },
+  { id: "practice", title: "추천 문제" },
+];
+
+import { useSearchParams, usePathname } from "next/navigation";
+>>>>>>> origin/feature/interview
 
 export function CTPRightSidebar() {
   const searchParams = useSearchParams();
@@ -47,6 +62,7 @@ export function CTPRightSidebar() {
   useEffect(() => {
     // Small delay to ensure DOM is ready after route transition
     const timeoutId = setTimeout(() => {
+<<<<<<< HEAD
       const items = buildToc();
       if (tocDebug) {
         // eslint-disable-next-line no-console
@@ -70,6 +86,25 @@ export function CTPRightSidebar() {
       const sections = document.querySelectorAll("[data-toc][id]");
       sections.forEach((section) => observer.observe(section));
 
+=======
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(entry.target.id);
+            }
+          });
+        },
+        {
+          rootMargin: "-20% 0px -35% 0px",
+          threshold: 0.1
+        }
+      );
+
+      const sections = document.querySelectorAll("section[id]");
+      sections.forEach((section) => observer.observe(section));
+
+>>>>>>> origin/feature/interview
       return () => observer.disconnect();
     }, 100);
 
