@@ -1,6 +1,6 @@
-# StackLoad Crawler
+# Dibut Crawler
 
-StackLoad 프로젝트의 데이터 수집 모듈입니다.
+Dibut 프로젝트의 데이터 수집 모듈입니다.
 현재 구조는 **크롤러별 독립 실행**으로 완전히 정리되어 있습니다.
 
 ## 빠른 시작 (uv)

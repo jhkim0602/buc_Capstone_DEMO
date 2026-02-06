@@ -108,7 +108,7 @@ export function CommunitySidebar() {
 
       {/* Footer / Copyright */}
       <div className="text-xs text-muted-foreground px-1">
-        © 2026 StackLoad Community
+        © 2026 Dibut Community
       </div>
     </div>
   );

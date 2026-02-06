@@ -89,7 +89,7 @@ export default function BookmarksPage() {
                 <button className="hover:opacity-80 transition-opacity">
                   <a href="/">
                     <h1 className="text-2xl font-black text-blue-600 dark:text-blue-400">
-                      StackLoad
+                      Dibut
                     </h1>
                   </a>
                 </button>
@@ -120,7 +120,7 @@ export default function BookmarksPage() {
               <button className="hover:opacity-80 transition-opacity">
                 <a href="/">
                   <h1 className="text-2xl font-black text-blue-600 dark:text-blue-400">
-                    StackLoad
+                    Dibut
                   </h1>
                 </a>
               </button>
@@ -161,7 +161,7 @@ export default function BookmarksPage() {
               <button className="hover:opacity-80 transition-opacity">
                 <a href="/">
                   <h1 className="text-2xl font-black text-blue-600 dark:text-blue-400">
-                    StackLoad
+                    Dibut
                   </h1>
                 </a>
               </button>

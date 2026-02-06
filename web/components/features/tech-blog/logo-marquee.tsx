@@ -37,7 +37,7 @@ export function LogoMarquee() {
   return (
     <div className="w-full bg-background py-4 overflow-hidden relative">
       <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-background via-transparent to-background" />
-      <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
+      <div className="flex w-max min-w-max items-center animate-logo-marquee hover:[animation-play-state:paused] will-change-transform">
         {[...LOGOS, ...LOGOS].map((logo, index) => {
           const name = logo.split(".")[0];
           return (

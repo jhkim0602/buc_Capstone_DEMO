@@ -7,7 +7,7 @@ import { SidebarBanner } from "@/components/features/career/sidebar-banner";
 import { PaginationControl } from "@/components/ui/pagination-control";
 
 export const metadata = {
-  title: "채용 공고 | StackLoad",
+  title: "채용 공고 | Dibut",
   description: "최신 개발자 채용 정보를 기술 스택별로 탐색하세요.",
 };
 

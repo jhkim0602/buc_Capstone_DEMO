@@ -89,9 +89,9 @@ export function GlobalHeader() {
             >
               <span className="font-black text-xl text-foreground bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
                 <span className="bg-foreground text-background px-1 rounded mr-1">
-                  SL
+                  DB
                 </span>
-                StackLoad
+                Dibut
               </span>
             </Link>
 

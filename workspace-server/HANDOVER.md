@@ -1,7 +1,7 @@
 # Workspace Server Handover & Architecture Guide
 
 ## 1. Project Overview
-This `workspace-server` is a dedicated Node.js server for handling real-time collaboration features of the StackLoad platform. It separates these I/O-bound concerns from the CPU-bound AI backend.
+This `workspace-server` is a dedicated Node.js server for handling real-time collaboration features of the Dibut platform. It separates these I/O-bound concerns from the CPU-bound AI backend.
 
 ### Core Responsibilities
 - **Chat**: Real-time messaging, room management (Socket.io).

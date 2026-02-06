@@ -1,6 +1,6 @@
-# StackLoad Web Frontend
+# Dibut Web Frontend
 
-**StackLoad**의 프론트엔드 애플리케이션입니다. 개발자 기술 블로그 큐레이션, 커리어 관리, 그리고 AI 인터뷰 및 협업 기능을 제공합니다.
+**Dibut (디벗_Buddy for Developers)**의 프론트엔드 애플리케이션입니다. 개발자 기술 블로그 큐레이션, 커리어 관리, 그리고 AI 인터뷰 및 협업 기능을 제공합니다.
 
 ## 🛠 기술 스택 (Tech Stack)
 

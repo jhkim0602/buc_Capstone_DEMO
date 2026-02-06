@@ -26,7 +26,7 @@
 | REQ-CAR-001 | 채용 공고 딥 서치 | 키워드 매칭 + 의미 검색 (Deep Search) | Planned | - |
 | REQ-CAR-002 | 기술 스택 자동 분류 | 공고 텍스트에서 기술 태그 자동 추출 (Gemini) | **Done** | `crawler` |
 | REQ-CAR-003 | 대외활동 정보 애그리게이션 | 해커톤, 부트캠프 등 정보 수집 및 제공 | Planned | - |
-| REQ-CAR-004 | 기술 블로그 모음 (StackLoad) | 기업/개인 기술 블로그 RSS 수집 및 피드 제공 | **Done** | `web/app/career`, `crawler` (StackLoad Logic) |
+| REQ-CAR-004 | 기술 블로그 모음 (Dibut) | 기업/개인 기술 블로그 RSS 수집 및 피드 제공 | **Done** | `web/app/career`, `crawler` (Dibut Logic) |
 
 ## 3. 워크스페이스 (Workspace)
 **Status**: `Server Architecture Separated` / `Real-time Collab In Progress`

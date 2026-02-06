@@ -1,12 +1,12 @@
-# StackLoad 워크스페이스 구축 및 고도화 전략 (Workspace Deep Dive Planning)
+# Dibut 워크스페이스 구축 및 고도화 전략 (Workspace Deep Dive Planning)
 
-> **문서 개요**: 본 문서는 StackLoad의 핵심 엔진인 **'실시간 협업 워크스페이스(Workspace)'**의 현재 구현 상태와 향후 고도화 전략을 다룹니다. `workspace-server` 분리 및 초기 UI 구현이 완료된 시점을 기준으로 작성되었습니다.
+> **문서 개요**: 본 문서는 Dibut의 핵심 엔진인 **'실시간 협업 워크스페이스(Workspace)'**의 현재 구현 상태와 향후 고도화 전략을 다룹니다. `workspace-server` 분리 및 초기 UI 구현이 완료된 시점을 기준으로 작성되었습니다.
 
 ---
 
 ## 1. 워크스페이스 현황 및 기능 진단 (Current Status Analysis)
 
-현재 StackLoad 워크스페이스는 별도의 WebSocket 서버(`workspace-server`)를 분리하여 운영 중이며, `shadcn/ui` 기반의 프론트엔드와 연동되어 있습니다.
+현재 Dibut 워크스페이스는 별도의 WebSocket 서버(`workspace-server`)를 분리하여 운영 중이며, `shadcn/ui` 기반의 프론트엔드와 연동되어 있습니다.
 
 ### 1.1 구현된 기능 (Implemented Features)
 *   **Architecture**:

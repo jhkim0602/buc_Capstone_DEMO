@@ -10,10 +10,12 @@ import { Suspense } from "react";
 import { PresenceProvider } from "@/components/providers/presence-provider";
 import { VoiceManager } from "@/components/features/workspace/voice/voice-manager";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://dibut.dev";
+
 export const metadata: Metadata = {
   title: {
-    default: "StackLoad - Developer Productivity Platform",
-    template: "%s | StackLoad",
+    default: "Dibut (디벗_Buddy for Developers)",
+    template: "%s | Dibut",
   },
   description:
     "Integrated platform for Tech Blogs, AI Interview Practice, and Project Collaboration.",
@@ -21,12 +23,13 @@ export const metadata: Metadata = {
     "Tech Blog",
     "AI Interview",
     "Developer Tools",
-    "StackLoad",
+    "Dibut",
+    "디벗",
     "Collaboration",
   ],
-  authors: [{ name: "StackLoad Team" }],
-  creator: "StackLoad",
-  publisher: "StackLoad",
+  authors: [{ name: "Dibut Team" }],
+  creator: "Dibut",
+  publisher: "Dibut",
   robots: {
     index: true,
     follow: true,
@@ -34,10 +37,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "ko_KR",
-    url: "https://stackload.dev",
-    title: "StackLoad",
+    url: SITE_URL,
+    title: "Dibut (디벗_Buddy for Developers)",
     description: "Developer Productivity Platform",
-    siteName: "StackLoad",
+    siteName: "Dibut",
   },
 };
 

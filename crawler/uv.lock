@@ -1974,7 +1974,7 @@ wheels = [
 ]
 
 [[package]]
-name = "stackload-crawler"
+name = "dibut-crawler"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

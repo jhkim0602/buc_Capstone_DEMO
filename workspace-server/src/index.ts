@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 4000;
 
 const httpServer = createServer((req, res) => {
     res.writeHead(200);
-    res.end("StackLoad Workspace Server is running");
+    res.end("Dibut Workspace Server is running");
 });
 
 const io = new Server(httpServer, {

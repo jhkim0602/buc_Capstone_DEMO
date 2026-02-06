@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://stackload.dev";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dibut.dev";
 
   const staticPages: MetadataRoute.Sitemap = [
     {

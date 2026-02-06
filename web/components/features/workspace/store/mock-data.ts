@@ -261,7 +261,7 @@ export const MOCK_PROJECTS: Project[] = [
   },
   {
     id: "p-2", // simplified for brevity
-    title: "StackLoad 사이드 프로젝트",
+    title: "Dibut 사이드 프로젝트",
     description: "개발자 커리어 플랫폼 클론 코딩",
     type: "side-project",
     status: "live",

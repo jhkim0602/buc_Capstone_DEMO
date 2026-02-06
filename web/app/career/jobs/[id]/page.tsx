@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
-    title: `${job.title} | StackLoad`,
+    title: `${job.title} | Dibut`,
     description: `${job.company}의 채용 공고를 확인하세요.`,
     openGraph: {
       images: job.image_url ? [job.image_url] : [],

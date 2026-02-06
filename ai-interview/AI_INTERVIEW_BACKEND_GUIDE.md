@@ -98,7 +98,7 @@
     ```json
     {
       "session_id": "uuid-v4...",
-      "socket_url": "wss://api.stackload.com/ws/interview/{session_id}",
+      "socket_url": "wss://api.dibut.com/ws/interview/{session_id}",
       "first_question": {
           "text": "안녕하세요, 지원해주신 OOO 포지션 면접을 시작하겠습니다. 간단한 자기소개 부탁드립니다.",
           "audio_url": "https://..." // TTS 오디오 (Optional)

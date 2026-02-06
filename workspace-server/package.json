@@ -1,7 +1,7 @@
 {
   "name": "workspace-server",
   "version": "1.0.0",
-  "description": "Real-time collaboration server for StackLoad",
+  "description": "Real-time collaboration server for Dibut",
   "main": "src/index.ts",
   "scripts": {
     "start": "tsx src/index.ts",

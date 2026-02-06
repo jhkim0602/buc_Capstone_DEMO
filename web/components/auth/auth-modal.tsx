@@ -129,7 +129,7 @@ export function AuthModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-bold">
-            StackLoad에 오신 것을 환영합니다
+            Dibut에 오신 것을 환영합니다
           </DialogTitle>
         </DialogHeader>
 

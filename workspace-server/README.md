@@ -1,6 +1,6 @@
 # Workspace Server
 
-StackLoad 프로젝트의 실시간 협업 기능을 담당하는 WebSocket 서버입니다.
+Dibut 프로젝트의 실시간 협업 기능을 담당하는 WebSocket 서버입니다.
 Socket.IO 및 Yjs를 사용하여 실시간 화이트보드, 채팅, 커서 공유 등의 기능을 제공합니다.
 
 ## 🏗 아키텍처 및 연결 구조 (Architecture & Connection)

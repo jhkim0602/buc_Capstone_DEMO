@@ -1,7 +1,7 @@
 [project]
-name = "stackload-crawler"
+name = "dibut-crawler"
 version = "0.1.0"
-description = "RSS Crawler for StackLoad"
+description = "RSS Crawler for Dibut"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
