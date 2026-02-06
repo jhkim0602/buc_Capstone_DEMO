@@ -2,16 +2,16 @@ import { useCallback, useState } from "react";
 import { VisualItem } from "@/components/features/ctp/common/types";
 
 const BASE_NODES: VisualItem[] = [
-  { id: "A", value: "A", label: "d0·l0 루트" },
-  { id: "B", value: "B", label: "d1·l1 내부" },
-  { id: "C", value: "C", label: "d1·l1 내부" },
-  { id: "D", value: "D", label: "d1·l1 내부" },
-  { id: "E", value: "E", label: "d2·l2 리프" },
-  { id: "F", value: "F", label: "d2·l2 리프" },
-  { id: "G", value: "G", label: "d2·l2 리프" },
-  { id: "H", value: "H", label: "d2·l2 내부" },
-  { id: "I", value: "I", label: "d2·l2 리프" },
-  { id: "J", value: "J", label: "d3·l3 리프" },
+  { id: "A", value: "A", label: "d0 루트" },
+  { id: "B", value: "B", label: "d1 내부" },
+  { id: "C", value: "C", label: "d1 내부" },
+  { id: "D", value: "D", label: "d1 내부" },
+  { id: "E", value: "E", label: "d2 리프" },
+  { id: "F", value: "F", label: "d2 리프" },
+  { id: "G", value: "G", label: "d2 리프" },
+  { id: "H", value: "H", label: "d2 내부" },
+  { id: "I", value: "I", label: "d2 리프" },
+  { id: "J", value: "J", label: "d3 리프" },
 ];
 
 const BASE_EDGES = [
@@ -26,7 +26,7 @@ const BASE_EDGES = [
   { source: "H", target: "J", label: "1" },
 ];
 
-const STAGES = ["degree-distance", "level-width", "size", "subtree", "path"] as const;
+const STAGES = ["structure", "distance", "size"] as const;
 type StageKey = (typeof STAGES)[number];
 
 const NODE_META: Record<string, { degree: number; level: number; type: string }> = {
@@ -43,67 +43,46 @@ const NODE_META: Record<string, { degree: number; level: number; type: string }>
 };
 
 const STAGE_MESSAGES: Record<StageKey, string> = {
-  "degree-distance": `1/5 차수·거리
-핵심값: degree(D)=2, tree degree=3, distance(E,J)=5.
+  structure: `1/3 구조(차수·레벨·너비)
+핵심값: degree(D)=2, tree degree=3, width=5.
+포인트: level2(E,F,G,H,I)가 가장 넓습니다.`,
+  distance: `2/3 거리
+핵심값: distance(E,J)=5.
 경로: E→B→A→D→H→J`,
-  "level-width": `2/5 레벨과 너비
-핵심값: level0=1, level1=3, level2=5, level3=1.
-결론: width(최대 너비)=5`,
-  size: `3/5 노드/트리 크기
+  size: `3/3 크기(노드·트리·서브트리)
 핵심값: node size(D)=4, tree size=10.
-설명: D 하위(D,H,I,J)=4`,
-  subtree: `4/5 서브트리
-핵심값: subtree(D)={D,H,I,J}.
-설명: 하위 구조만 떼어도 트리 성질 유지`,
-  path: `5/5 유일 경로
-핵심값: F→J = F→B→A→D→H→J.
-설명: 대체 경로가 없습니다.`,
+서브트리: {D,H,I,J}`,
 };
 
 const decorateByStage = (stage: StageKey): VisualItem[] =>
   BASE_NODES.map((node) => {
-    if (stage === "degree-distance") {
-      if (node.id === "D") return { ...node, status: "active" };
-      if (node.id === "A" || node.id === "H") return { ...node, status: "comparing" };
-      if (node.id === "E") return { ...node, status: "visited" };
-      if (node.id === "J") return { ...node, status: "found" };
-      return { ...node, status: undefined };
+    if (stage === "structure") {
+      if (node.id === "A") return { ...node, status: "active" };
+      if (node.id === "B" || node.id === "C" || node.id === "D") return { ...node, status: "success" };
+      if (node.id === "E" || node.id === "F" || node.id === "G" || node.id === "H" || node.id === "I") {
+        return { ...node, status: "visited" };
+      }
+      return { ...node, status: "visited" };
     }
 
-    if (stage === "level-width") {
-      if (node.id === "A") return { ...node, status: "visited" };
-      if (node.id === "B" || node.id === "C" || node.id === "D") return { ...node, status: "active" };
-      if (node.id === "E" || node.id === "F" || node.id === "G" || node.id === "H" || node.id === "I") {
-        return { ...node, status: "success" };
-      }
-      if (node.id === "J") return { ...node, status: "comparing" };
+    if (stage === "distance") {
+      if (node.id === "D" || node.id === "H") return { ...node, status: "comparing" };
+      if (node.id === "E" || node.id === "B" || node.id === "A") return { ...node, status: "visited" };
+      if (node.id === "J") return { ...node, status: "found" };
       return { ...node, status: undefined };
     }
 
     if (stage === "size") {
       if (node.id === "D") return { ...node, status: "active" };
       if (node.id === "H" || node.id === "I" || node.id === "J") return { ...node, status: "success" };
+      if (node.id === "A") return { ...node, status: "comparing" };
       return { ...node, status: "visited" };
-    }
-
-    if (stage === "subtree") {
-      if (node.id === "D") return { ...node, status: "active" };
-      if (node.id === "H" || node.id === "I" || node.id === "J") return { ...node, status: "success" };
-      if (node.id === "A" || node.id === "B" || node.id === "C") return { ...node, status: "visited" };
-      return { ...node, status: undefined };
-    }
-
-    if (stage === "path") {
-      if (node.id === "D" || node.id === "H") return { ...node, status: "comparing" };
-      if (node.id === "F" || node.id === "B" || node.id === "A") return { ...node, status: "visited" };
-      if (node.id === "J") return { ...node, status: "found" };
-      return { ...node, status: undefined };
     }
 
     return node;
   });
 
-export const useTreeBasicsSimulation = () => {
+export const useTreePropertiesSimulation = () => {
   const [nodes, setNodes] = useState<VisualItem[]>(BASE_NODES);
   const [logs, setLogs] = useState<string[]>([]);
   const [stageCursor, setStageCursor] = useState<number>(-1);
@@ -112,7 +91,7 @@ export const useTreeBasicsSimulation = () => {
     "노드를 클릭하면 차수/레벨 정보를 확인할 수 있습니다.",
   ]);
 
-  const addLog = (msg: string) => setLogs((p) => [msg, ...p]);
+  const addLog = (msg: string) => setLogs((prev) => [msg, ...prev]);
 
   const highlightNext = () => {
     setStageCursor((prev) => {
@@ -131,7 +110,7 @@ export const useTreeBasicsSimulation = () => {
     setSelectedNodeId(null);
     setSelectedSummary(["노드를 클릭하면 차수/레벨 정보를 확인할 수 있습니다."]);
     addLog(`초기화 완료
-안내: Peek으로 차수/거리 → 레벨/너비 → 크기 → 서브트리 → 경로를 확인하세요.`);
+안내: Peek 버튼으로 구조 → 거리 → 크기를 순서대로 확인하세요.`);
   };
 
   const selectNode = (nodeId: string | number) => {

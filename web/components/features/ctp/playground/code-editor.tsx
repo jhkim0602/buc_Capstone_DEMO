@@ -113,10 +113,10 @@ export function CodeEditor({
     }
 
     // Monaco type definitions can differ by version; guard optional API at runtime.
-    const setHiddenAreas = (editor as any).setHiddenAreas as
-      | ((areas: typeof ranges) => void)
-      | undefined;
-    setHiddenAreas?.(ranges);
+    const setHiddenAreas = (editor as any).setHiddenAreas;
+    if (typeof setHiddenAreas === "function") {
+      setHiddenAreas.call(editor, ranges);
+    }
   }, [value, hiddenLinePatterns, hideFromMarker]);
 
   return (

@@ -80,6 +80,9 @@ export interface CTPModule {
       edges?: { source: string; target: string; label?: string }[];
       logs?: string[];
       handlers: Record<string, () => void>;
+      selectedNodeId?: string | number | null;
+      selectedSummary?: string[];
+      onNodeSelect?: (nodeId: string | number) => void;
     };
   };
   Visualizer: ComponentType<any>;

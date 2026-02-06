@@ -2,46 +2,64 @@ import { CTPModuleConfig } from "@/components/features/ctp/common/types";
 
 export const TREE_BST_CONFIG: CTPModuleConfig = {
   title: "Binary Search Tree (BST)",
-  description: "효율적인 탐색과 정렬을 위한 이진 트리 구조입니다.",
-  mode: 'code',
+  description: "정렬 불변식을 기반으로 search/insert 경로가 결정되는 트리 구조를 학습합니다.",
+  mode: "code",
+  tags: ["BST Invariant", "Search", "Insert", "Inorder Sorted"],
   story: {
-    problem: `수많은 책이 무작위로 쌓여있다면, 특정 책을 찾기 위해 모든 책을 뒤져야 합니다(O(N)).
-하지만 책들이 '가나다순'이나 '번호순'으로 꽂혀 있다면 훨씬 빨리 찾을 수 있지 않을까요?`,
-    definition: `이진 탐색 트리(BST)는 **정렬된 상태를 유지하는 트리**입니다.
+    problem: `무작위 데이터에서 값을 찾으려면 최악 O(N) 비교가 필요합니다.
+하지만 비교 결과에 따라 탐색 범위를 즉시 줄일 수 있다면 훨씬 빠르게 찾을 수 있습니다.`,
+    definition: `이진 탐색 트리(BST)는 **정렬 상태를 유지하는 이진 트리**입니다.
 
 **핵심 규칙**
-- 모든 노드에 대해, **왼쪽 자식**은 나보다 작고, **오른쪽 자식**은 나보다 큽니다.
-- 이 규칙 덕분에 매 단계마다 **탐색 범위를 절반**으로 줄일 수 있습니다 (Ideal O(log N)).
+- 모든 노드에서 왼쪽 서브트리 값 < 현재 노드 값 < 오른쪽 서브트리 값
+- 모든 서브트리도 동일한 규칙을 만족
 
 **불변식**
-- In-Order Traversal(중위 순회)을 하면 오름차순으로 정렬된 데이터가 나온다.
-- 모든 서브트리도 BST 성질을 만족한다.`,
-    analogy: `업다운(Up-Down) 게임과 같습니다. 숫자를 맞출 때 50을 불렀는데 "Down"이라고 하면, 51~100은 쳐다볼 필요도 없이 버립니다.
-BST 탐색도 이와 같이 '필요 없는 절반'을 과감히 버리며 정답을 찾아갑니다.`,
+- Inorder 순회 결과는 항상 오름차순
+- 탐색/삽입은 비교 결과(작다/크다)에 따라 한 방향으로만 내려간다.`,
+    analogy: `업다운 게임과 같습니다.
+현재 값보다 target이 작으면 왼쪽, 크면 오른쪽으로만 이동하므로 매 단계 후보가 줄어듭니다.`,
     playgroundDescription: `이번 단계에서 무엇을 볼까?
-- **범위 축소**: Target보다 작으면 오른쪽으로, 크면 왼쪽으로 이동하는 결정 과정
-- **경로 기록**: 탐색하면서 거쳐가는 노드들이 '정답을 찾기 위한 단서'가 됨
-- **정렬 상태**: 중위 순회 시 자연스럽게 정렬된 값이 나옴
-
-**실습 요약**
-- 루트에서 시작해 조건에 따라 계속 아래로 내려감
-- 값을 찾거나, Leaf에 도달하면(찾는 값 없음) 종료`
+- **ACTION 변경 + 실행**: search / insert 시나리오 전환
+- ACTION 값을 search / insert로 바꿨을 때 경로(path) 변화
+- compare_nodes가 보여주는 비교 기준
+- target / insert_value 변경에 따른 분기 결과
+- insert 시 nodes/edges가 갱신되며 트리 불변식이 유지되는지`,
   },
   features: [
-    { title: "정렬된 구조 (Sorted)", description: "왼쪽 < 부모 < 오른쪽 규칙을 항상 만족합니다. 이 성질을 이용해 데이터를 정렬된 상태로 저장합니다." },
-    { title: "효율적인 탐색 (Search)", description: "균형이 잘 잡혀있다면 스무고개처럼 절반씩 후보를 지워나가며 O(log N)만에 찾습니다." },
-    { title: "동적 업데이트", description: "배열은 중간 삽입 시 O(N)이 걸리지만, BST는 위치만 찾으면 링크 수정 만으로 삽입/삭제가 가능합니다." }
-  ],
-    complexity: {
-        access: "O(log N)",
-        search: "O(log N)",
-        insertion: "O(log N)",
-        deletion: "O(log N)"
+    {
+      title: "정렬 불변식",
+      description: "왼쪽 < 부모 < 오른쪽 규칙으로 탐색 방향이 즉시 결정됩니다.",
     },
-    implementation: [
-        {
-            language: "python",
-            code: `class TreeNode:
+    {
+      title: "탐색 경로의 단일성",
+      description: "동일한 target은 항상 동일한 비교 경로를 따라갑니다.",
+    },
+    {
+      title: "삽입 규칙의 단순성",
+      description: "탐색 경로의 끝(null 위치)에 새 노드를 연결하면 불변식을 유지할 수 있습니다.",
+    },
+    {
+      title: "균형 의존 성능",
+      description: "균형이 좋으면 O(log N), 편향되면 O(N)까지 악화됩니다.",
+    },
+  ],
+  complexity: {
+    access: "O(log N) ~ O(N)",
+    search: "O(log N) ~ O(N)",
+    insertion: "O(log N) ~ O(N)",
+    deletion: "O(log N) ~ O(N)",
+  },
+  complexityNames: {
+    access: "루트부터 탐색 경로 길이",
+    search: "값 조회",
+    insertion: "새 노드 삽입",
+    deletion: "노드 삭제(재연결/대체 포함)",
+  },
+  implementation: [
+    {
+      language: "python",
+      code: `class TreeNode:
     def __init__(self, val=0):
         self.val = val
         self.left = None
@@ -54,7 +72,7 @@ class BST:
 
         if val < root.val:
             root.left = self.insert(root.left, val)
-        else:
+        elif val > root.val:
             root.right = self.insert(root.right, val)
         return root
 
@@ -65,12 +83,11 @@ class BST:
         if val < root.val:
             return self.search(root.left, val)
         return self.search(root.right, val)`
-        }
-    ],
-    initialCode: {
-        python: `# === USER CODE START ===
+    }
+  ],
+  initialCode: {
+    python: `# === USER CODE START ===
 # Binary Search Tree (BST)
-# Static snapshot to avoid deep recursion in Skulpt
 nodes = [8, 3, 10, 1, 6, 14, 4, 7, 13]
 edges = [
     [8, 3], [8, 10], [3, 1], [3, 6],
@@ -89,23 +106,78 @@ tree = {
     13: (None, None),
 }
 
+root = 8
 active_node = None
 visited_nodes = []
+compare_nodes = []
 found_node = None
+path = []
 
+ACTION = "search"  # search | insert
 target = 7
-current = 8
-while current is not None:
-    active_node = current
-    visited_nodes.append(current)
-    if current == target:
-        found_node = current
-        break
-    left, right = tree[current]
-    if target < current:
-        current = left
+insert_value = 5
+
+if ACTION == "search":
+    current = root
+    while current is not None:
+        active_node = current
+        compare_nodes = [current, target]
+        visited_nodes.append(current)
+        path = visited_nodes[:]
+
+        if current == target:
+            found_node = current
+            break
+
+        left, right = tree[current]
+        if target < current:
+            current = left
+        else:
+            current = right
+
+    if found_node is not None:
+        result = f"search({target}) -> found"
     else:
-        current = right
+        result = f"search({target}) -> not found"
+
+else:  # ACTION == "insert"
+    current = root
+    parent = None
+
+    while current is not None:
+        active_node = current
+        compare_nodes = [current, insert_value]
+        visited_nodes.append(current)
+        path = visited_nodes[:]
+
+        parent = current
+        left, right = tree[current]
+
+        if insert_value < current:
+            current = left
+        elif insert_value > current:
+            current = right
+        else:
+            break
+
+    if current is None:
+        tree[insert_value] = (None, None)
+        nodes.append(insert_value)
+
+        left, right = tree[parent]
+        if insert_value < parent:
+            tree[parent] = (insert_value, right)
+        else:
+            tree[parent] = (left, insert_value)
+
+        edges.append([parent, insert_value])
+        found_node = insert_value
+        active_node = insert_value
+        path = visited_nodes + [insert_value]
+        result = f"insert({insert_value}) -> inserted under {parent}"
+    else:
+        found_node = current
+        result = f"insert({insert_value}) -> already exists"
 
 nodes = nodes
 edges = edges
@@ -119,13 +191,13 @@ def _dump(name):
     if name in globals():
         print(name + ":", globals()[name])
 
-for _k in ["root", "result"]:
+for _k in ["ACTION", "target", "insert_value", "path", "result"]:
     _dump(_k)
 `
   },
   practiceProblems: [
-    { id: 5639, title: "이진 검색 트리", tier: "Gold V", description: "BST 기본." },
-    { id: 1406, title: "에디터", tier: "Silver II", description: "연결 구조 활용." },
-    { id: 7662, title: "이중 우선순위 큐", tier: "Gold IV", description: "BST/Heap 아이디어." },
+    { id: 5639, title: "이진 검색 트리", tier: "Gold V", description: "전위 순회 입력으로 BST 후위 순회를 출력합니다." },
+    { id: 2957, title: "이진 탐색 트리", tier: "Gold I", description: "삽입 순서에 따른 트리 깊이 누적을 추적합니다." },
+    { id: 21939, title: "문제 추천 시스템 Version 1", tier: "Gold IV", description: "정렬 구조(set/heap) 운용으로 BST 사고를 훈련합니다." },
   ],
 };

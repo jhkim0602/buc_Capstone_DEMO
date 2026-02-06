@@ -194,7 +194,7 @@ mapGroup("linked", ["singly", "doubly", "circular", "two-pointers"]);
 mapGroup("stack", ["lifo-basics", "array-stack", "linked-stack", "monotonic-stack"]);
 mapGroup("queue", ["linear-queue", "circular-queue", "deque", "pq-basics"]);
 mapGroup("hash", ["hash-basics", "collision", "hash-implement"]);
-mapGroup("tree", ["tree-basics", "binary-traversal", "bst"]);
+mapGroup("tree", ["tree-basics", "tree-properties", "binary-traversal", "bst"]);
 mapGroup("heap", ["heap-basics", "min-heap", "max-heap"]);
 mapGroup("trie", ["trie-basics", "prefix-search", "trie-apps"]);
 mapGroup("uf", ["ds-basics", "union-rank", "path-compression", "ds-apps"]);
@@ -230,7 +230,7 @@ const groupObservation: Record<string, string> = {
   stack: `**이번 단계에서 무엇을 볼까?**\\n- push/pop 후 top 변화\\n- 단조 스택에서 연속 pop 발생 시점`,
   queue: `**이번 단계에서 무엇을 볼까?**\\n- front/rear 이동 규칙\\n- empty/full 판정 조건`,
   hash: `**이번 단계에서 무엇을 볼까?**\\n- 충돌 발생 위치\\n- 리해시/프로빙 경로`,
-  tree: `**이번 단계에서 무엇을 볼까?**\\n- 방문 순서(전/중/후위)\\n- 높이/깊이 변화`,
+  tree: `**이번 단계에서 무엇을 볼까?**\\n- 차수/거리/레벨/너비/크기 변화\\n- 방문 순서(전/중/후위)와 의미 차이`,
   heap: `**이번 단계에서 무엇을 볼까?**\\n- bubble-up/down 과정\\n- 힙 속성 유지 여부`,
   trie: `**이번 단계에서 무엇을 볼까?**\\n- prefix 경로가 확장되는 과정\\n- end flag가 켜지는 위치`,
   uf: `**이번 단계에서 무엇을 볼까?**\\n- find 경로\\n- union 이후 parent 변화`,

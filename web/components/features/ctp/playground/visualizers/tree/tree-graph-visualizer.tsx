@@ -25,37 +25,51 @@ interface TreeVisualizerProps {
     rootId?: string | null;
     emptyMessage?: string;
     orientation?: 'TB' | 'LR'; // Top-to-Bottom or Left-to-Right
+    selectedNodeId?: string | number | null;
+    onNodeSelect?: (nodeId: string | number) => void;
 }
 
 interface TreeNodeData extends Record<string, unknown> {
     value: any;
     label?: string;
     isHighlighted?: boolean;
+    isSelected?: boolean;
+    onSelect?: ((nodeId: string | number) => void) | undefined;
+    nodeId?: string | number;
     status?: 'active' | 'comparing' | 'visited' | 'found' | 'success';
 }
 
 // --- Custom Node ---
 const TreeNode = ({ data }: NodeProps<Node<TreeNodeData>>) => {
     return (
-        <div className="relative group">
+            <div className="relative group">
              {/* Label/Index helper */}
              {data.label && (
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-muted-foreground opacity-70 whitespace-nowrap">
+                <div className="pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 select-none text-[11px] font-medium text-muted-foreground whitespace-nowrap">
                     {data.label}
                 </div>
             )}
 
             <div className={cn(
-                "w-12 h-12 flex items-center justify-center rounded-full border-2 text-sm font-bold shadow-md transition-all duration-500",
+                "relative z-10 w-12 h-12 flex items-center justify-center rounded-full border-2 text-sm font-bold shadow-md transition-all duration-500 cursor-pointer",
                 // Status Layer
                 data.status === 'active' && "bg-blue-500 text-white border-blue-600 scale-110 shadow-blue-200 ring-4 ring-blue-100",
                 data.status === 'comparing' && "bg-yellow-100 text-yellow-700 border-yellow-500 scale-105 animate-pulse",
                 data.status === 'visited' && "bg-gray-100 text-gray-400 border-gray-300",
                 data.status === 'found' && "bg-green-500 text-white border-green-600 scale-125 ring-4 ring-green-100",
+                data.status === 'success' && "bg-emerald-100 text-emerald-700 border-emerald-500 ring-2 ring-emerald-200",
+                !data.status && data.isHighlighted && "bg-blue-50 text-blue-700 border-blue-400 ring-2 ring-blue-200",
 
                 // Default
-                !data.status && "bg-white text-gray-800 border-gray-300 hover:border-blue-400"
-            )}>
+                !data.status && !data.isHighlighted && "bg-white text-gray-800 border-gray-300 hover:border-blue-400",
+                data.isSelected && "scale-[1.28] ring-4 ring-violet-300 !border-violet-700 !bg-violet-100 !text-violet-900 shadow-[0_0_0_4px_rgba(139,92,246,0.18)]"
+            )}
+            onClick={() => {
+                if (data.onSelect && data.nodeId !== undefined) {
+                    data.onSelect(data.nodeId);
+                }
+            }}
+            >
                 {data.value}
             </div>
 
@@ -72,8 +86,13 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-    const isHorizontal = direction === 'LR';
-    dagreGraph.setGraph({ rankdir: direction });
+    dagreGraph.setGraph({
+        rankdir: direction,
+        nodesep: direction === "TB" ? 70 : 90,
+        ranksep: direction === "TB" ? 95 : 70,
+        marginx: 20,
+        marginy: 20,
+    });
 
     nodes.forEach((node) => {
         // Node size + spacing
@@ -107,7 +126,9 @@ export function TreeGraphVisualizer({
     data,
     edges: initialEdges = [],
     emptyMessage = "트리가 비어있습니다.",
-    orientation = 'TB'
+    orientation = 'TB',
+    selectedNodeId,
+    onNodeSelect
 }: TreeVisualizerProps) {
 
     const { nodes, edges } = useMemo(() => {
@@ -120,7 +141,11 @@ export function TreeGraphVisualizer({
             data: {
                 value: item.value,
                 label: item.label,
-                status: item.status
+                isHighlighted: item.isHighlighted,
+                status: item.status,
+                isSelected: selectedNodeId !== null && selectedNodeId !== undefined && String(selectedNodeId) === String(item.id),
+                onSelect: onNodeSelect,
+                nodeId: item.id,
             }
         }));
 
@@ -138,7 +163,7 @@ export function TreeGraphVisualizer({
         }));
 
         return getLayoutedElements(flowNodes, flowEdges, orientation);
-    }, [data, initialEdges, orientation]);
+    }, [data, initialEdges, orientation, selectedNodeId, onNodeSelect]);
 
 
     if (!data || data.length === 0) {
@@ -147,10 +172,40 @@ export function TreeGraphVisualizer({
 
     return (
         <div className="h-full w-full bg-muted/5 p-4 relative rounded-md overflow-hidden">
+            <div className="absolute left-3 top-3 z-10 rounded-md border border-border bg-background/90 px-2 py-1 text-[11px] text-muted-foreground shadow-sm">
+                <div className="font-semibold text-[11px] mb-1 text-foreground">범례</div>
+                <div className="flex flex-wrap gap-2">
+                    <span className="inline-flex items-center gap-1">
+                        <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
+                        기준
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                        <span className="inline-block h-2 w-2 rounded-full bg-yellow-500" />
+                        비교
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                        <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                        강조
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                        <span className="inline-block h-2 w-2 rounded-full bg-slate-300" />
+                        완료
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                        <span className="inline-block h-2 w-2 rounded-full bg-violet-500" />
+                        선택
+                    </span>
+                </div>
+            </div>
+
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}
+                nodesDraggable={false}
+                onNodeClick={(_, node) => {
+                    if (onNodeSelect) onNodeSelect(node.id);
+                }}
                 fitView
                 fitViewOptions={{ padding: 0.2, duration: 800 }} // Smooth zoom
                 className="bg-transparent"

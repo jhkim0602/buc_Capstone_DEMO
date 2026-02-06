@@ -104,6 +104,7 @@ export const CTP_DATA: CTPCategory[] = [
         difficulty: "Medium",
         subConcepts: [
           { id: "tree-basics", title: "트리 기본 (Tree Basics)" },
+          { id: "tree-properties", title: "트리 성질 (차수/거리/레벨/크기/서브트리)" },
           { id: "binary-traversal", title: "이진 트리 순회 (Traversal)" },
           { id: "bst", title: "이진 탐색 트리 (BST)" }
         ]
